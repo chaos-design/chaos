@@ -1,0 +1,15 @@
+packages/*/CHANGELOG.md
+dist/
+temp/
+.github/
+
+template-*
+tsconfig.json
+
+# markdown
+LICENSE.md
+README.md
+CONTRIBUTING.md
+
+pnpm-lock.yaml
+pnpm-workspace.yaml

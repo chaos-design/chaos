@@ -1,0 +1,44 @@
+{
+  "name": "create-chaos",
+  "version": "0.0.1",
+  "type": "module",
+  "license": "MIT",
+  "author": "rain120",
+  "bin": {
+    "create-chaos": "index.js",
+    "chaos": "index.js"
+  },
+  "files": [
+    "index.js",
+    "template-*",
+    "dist"
+  ],
+  "scripts": {
+    "dev": "unbuild --stub",
+    "build": "unbuild",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm run build"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chaos-design/chaos.git",
+    "directory": "packages/create"
+  },
+  "bugs": {
+    "url": "https://github.com/chaos-design/chaos/issues"
+  },
+  "homepage": "https://github.com/chaos-design/chaos/tree/main/packages/create#readme",
+  "devDependencies": {
+    "@chaos-design/tsconfig": "^0.0.11",
+    "@types/minimist": "^1.2.2",
+    "@types/node": "^20.3.3",
+    "@types/prompts": "^2.4.4",
+    "cross-spawn": "^7.0.3",
+    "kolorist": "^1.8.0",
+    "minimist": "^1.2.8",
+    "prompts": "^2.4.2"
+  }
+}

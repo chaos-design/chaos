@@ -1,0 +1,60 @@
+{
+  "name": "@chaos-design/chaos",
+  "version": "0.0.1",
+  "description": "For fastly and easily to frontend development by the tool",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "postinstall": "simple-git-hooks",
+    "typecheck": "tsc -p scripts --noEmit && pnpm -r --parallel run typecheck",
+    "lint": "eslint --cache ./packages/*",
+    "format": "prettier --write --cache .",
+    "build": "pnpm -r --filter='./packages/*' run build",
+    "dev": "pnpm -r --parallel --filter='./packages/*' run dev",
+    "getchanged": "sh ./scripts/get-changed-pkg-path.sh",
+    "release-all": "bumpp packages/**/package.json",
+    "release": "sh cache-changed-pkg-path.sh"
+  },
+  "keywords": [
+    "chaos",
+    "create-chaos",
+    "chaos",
+    "create tool"
+  ],
+  "license": "MIT",
+  "author": "Rain120",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chaos-design/chaos.git"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm exec lint-staged --concurrent false"
+  },
+  "lint-staged": {
+    "*": [
+      "prettier --write --cache --ignore-unknown",
+      "pnpm run getchanged"
+    ],
+    "packages/*/{src,types}/**/*.ts": [
+      "eslint --cache --fix"
+    ],
+    "packages/**/*.d.ts": [
+      "eslint --cache --fix"
+    ]
+  },
+  "devDependencies": {
+    "@chaos-design/eslint-config": "^0.0.12",
+    "@types/cross-spawn": "^6.0.2",
+    "@types/node": "^20.3.3",
+    "bumpp": "^9.1.1",
+    "eslint": "^8.44.0",
+    "eslint-define-config": "^1.21.0",
+    "lint-staged": "^13.2.3",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.8.8",
+    "simple-git-hooks": "^2.8.1",
+    "typescript": "^5.1.6",
+    "unbuild": "^1.2.1"
+  }
+}
