@@ -8,13 +8,13 @@ export interface ComponentNameProps {
 }
 
 const ComponentName = ({ className }: ComponentNameProps) => {
-  const [counter, setCounter] = useState(0);
+  const [counter, setCounter] = useState<number>(0);
 
   return (
     <div
       className={c(s.ComponentName, className)}
       onClick={() => {
-        setCounter((c) => c + 1);
+        setCounter((counter: number) => counter + 1);
       }}
     >
       Counter: {counter}

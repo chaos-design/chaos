@@ -4,7 +4,27 @@ import { fileURLToPath } from 'node:url';
 import spawn from 'cross-spawn';
 import minimist from 'minimist';
 import prompts from 'prompts';
-import { blue, cyan, lightRed, red, reset, yellow } from 'kolorist';
+import { red, reset, yellow } from 'kolorist';
+import type { ChaosConfigOptions, Framework } from './config.ts';
+import {
+  DEFAULT_TARGET_DIR,
+  FRAMEWORKS,
+  TEMPLATES,
+  TEMPLATE_IGNORE,
+  colors,
+  loadChaosConfig,
+  renameFiles,
+} from './config.ts';
+import {
+  copy,
+  emptyDir,
+  formatTargetDir,
+  isEmpty,
+  isValidPackageName,
+  pkgFromUserAgent,
+  setupReactComponent,
+  toValidPackageName,
+} from './utils.ts';
 
 // Avoids autoconversion to number of the project name by defining that the args
 // non associated with an option ( _ ) needs to be parsed as a string. See #4606
@@ -14,108 +34,11 @@ const argv = minimist<{
 }>(process.argv.slice(2), { string: ['_'] });
 const cwd = process.cwd();
 
-type ColorFunc = (str: string | number) => string;
-
-interface Framework {
-  name: string;
-  display: string;
-  color: ColorFunc;
-  variants: FrameworkVariant[];
-}
-
-interface FrameworkVariant {
-  name: string;
-  display: string;
-  color: ColorFunc;
-  customCommand?: string;
-}
-
-const FRAMEWORKS: Framework[] = [
-  {
-    name: 'react',
-    display: 'React',
-    color: cyan,
-    variants: [
-      {
-        name: 'react-ts',
-        display: 'React TypeScript',
-        color: blue,
-      },
-      {
-        name: 'react-component-ts',
-        display: 'React Component',
-        color: yellow,
-      },
-    ],
-  },
-  {
-    name: 'library',
-    display: 'Library',
-    color: lightRed,
-    variants: [
-      {
-        name: 'library-ts',
-        display: 'TypeScript',
-        color: blue,
-      },
-      {
-        name: 'library-react-component-ts',
-        display: 'React Component Library',
-        color: yellow,
-      },
-    ],
-  },
-  {
-    name: 'repository',
-    color: lightRed,
-    display: 'Repository',
-    variants: [
-      {
-        name: 'monorepo',
-        display: 'Monorepo',
-        color: blue,
-      },
-    ],
-  },
-  // {
-  //   name: 'others',
-  //   display: 'Others',
-  //   color: reset,
-  //   variants: [
-  //     {
-  //       name: 'create-vite',
-  //       display: 'create-vite ↗',
-  //       color: reset,
-  //       customCommand: 'npm create vite-create@latest TARGET_DIR',
-  //     }
-  //   ],
-  // },
-];
-
-const TEMPLATES = FRAMEWORKS.map(
-  f => (f.variants && f.variants.map(v => v.name)) || [f.name],
-).reduce((a, b) => a.concat(b), []);
-
-const renameFiles: Record<string, string | undefined> = {
-  '_github': '.github',
-  '_gitignore': '.gitignore',
-  '_editorconfig': '.editorconfig',
-  '_eslintignore': '.eslintignore',
-  '_eslintrc.cjs': '.eslintrc.cjs',
-  '_eslintrc.js': '.eslintrc.js',
-  '_gitattributes': '.gitattributes',
-  '_npmrc': '.npmrc',
-  '_prettierignore': '.prettierignore',
-  '_prettierrc.json': '.prettierrc.json',
-};
-
-const defaultTargetDir = 'chaos-project';
-
 async function init() {
   const argTargetDir = formatTargetDir(argv._[0]);
   const argTemplate = argv.template || argv.t;
 
-  let targetDir = argTargetDir || defaultTargetDir;
+  let targetDir = argTargetDir || DEFAULT_TARGET_DIR;
   const getProjectName = () =>
     targetDir === '.' ? path.basename(path.resolve()) : targetDir;
 
@@ -130,9 +53,9 @@ async function init() {
           type: argTargetDir ? null : 'text',
           name: 'projectName',
           message: reset('Project name:'),
-          initial: defaultTargetDir,
+          initial: DEFAULT_TARGET_DIR,
           onState: (state) => {
-            targetDir = formatTargetDir(state.value) || defaultTargetDir;
+            targetDir = formatTargetDir(state.value) || DEFAULT_TARGET_DIR;
           },
         },
         {
@@ -148,8 +71,9 @@ async function init() {
         },
         {
           type: (_, { overwrite }: { overwrite?: boolean }) => {
-            if (overwrite === false)
-            { throw new Error(`${red('✖')} Operation cancelled`); }
+            if (overwrite === false) {
+              throw new Error(`${red('✖')} Operation cancelled`);
+            }
 
             return null;
           },
@@ -160,7 +84,7 @@ async function init() {
           name: 'packageName',
           message: reset('Package name:'),
           initial: () => toValidPackageName(getProjectName()),
-          validate: dir =>
+          validate: (dir: string) =>
             isValidPackageName(dir) || 'Invalid package.json name',
         },
         {
@@ -216,6 +140,9 @@ async function init() {
 
   const root = path.join(cwd, targetDir);
 
+  const pkgInfo = pkgFromUserAgent(process.env.npm_config_user_agent);
+  const pkgManager = pkgInfo ? pkgInfo.name : 'pnpm';
+
   if (overwrite) {
     emptyDir(root);
   } else if (!fs.existsSync(root)) {
@@ -226,13 +153,134 @@ async function init() {
   let template: string = variant || framework?.name || argTemplate;
   let isReactSwc = false;
 
+  if (template === 'custom') {
+    try {
+      const config = await loadChaosConfig();
+
+      const customResult = await prompts([
+        {
+          type: () =>
+            argTemplate ? null : config?.template?.length ? null : 'text',
+          name: 'templatePath',
+          message: reset('Template path:'),
+        },
+        {
+          type: () =>
+            argTemplate
+            && config.template.map(t => t.name).includes(argTemplate)
+              ? null
+              : 'select',
+          name: 'template',
+          message:
+            typeof argTemplate === 'string'
+            && !config?.template.map(t => t.name).includes(argTemplate)
+              ? reset(
+                  `"${argTemplate}" isn't a valid template. Please choose from below: `,
+              )
+              : reset('Select a framework:'),
+          initial: 0,
+          choices: (config?.template || []).map((t, i) => {
+            const frameworkColor
+              = colors[(Math.random() * colors.length - 1) | 0];
+
+            if (!t.path) {
+              console.log();
+              throw new Error(
+                `${yellow('Template config had lost path in')} ${red(t.name)}`,
+              );
+            }
+
+            return {
+              title: frameworkColor(t.name),
+              value: { ...t },
+            };
+          }),
+        },
+      ]);
+
+      const { templatePath = '', template = {} } = customResult;
+      const {
+        path: tPath,
+        ignore = [],
+        renameFiles: templateRenameFiles = {},
+        replace,
+      } = template;
+      const templateDir = tPath || templatePath;
+
+      if (!fs.existsSync(targetDir)) {
+        console.log();
+        throw new Error(
+          `${yellow('The Path is not exist in')} ${red(targetDir)}.`,
+        );
+      }
+
+      console.log(`\n🔍 Scaffolding project in ${root} ...`);
+
+      const processFiles = (
+        files: string[],
+        templateDir: string,
+        root: string,
+        renameFiles: ChaosConfigOptions['renameFiles'] = {},
+      ) => {
+        for (const file of files.filter(
+          f => ![...TEMPLATE_IGNORE, ...ignore].filter(Boolean).includes(f),
+        )) {
+          const targetPath = path.join(root, renameFiles[file] ?? file);
+          const filePath = path.join(templateDir, file);
+
+          try {
+            const stats = fs.statSync(filePath);
+            if (stats.isFile()) {
+              const content
+                = typeof replace !== 'function'
+                  ? ''
+                  : replace(file, fs.readFileSync(filePath, 'utf-8'));
+
+              if (content) {
+                fs.writeFileSync(targetPath, `${content}`);
+              } else {
+                copy(filePath, targetPath);
+              }
+            } else if (stats.isDirectory()) {
+              const subFiles = fs.readdirSync(filePath);
+              const subTemplateDir = path.join(templateDir, file);
+              const subRoot = path.join(root, renameFiles[file] ?? file);
+
+              fs.mkdirSync(subRoot);
+              processFiles(
+                subFiles,
+                subTemplateDir,
+                subRoot,
+                templateRenameFiles,
+              );
+            }
+          } catch (err) {
+            console.error(`Error processing file: ${filePath}`, err);
+          }
+        }
+      };
+
+      processFiles(
+        fs.readdirSync(templateDir),
+        templateDir,
+        root,
+        templateRenameFiles,
+      );
+
+      writeDoneTip(root, pkgManager);
+    } catch (cancelled: any) {
+      console.log(cancelled.message);
+
+      return;
+    }
+
+    process.exit();
+  }
+
   if (template.includes('-swc')) {
     isReactSwc = true;
     template = template.replace('-swc', '');
   }
-
-  const pkgInfo = pkgFromUserAgent(process.env.npm_config_user_agent);
-  const pkgManager = pkgInfo ? pkgInfo.name : 'pnpm';
   const isYarn1 = pkgManager === 'yarn' && pkgInfo?.version.startsWith('1.');
 
   const { customCommand }
@@ -327,6 +375,10 @@ async function init() {
   //   setupReactSwc(root, template.endsWith('-ts'));
   // }
 
+  writeDoneTip(root, pkgManager);
+}
+
+export function writeDoneTip(root: string, pkgManager: string) {
   const cdProjectName = path.relative(cwd, root);
   console.log('\n✅ Done. Now run:\n');
 
@@ -349,124 +401,6 @@ async function init() {
       break;
   }
   console.log();
-}
-
-function formatTargetDir(targetDir: string | undefined) {
-  return targetDir?.trim().replace(/\/+$/g, '');
-}
-
-function copy(src: string, dest: string) {
-  const stat = fs.statSync(src);
-
-  if (stat.isDirectory()) {
-    copyDir(src, dest);
-  } else {
-    fs.copyFileSync(src, dest);
-  }
-}
-
-function isValidPackageName(projectName: string) {
-  return /^(?:@[a-z\d\-*~][a-z\d\-*._~]*\/)?[a-z\d\-~][a-z\d\-._~]*$/.test(
-    projectName,
-  );
-}
-
-function toValidPackageName(projectName: string) {
-  return projectName
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/^[._]/, '')
-    .replace(/[^a-z\d\-~]+/g, '-');
-}
-
-function copyDir(srcDir: string, destDir: string) {
-  fs.mkdirSync(destDir, { recursive: true });
-
-  for (const file of fs.readdirSync(srcDir)) {
-    const srcFile = path.resolve(srcDir, file);
-    const destFile = path.resolve(destDir, file);
-
-    copy(srcFile, destFile);
-  }
-}
-
-function isEmpty(path: string) {
-  const files = fs.readdirSync(path);
-
-  return files.length === 0 || (files.length === 1 && files[0] === '.git');
-}
-
-function emptyDir(dir: string) {
-  if (!fs.existsSync(dir)) {
-    return;
-  }
-
-  for (const file of fs.readdirSync(dir)) {
-    if (file === '.git') {
-      continue;
-    }
-
-    fs.rmSync(path.resolve(dir, file), { recursive: true, force: true });
-  }
-}
-
-function pkgFromUserAgent(userAgent: string | undefined) {
-  if (!userAgent) {
-    return undefined;
-  }
-
-  const pkgSpec = userAgent.split(' ')[0];
-  const pkgSpecArr = pkgSpec.split('/');
-
-  return {
-    name: pkgSpecArr[0],
-    version: pkgSpecArr[1],
-  };
-}
-
-function setupReactComponent(root: string, name: string) {
-  editFile(path.resolve(root, 'index.tsx'), (content) => {
-    return content.replace(/ComponentName/g, kebabCase2UpperCamelCase(name));
-  });
-
-  editFile(path.resolve(root, 'index.module.scss'), (content) => {
-    return content.replace(/ComponentName/g, kebabCase2CamelCase(name));
-  });
-}
-
-// function setupReactSwc(root: string, isTs: boolean) {
-//   editFile(path.resolve(root, 'package.json'), (content) => {
-//     return content.replace(
-//       /"@vitejs\/plugin-react": ".+?"/,
-//       '"@vitejs/plugin-react-swc": "^3.0.0"',
-//     );
-//   });
-
-//   editFile(
-//     path.resolve(root, `vite.config.${isTs ? 'ts' : 'js'}`),
-//     (content) => {
-//       return content.replace('@vitejs/plugin-react', '@vitejs/plugin-react-swc')
-//     },
-//   )
-// }
-
-function editFile(file: string, callback: (content: string) => string) {
-  const content = fs.readFileSync(file, 'utf-8');
-
-  fs.writeFileSync(file, callback(content), 'utf-8');
-}
-
-function kebabCase2UpperCamelCase(word: string) {
-  return word.replace(/(^|\s|-)\w/g, match =>
-    match.replace(/-|\s/g, '').toUpperCase(),
-  );
-}
-
-function kebabCase2CamelCase(word: string) {
-  return word.replace(/-([a-zA-Z\d])/g, (match, letter) =>
-    letter.toUpperCase(),
-  );
 }
 
 init().catch((e) => {

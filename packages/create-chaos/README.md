@@ -53,9 +53,61 @@ Currently supported template presets include:
   - `typescript`
 
 - `repository`
+
   - `monorepo`
 
+- `Others`
+  - `Custom`
+
 You can use `.` for the project name to scaffold in the current directory.
+
+### Custom
+
+- Create a template file wherever you want.
+- Create a `chaos.config.[js, cjs, mjs, ts]` file in your execution directory, or add a `chaos` field in the `package.json` with the following configuration.
+
+  **package.json**
+
+  ```json
+  {
+    "chaos": {
+      "template": [
+        {
+          "name": "gallery",
+          "path": "../../../gallery"
+        }
+      ]
+    }
+  }
+  ```
+
+  **chaos.config.ts**
+
+  ```ts
+  export default {
+    template: [
+      {
+        name: 'config gallery',
+        path: '../../../gallery',
+        ignore: ['node_modules', '.git'],
+        renameFiles: {
+          'README.md': 'README.zh.md',
+        },
+        replace: (file, content) => {
+          if (file.includes('gitignore')) {
+            return `${content}\nchaos`;
+          }
+
+          return '';
+        },
+      },
+    ],
+  };
+  ```
+
+  Note: When both `package.json` and `chaos.config.[js, cjs, mjs, ts]` files exist in the project, the configurations are merged. Also, if you don't have any configurations, you can simply input the path to your template based on the command.
+
+- Run `pnpm create chaos@latest`.
 
 ## Community Templates
 

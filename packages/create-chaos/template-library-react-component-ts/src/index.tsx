@@ -8,16 +8,16 @@ export interface CounterProps {
 }
 
 const Counter = ({ className }: CounterProps) => {
-  const [counter, setCounter] = useState(0);
+  const [count, setCount] = useState(0);
 
   return (
     <div
       className={c(s.counter, className)}
       onClick={() => {
-        setCounter((c) => c + 1);
+        setCount((count: number) => count + 1)
       }}
     >
-      Counter: {counter}
+      Counter: {count}
     </div>
   );
 };
