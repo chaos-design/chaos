@@ -81,7 +81,12 @@ export function pkgFromUserAgent(userAgent: string | undefined) {
 
 export function setupReactComponent(root: string, name: string) {
   editFile(path.resolve(root, 'index.tsx'), (content) => {
-    return content.replace(/ComponentName/g, kebabCase2UpperCamelCase(name));
+    return content
+      .replace(
+        /ComponentNameContainer/g,
+        `${kebabCase2CamelCase(name)}Container`,
+      )
+      .replace(/ComponentName/g, kebabCase2UpperCamelCase(name));
   });
 
   editFile(path.resolve(root, 'index.module.scss'), (content) => {

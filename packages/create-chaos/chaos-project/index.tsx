@@ -3,16 +3,16 @@ import c from 'classnames';
 
 import s from './index.module.scss';
 
-export interface ComponentNameProps {
+export interface ChaosProjectProps {
   className?: string;
 }
 
-const ComponentName = ({ className }: ComponentNameProps) => {
+const ChaosProject = ({ className }: ChaosProjectProps) => {
   const [counter, setCounter] = useState<number>(0);
 
   return (
     <div
-      className={c(s.ComponentNameContainer, className)}
+      className={c(s.chaosProjectContainer, className)}
       onClick={() => {
         setCounter((counter: number) => counter + 1);
       }}
@@ -22,4 +22,4 @@ const ComponentName = ({ className }: ComponentNameProps) => {
   );
 };
 
-export default ComponentName;
+export default ChaosProject;

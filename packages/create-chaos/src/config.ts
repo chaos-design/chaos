@@ -36,12 +36,12 @@ export const FRAMEWORKS: Framework[] = [
     variants: [
       {
         name: 'react-ts',
-        display: 'React TypeScript',
+        display: 'TypeScript Project',
         color: cyan,
       },
       {
         name: 'react-component-ts',
-        display: 'React Component',
+        display: 'Component',
         color: blue,
       },
     ],
@@ -58,7 +58,7 @@ export const FRAMEWORKS: Framework[] = [
       },
       {
         name: 'library-react-component-ts',
-        display: 'React Component Library',
+        display: 'React Component',
         color: magenta,
       },
     ],
@@ -84,7 +84,6 @@ export const FRAMEWORKS: Framework[] = [
         name: 'custom',
         display: 'Create By Custom ↗',
         color: yellow,
-        customCommand: 'npm create vite-create@latest TARGET_DIR',
       },
     ],
   },

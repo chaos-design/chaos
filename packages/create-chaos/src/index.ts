@@ -63,7 +63,7 @@ async function init() {
             !fs.existsSync(targetDir) || isEmpty(targetDir) ? null : 'confirm',
           name: 'overwrite',
           message: () =>
-            `${
+            `❗️${
               targetDir === '.'
                 ? 'Current directory'
                 : `Target directory "${targetDir}"`
@@ -102,7 +102,9 @@ async function init() {
             const frameworkColor = framework.color;
 
             return {
-              title: frameworkColor(framework.display || framework.name),
+              title: `🗂  ${frameworkColor(
+                framework.display || framework.name,
+              )}`,
               value: framework,
             };
           }),
@@ -117,7 +119,7 @@ async function init() {
               const variantColor = variant.color;
 
               return {
-                title: variantColor(variant.display || variant.name),
+                title: `📦 ${variantColor(variant.display || variant.name)}`,
                 value: variant.name,
               };
             }),
