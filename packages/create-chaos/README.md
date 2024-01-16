@@ -44,16 +44,13 @@ pnpm create chaos my-react-app --template react-ts
 Currently supported template presets include:
 
 - `react`
-
   - `react-ts`
   - `component`
 
 - `lib`
-
   - `typescript`
 
 - `repository`
-
   - `monorepo`
 
 - `Others`
