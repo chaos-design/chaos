@@ -1,0 +1,11 @@
+{
+  "extends": "@chaos-design/tsconfig",
+  "compilerOptions": {
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "outDir": "./lib",
+  },
+  "include": ["src"]
+}

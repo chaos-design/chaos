@@ -30,18 +30,25 @@
   "bugs": {
     "url": "https://github.com/chaos-design/chaos/issues"
   },
-  "homepage": "https://github.com/chaos-design/chaos/tree/main/packages/create#readme",
+  "homepage": "https://github.com/chaos-design/chaos/blob/main/packages/create-chaos/README.md",
   "dependencies": {
     "c12": "^1.4.2"
   },
   "devDependencies": {
-    "@chaos-design/tsconfig": "^0.0.11",
+    "eslint-config-chaos": "^0.0.15",
+    "@chaos-design/tsconfig": "^0.0.15",
     "@types/minimist": "^1.2.2",
-    "@types/node": "^20.3.3",
+    "@types/node": "^20.4.2",
     "@types/prompts": "^2.4.4",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
     "cross-spawn": "^7.0.3",
+    "eslint": "^8.45.0",
     "kolorist": "^1.8.0",
     "minimist": "^1.2.8",
-    "prompts": "^2.4.2"
+    "next": "^13.4.12",
+    "prompts": "^2.4.2",
+    "react-dom": "^18.2.0",
+    "typescript": "^5.1.6"
   }
 }

@@ -28,7 +28,7 @@
     "sass": "^1.63.6"
   },
   "devDependencies": {
-    "@chaos-design/eslint-config": "^0.0.12",
+    "eslint-config-chaos": "^0.0.15",
     "@chaos-design/tsconfig": "^0.0.11",
     "@rollup/plugin-commonjs": "^25.0.3",
     "@rollup/plugin-node-resolve": "^15.1.0",

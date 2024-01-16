@@ -23,6 +23,7 @@ import {
   isValidPackageName,
   pkgFromUserAgent,
   setupReactComponent,
+  setupWebpack,
   toValidPackageName,
 } from './utils.ts';
 
@@ -236,7 +237,11 @@ async function init() {
               const content
                 = typeof replace !== 'function'
                   ? ''
-                  : replace(file, fs.readFileSync(filePath, 'utf-8'));
+                  : replace(
+                    file,
+                    fs.readFileSync(filePath, 'utf-8'),
+                    packageName,
+                  );
 
               if (content) {
                 fs.writeFileSync(targetPath, `${content}`);
@@ -285,7 +290,7 @@ async function init() {
   }
   const isYarn1 = pkgManager === 'yarn' && pkgInfo?.version.startsWith('1.');
 
-  const { customCommand }
+  const { customCommand, ignore = [] }
     = FRAMEWORKS.flatMap(f => f.variants).find(v => v.name === template)
     ?? {};
 
@@ -355,7 +360,9 @@ async function init() {
 
   const files = fs.readdirSync(templateDir);
 
-  for (const file of files.filter(f => f !== 'package.json')) {
+  for (const file of files.filter(
+    f => ![...ignore, 'package.json'].includes(f),
+  )) {
     write(file);
   }
 
@@ -365,6 +372,12 @@ async function init() {
 
     return;
   }
+
+  if (template.includes('webpack')) {
+    setupWebpack(root, getProjectName());
+    console.log(template, '\n✅ Rename Done.\n');
+  }
+
   const pkg = JSON.parse(
     fs.readFileSync(path.join(templateDir, 'package.json'), 'utf-8'),
   );

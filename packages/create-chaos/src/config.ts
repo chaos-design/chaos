@@ -26,7 +26,10 @@ export interface FrameworkVariant {
   display: string;
   color: ColorFunc;
   customCommand?: string;
+  ignore?: string[];
 }
+
+export const TEMPLATE_IGNORE = ['node_modules', '.git'];
 
 export const FRAMEWORKS: Framework[] = [
   {
@@ -60,6 +63,32 @@ export const FRAMEWORKS: Framework[] = [
         name: 'library-react-component-ts',
         display: 'React Component',
         color: magenta,
+      },
+    ],
+  },
+  {
+    name: 'webpack',
+    display: 'Webpack',
+    color: lightRed,
+    variants: [
+      {
+        name: 'webpack-plugin',
+        display: 'Webpack Plugin',
+        color: red,
+        ignore: ['lib', 'dist', ...TEMPLATE_IGNORE],
+      },
+    ],
+  },
+  {
+    name: 'vscode',
+    display: 'Vscode',
+    color: lightRed,
+    variants: [
+      {
+        name: 'vscode-plugin',
+        display: 'Vscode Extension',
+        color: red,
+        ignore: ['lib', 'dist', ...TEMPLATE_IGNORE],
       },
     ],
   },
@@ -132,8 +161,6 @@ export const colors = [
   red,
   yellow,
 ];
-
-export const TEMPLATE_IGNORE = ['node_modules', '.git'];
 
 export interface ChaosConfigOptions {
   name: string;

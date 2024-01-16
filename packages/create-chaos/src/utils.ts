@@ -94,6 +94,32 @@ export function setupReactComponent(root: string, name: string) {
   });
 }
 
+export function setupWebpack(root: string, name: string) {
+  console.log('kebabCase2CamelCase(name)', kebabCase2UpperCamelCase(name));
+  editFile(path.resolve(root, 'src/index.ts'), (content) => {
+    return content.replace(
+      /WebpackPlugin/g,
+      `${kebabCase2UpperCamelCase(name)}`,
+    );
+  });
+
+  editFile(path.resolve(root, 'demo/package.json'), (content) => {
+    return content.replace(/WebpackPlugin/g, `${name}`);
+  });
+
+  editFile(path.resolve(root, 'demo/webpack.config.js'), (content) => {
+    return content
+      .replace(/WebpackPlugin/g, `${kebabCase2UpperCamelCase(name)}`)
+      .replace(/@chaos-design\/webpack-plugin/g, name);
+  });
+
+  editFile(path.resolve(root, 'README.md'), (content) => {
+    return content
+      .replace(/WebpackPlugin/g, `${kebabCase2UpperCamelCase(name)}`)
+      .replace(/@chaos-design\/webpack-plugin/g, name);
+  });
+}
+
 // export function setupReactSwc(root: string, isTs: boolean) {
 //   editFile(path.resolve(root, 'package.json'), (content) => {
 //     return content.replace(

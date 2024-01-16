@@ -44,11 +44,12 @@
     ]
   },
   "devDependencies": {
-    "@chaos-design/eslint-config": "^0.0.12",
+    "eslint-config-chaos": "^0.0.15",
     "@types/cross-spawn": "^6.0.2",
     "@types/node": "^20.3.3",
     "bumpp": "^9.1.1",
     "eslint": "^8.44.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-define-config": "^1.21.0",
     "lint-staged": "^13.2.3",
     "npm-run-all": "^4.1.5",
