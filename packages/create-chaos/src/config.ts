@@ -124,6 +124,7 @@ export const TEMPLATES = FRAMEWORKS.map(
 
 /* eslint-disable quote-props */
 export const renameFiles: Record<string, string | undefined> = {
+  _vscode: '.vscode',
   _github: '.github',
   _gitignore: '.gitignore',
   _editorconfig: '.editorconfig',
@@ -134,6 +135,7 @@ export const renameFiles: Record<string, string | undefined> = {
   _npmrc: '.npmrc',
   _prettierignore: '.prettierignore',
   '_prettierrc.json': '.prettierrc.json',
+  _prettierrc: '.prettierrc',
 };
 
 export const DEFAULT_TARGET_DIR = 'chaos-project';

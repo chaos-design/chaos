@@ -121,26 +121,24 @@ importers:
   packages/create-chaos/template-library-ts:
     specifiers:
       '@chaos-design/eslint-config-ts': ^0.0.8
-      '@chaos-design/tsconfig': ^0.0.11
       '@types/node': ^20.3.3
       bumpp: ^9.1.1
       eslint: ^8.44.0
       eslint-define-config: ^1.21.0
       lint-staged: ^13.2.3
       npm-run-all: ^4.1.5
-      prettier: ^2.8.8
+      prettier: ^3.2.2
       tsup: ^7.1.0
       typescript: ^5.1.6
     devDependencies:
       '@chaos-design/eslint-config-ts': 0.0.8_ko3fmmbeyij36muomfgt2u76xu
-      '@chaos-design/tsconfig': 0.0.11
       '@types/node': 20.4.2
       bumpp: 9.1.1
       eslint: 8.45.0
       eslint-define-config: 1.21.0
       lint-staged: 13.2.3
       npm-run-all: 4.1.5
-      prettier: 2.8.8
+      prettier: 3.2.2
       tsup: 7.1.0_typescript@5.1.6
       typescript: 5.1.6
 
@@ -332,7 +330,7 @@ importers:
       webpack-cli: ^4.9.2
       webpack-dev-server: ^4.8.1
     devDependencies:
-      '@chaos-design/tsconfig': 0.0.15
+      '@chaos-design/tsconfig': 0.0.19-beta.11
       '@chaos-design/webpack-plugin': link:../lib
       ts-loader: 9.4.4_rggdtlzfqxxwxudp3onsqdyocm
       typescript: 4.9.5
@@ -755,6 +753,10 @@ packages:
 
   /@chaos-design/tsconfig/0.0.15:
     resolution: {integrity: sha512-dn8BUPEBsa8HfxmG9vz/bJXVThmv7LloU3vu/EEA74nbOWmbmegLa6lhDePqoq7Xl6SFOds7gLbJGAKoWiWEeA==}
+    dev: true
+
+  /@chaos-design/tsconfig/0.0.19-beta.11:
+    resolution: {integrity: sha512-5/0bz64A8KHP1enWrn2URo6DPlgFGLTZEs9e2KtmjtHIkhUxRmltyLAL1JEaInQijP8sPokUyFErH3vnwmGx9A==}
     dev: true
 
   /@ctrl/tinycolor/3.6.0:
