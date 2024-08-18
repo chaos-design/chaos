@@ -1,6 +1,6 @@
 {
   "name": "@chaos-design/chaos",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "For fastly and easily to frontend development by the tool",
   "private": true,
   "main": "index.js",
@@ -12,9 +12,9 @@
     "format": "prettier --write --cache .",
     "build": "pnpm -r --filter='./packages/*' run build",
     "dev": "pnpm -r --parallel --filter='./packages/*' run dev",
-    "getchanged": "sh ./scripts/get-changed-pkg-path.sh",
     "release-all": "bumpp packages/**/package.json",
-    "release": "sh cache-changed-pkg-path.sh"
+    "release": "bumpp packages/**/package.json packages/**/*/package.json",
+    "publish-pkg": "sh ./scripts/publish-to-npm.sh"
   },
   "keywords": [
     "chaos",
@@ -33,8 +33,7 @@
   },
   "lint-staged": {
     "*": [
-      "prettier --write --cache --ignore-unknown",
-      "pnpm run getchanged"
+      "prettier --write --cache --ignore-unknown"
     ],
     "packages/*/{src,types}/**/*.ts": [
       "eslint --cache --fix"
@@ -44,18 +43,19 @@
     ]
   },
   "devDependencies": {
-    "eslint-config-chaos": "^0.0.15",
     "@types/cross-spawn": "^6.0.2",
     "@types/node": "^20.3.3",
     "bumpp": "^9.1.1",
     "eslint": "^8.44.0",
+    "eslint-config-chaos": "latest",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-define-config": "^1.21.0",
+    "eslint-define-config": "^2.1.0",
     "lint-staged": "^13.2.3",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.8.8",
     "simple-git-hooks": "^2.8.1",
     "typescript": "^5.1.6",
-    "unbuild": "^1.2.1"
+    "unbuild": "^1.2.1",
+    "zx": "^8.1.4"
   }
 }

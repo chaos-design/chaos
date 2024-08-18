@@ -1,9 +1,8 @@
 {
   "name": "create-chaos",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "type": "module",
   "license": "MIT",
-  "author": "rain120",
   "bin": {
     "create-chaos": "index.js",
     "chaos": "index.js"
@@ -30,25 +29,26 @@
   "bugs": {
     "url": "https://github.com/chaos-design/chaos/issues"
   },
+  "author": "rain120",
   "homepage": "https://github.com/chaos-design/chaos/blob/main/packages/create-chaos/README.md",
   "dependencies": {
-    "c12": "^1.4.2"
+    "c12": "^1.11.1"
   },
   "devDependencies": {
-    "eslint-config-chaos": "^0.0.15",
-    "@chaos-design/tsconfig": "^0.0.15",
+    "eslint-config-chaos": "latest",
+    "@chaos-design/tsconfig": "latest",
     "@types/minimist": "^1.2.2",
-    "@types/node": "^20.4.2",
-    "@types/prompts": "^2.4.4",
-    "@types/react": "^18.2.14",
-    "@types/react-dom": "^18.2.6",
+    "@types/node": "^20.14.11",
+    "@types/prompts": "^2.4.9",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "cross-spawn": "^7.0.3",
-    "eslint": "^8.45.0",
+    "eslint": "^9.9.0",
     "kolorist": "^1.8.0",
     "minimist": "^1.2.8",
     "next": "^13.4.12",
     "prompts": "^2.4.2",
-    "react-dom": "^18.2.0",
+    "react-dom": "^18.3.1",
     "typescript": "^5.1.6"
   }
 }

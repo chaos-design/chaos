@@ -1,5 +1,5 @@
 import React from 'react';
-import './globals.css';
+
 import {
   LaptopOutlined,
   NotificationOutlined,
@@ -8,6 +8,8 @@ import {
 import type { MenuProps } from 'antd';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
 import { inter } from '../config/layout';
+
+import './globals.css';
 
 const items1: MenuProps['items'] = ['1', '2', '3'].map((key) => ({
   key,

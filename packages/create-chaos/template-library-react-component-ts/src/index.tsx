@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import c from '@tinyfe/classnames/es';
+
+import c from '@chaos-design/classnames';
 
 import s from './index.module.scss';
 

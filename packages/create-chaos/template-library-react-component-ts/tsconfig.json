@@ -3,5 +3,6 @@
   "compilerOptions": {
     "jsx": "react-jsx"
   },
-  "include": ["vite.config.ts", "src/**/*", "demo/**/*"]
+  "include": ["src/**/*.tsx", "src/**/*.ts", "global.d.ts", "vitest-setup.ts"],
+  "exclude": ["node_modules", "dist", "playground/**/*"]
 }

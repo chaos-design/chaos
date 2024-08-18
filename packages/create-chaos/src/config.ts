@@ -22,6 +22,7 @@ export interface Framework {
 }
 
 export interface FrameworkVariant {
+  showName?: string;
   name: string;
   display: string;
   color: ColorFunc;
@@ -38,11 +39,13 @@ export const FRAMEWORKS: Framework[] = [
     color: lightCyan,
     variants: [
       {
+        showName: 'react',
         name: 'react-ts',
         display: 'TypeScript Project',
         color: cyan,
       },
       {
+        showName: 'reactc',
         name: 'react-component-ts',
         display: 'Component',
         color: blue,
@@ -55,11 +58,13 @@ export const FRAMEWORKS: Framework[] = [
     color: lightRed,
     variants: [
       {
+        showName: 'lib',
         name: 'library-ts',
         display: 'TypeScript',
         color: red,
       },
       {
+        showName: 'libc',
         name: 'library-react-component-ts',
         display: 'React Component',
         color: magenta,
@@ -72,6 +77,7 @@ export const FRAMEWORKS: Framework[] = [
     color: lightRed,
     variants: [
       {
+        showName: 'wp',
         name: 'webpack-plugin',
         display: 'Webpack Plugin',
         color: red,
@@ -81,10 +87,11 @@ export const FRAMEWORKS: Framework[] = [
   },
   {
     name: 'vscode',
-    display: 'Vscode',
+    display: 'VS Code',
     color: lightRed,
     variants: [
       {
+        showName: 'vsp',
         name: 'vscode-plugin',
         display: 'Vscode Extension',
         color: red,
@@ -98,6 +105,7 @@ export const FRAMEWORKS: Framework[] = [
     display: 'Repository',
     variants: [
       {
+        showName: 'monorepo',
         name: 'monorepo',
         display: 'Monorepo',
         color: green,
@@ -118,9 +126,35 @@ export const FRAMEWORKS: Framework[] = [
   },
 ];
 
-export const TEMPLATES = FRAMEWORKS.map(
-  f => (f.variants && f.variants.map(v => v.name)) || [f.name],
-).reduce((a, b) => a.concat(b), []);
+export const TEMPLATES_MAP = new Map();
+
+export const TEMPLATES = FRAMEWORKS.map((f) => {
+  if (f.variants) {
+    return f.variants.map((v) => {
+      TEMPLATES_MAP.set(v.showName, v.name);
+      TEMPLATES_MAP.set(v.name, v.name);
+
+      return v.showName || v.name;
+    });
+  }
+
+  return [f.name];
+}).reduce((a, b) => a.concat(b), []);
+
+export const helpMessage = `\
+Usage: create-chaos [OPTION]... [DIRECTORY]
+
+Options:
+  -t, --template NAME        use a specific template
+
+Available templates:
+${yellow('react-ts                      react         ')}
+${green('react-component-ts            reactc        ')}
+${cyan('library-ts                    lib           ')}
+${cyan('library-react-component-ts    libc          ')}
+${magenta('webpack-plugin                webpack-plugin')}
+${lightRed('vscode-plugin                 vscode-plugin ')}
+${red('monorepo                      monorepo      ')}`;
 
 /* eslint-disable quote-props */
 export const renameFiles: Record<string, string | undefined> = {

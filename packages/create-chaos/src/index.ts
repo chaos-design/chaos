@@ -10,8 +10,10 @@ import {
   DEFAULT_TARGET_DIR,
   FRAMEWORKS,
   TEMPLATES,
+  TEMPLATES_MAP,
   TEMPLATE_IGNORE,
   colors,
+  helpMessage,
   loadChaosConfig,
   renameFiles,
 } from './config.ts';
@@ -30,14 +32,29 @@ import {
 // Avoids autoconversion to number of the project name by defining that the args
 // non associated with an option ( _ ) needs to be parsed as a string. See #4606
 const argv = minimist<{
-  t?: string;
   template?: string;
-}>(process.argv.slice(2), { string: ['_'] });
+  help?: boolean;
+}>(process.argv.slice(2), {
+  default: { help: false },
+  alias: {
+    h: 'help',
+    t: 'template',
+  },
+  string: ['_'],
+});
 const cwd = process.cwd();
+
+console.log('argv', argv);
 
 async function init() {
   const argTargetDir = formatTargetDir(argv._[0]);
   const argTemplate = argv.template || argv.t;
+
+  const help = argv.help;
+  if (help) {
+    console.log(helpMessage);
+    return;
+  }
 
   let targetDir = argTargetDir || DEFAULT_TARGET_DIR;
   const getProjectName = () =>
@@ -218,7 +235,6 @@ async function init() {
       }
 
       console.log(`\n🔍 Scaffolding project in ${root} ...`);
-
       const processFiles = (
         files: string[],
         templateDir: string,
@@ -291,8 +307,9 @@ async function init() {
   const isYarn1 = pkgManager === 'yarn' && pkgInfo?.version.startsWith('1.');
 
   const { customCommand, ignore = [] }
-    = FRAMEWORKS.flatMap(f => f.variants).find(v => v.name === template)
-    ?? {};
+    = FRAMEWORKS.flatMap(f => f.variants).find(
+      v => v.showName === template || v.name === template,
+    ) ?? {};
 
   if (customCommand) {
     const fullCustomCommand = customCommand
@@ -341,6 +358,7 @@ async function init() {
   }
 
   console.log(`\n🔍 Scaffolding project in ${root}...`);
+  template = TEMPLATES_MAP.get(template);
 
   const templateDir = path.resolve(
     fileURLToPath(import.meta.url),

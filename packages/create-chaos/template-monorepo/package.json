@@ -14,7 +14,8 @@
     "dev": "pnpm -r --parallel --filter='./packages/*' run dev",
     "getchanged": "sh ./scripts/get-changed-pkg-path.sh",
     "release-all": "bumpp packages/**/package.json",
-    "release": "sh cache-changed-pkg-path.sh"
+    "release": "bumpp packages/**/package.json packages/**/*/package.json",
+    "publish-pkg": "sh ./scripts/publish-to-npm.sh"
   },
   "keywords": [],
   "author": "Rain120",
@@ -35,15 +36,15 @@
     ]
   },
   "devDependencies": {
-    "@chaos-design/tsconfig": "^0.0.11",
-    "eslint-config-chaos": "^0.0.15",
+    "@chaos-design/tsconfig": "latest",
+    "eslint-config-chaos": "latest",
     "@types/cross-spawn": "^6.0.2",
     "@types/node": "^20.3.3",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "bumpp": "^9.1.1",
     "eslint": "^8.44.0",
-    "eslint-define-config": "^1.21.0",
+    "eslint-define-config": "^2.1.0",
     "lint-staged": "^13.2.3",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.8.8",
