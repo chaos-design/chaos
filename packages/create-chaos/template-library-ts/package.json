@@ -1,45 +1,44 @@
 {
   "name": "chaos-project",
-    "type": "module",
-    "version": "0.0.1",
-    "private": true,
-    "exports": {
-      "types": "./index.d.ts",
-      "require": "./lib/index.cjs",
-      "import": "./lib/index.js"
-    },
-    "main": "./lib/index.cjs",
-    "module": "./lib/index.js",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "exports": {
+    "development": "./src/index.ts",
     "types": "./index.d.ts",
-    "files": [
-      "lib",
-      "index.d.ts"
-    ],
-    "scripts": {
-      "dev": "tsup --watch",
-      "build": "tsup",
-      "preinstall": "npx only-allow pnpm",
-      "postinstall": "simple-git-hooks",
-      "typecheck": "tsc -p scripts --noEmit && pnpm -r --parallel run typecheck",
-      "lint": "eslint --cache ./packages/*",
-      "format": "prettier --write --cache .",
-      "release": "bumpp package.json"
-    },
-    "dependencies": {
-    },
-    "devDependencies": {
-      "@chaos-design/eslint-config-ts": "latest",
-      "@chaos-design/tsconfig": "latest",
-      "@types/node": "^20.3.3",
-      "bumpp": "^9.1.1",
-      "eslint": "^8.44.0",
-      "eslint-define-config": "^2.1.0",
-      "lint-staged": "^13.2.3",
-      "npm-run-all": "^4.1.5",
-      "prettier": "^2.8.8",
-      "tsup": "^7.1.0",
-      "typescript": "^5.1.6",
-      "unbuild": "^1.2.1"
-    }
+    "require": "./lib/index.cjs",
+    "import": "./lib/index.js"
+  },
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "types": "./index.d.ts",
+  "files": [
+    "lib",
+    "index.d.ts"
+  ],
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "preinstall": "npx only-allow pnpm",
+    "postinstall": "simple-git-hooks",
+    "typecheck": "tsc -p scripts --noEmit && pnpm -r --parallel run typecheck",
+    "lint": "eslint --cache ./packages/*",
+    "format": "prettier --write --cache .",
+    "release": "bumpp package.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@chaos-design/eslint-config-ts": "latest",
+    "@chaos-design/tsconfig": "latest",
+    "@types/node": "^20.3.3",
+    "bumpp": "^9.1.1",
+    "eslint": "^8.44.0",
+    "eslint-define-config": "^2.1.0",
+    "lint-staged": "^13.2.3",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.8.8",
+    "tsup": "^7.1.0",
+    "typescript": "^5.1.6",
+    "unbuild": "^1.2.1"
   }
-  
+}

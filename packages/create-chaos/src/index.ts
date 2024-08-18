@@ -43,8 +43,7 @@ const argv = minimist<{
   string: ['_'],
 });
 const cwd = process.cwd();
-
-console.log('argv', argv);
+// console.log('argv', argv);
 
 async function init() {
   const argTargetDir = formatTargetDir(argv._[0]);
