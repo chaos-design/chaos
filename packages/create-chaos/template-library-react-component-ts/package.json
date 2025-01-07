@@ -1,54 +1,59 @@
 {
   "name": "vite-react-typescript-starter",
-  "private": true,
-  "version": "0.0.1",
   "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "rm -rf dist && tsc && vite build",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+  "version": "0.0.1",
+  "private": true,
+  "exports": {
+    ".": {
+      "development": "./src/index.ts",
+      "require": "./dist/index.cjs.js",
+      "import": "./dist/index.es.js"
+    }
   },
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.es.js",
   "files": [
     "dist"
   ],
-  "main": "./dist/index.cjs.js",
-  "module": "./dist/index.es.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "rm -rf dist && tsc && vite build --watch",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
   "typings": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.es.js",
-      "require": "./dist/index.cjs.js"
-    }
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
   },
   "dependencies": {
-    "@tinyfe/classnames": "^0.0.8",
+    "@chaos-design/classnames": "latest",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sass": "^1.63.6"
   },
   "devDependencies": {
-    "eslint-config-chaos": "latest",
     "@chaos-design/tsconfig": "latest",
     "@rollup/plugin-commonjs": "^25.0.3",
     "@rollup/plugin-node-resolve": "^15.1.0",
     "@rollup/plugin-terser": "^0.4.3",
     "@rollup/plugin-typescript": "^11.1.2",
+    "@testing-library/react": "^16.0.1",
     "@types/node": "^20.3.3",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
     "@vitejs/plugin-react": "^4.0.1",
-    "eslint": "^8.43.0",
+    "@vitejs/plugin-react-swc": "^3.7.0",
+    "eslint": "^9.11.0",
+    "eslint-config-chaos": "latest",
     "eslint-define-config": "^2.1.0",
     "lint-staged": "^13.2.3",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.8.8",
     "typescript": "^5.1.6",
     "unbuild": "^1.2.1",
-    "vite": "^4.3.9"
-  },
-  "peerDependencies": {
-    "react": ">=18",
-    "react-dom": ">=18"
+    "vite": "^5.4.7",
+    "vite-plugin-dts": "^4.2.1",
+    "vitest": "^2.1.1"
   }
 }

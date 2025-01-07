@@ -26,6 +26,9 @@ export default defineConfig({
       formats: ['es', 'cjs'],
       fileName: (format: string) => `index.${format}.js`,
     },
+    // watch: {
+      // https://rollupjs.org/configuration-options/#watch
+    // },
     rollupOptions: {
       external: [
         'react/jsx-runtime',
