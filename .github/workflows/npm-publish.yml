@@ -46,6 +46,7 @@ jobs:
         run: |
           pnpm -v
           pnpm i
+          cd packages/chaos
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_CHAOS_TOKEN}}
