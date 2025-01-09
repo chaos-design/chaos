@@ -11,14 +11,14 @@ function resolve(str: string) {
 }
 
 const pkg = JSON.parse(
-  readFileSync(new URL('./package.json', import.meta.url)).toString(),
+  readFileSync(new URL('./package.json', import.meta.url)).toString()
 );
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), dts({ rollupTypes: true })],
   build: {
-    outDir: 'dist',
+    outDir: 'lib',
     minify: false,
     lib: {
       entry: resolve('src/index.ts'),
@@ -26,8 +26,8 @@ export default defineConfig({
       formats: ['es', 'cjs'],
       fileName: (format: string) => `index.${format}.js`,
     },
+    // https://rollupjs.org/configuration-options/#watch
     // watch: {
-      // https://rollupjs.org/configuration-options/#watch
     // },
     rollupOptions: {
       external: [
