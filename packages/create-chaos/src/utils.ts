@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import prompts from 'prompts';
 
 export function formatTargetDir(targetDir: string | undefined) {
   return targetDir?.trim().replace(/\/+$/g, '');
@@ -38,6 +39,20 @@ export function copyDir(srcDir: string, destDir: string) {
     const destFile = path.resolve(destDir, file);
 
     copy(srcFile, destFile);
+  }
+}
+
+export function findPackageRoot(startDir: string) {
+  let dir = startDir;
+  while (true) {
+    if (fs.existsSync(path.join(dir, 'package.json'))) {
+      return dir;
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) {
+      return startDir;
+    }
+    dir = parent;
   }
 }
 
@@ -152,4 +167,42 @@ export function kebabCase2CamelCase(word: string) {
   return word.replace(/-([a-zA-Z\d])/g, (match, letter) =>
     letter.toUpperCase(),
   );
+}
+
+export function getPromptOptions(
+  choices: { title: string; value: any; description?: string }[],
+  message: string,
+) {
+  return {
+    type: 'select',
+    name: 'value',
+    message,
+    choices,
+    initial: 0,
+  } as prompts.PromptObject;
+}
+
+export function writeDoneTip(root: string, pkgManager: string) {
+  const cdProjectName = path.relative(process.cwd(), root);
+  console.log('\n✅ Done. Now run:\n');
+
+  if (root !== process.cwd()) {
+    console.log(
+      `  cd ${
+        cdProjectName.includes(' ') ? `"${cdProjectName}"` : cdProjectName
+      }`,
+    );
+  }
+
+  switch (pkgManager) {
+    case 'yarn':
+      console.log('  yarn');
+      console.log('  yarn dev');
+      break;
+    default:
+      console.log(`  ${pkgManager} install`);
+      console.log(`  ${pkgManager} run dev`);
+      break;
+  }
+  console.log();
 }

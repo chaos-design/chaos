@@ -2,6 +2,7 @@
   "extends": "@chaos-design/tsconfig",
   "compilerOptions": {
     "target": "ESNext",
+    "module": "ESNext",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true,

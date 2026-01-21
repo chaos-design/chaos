@@ -51,12 +51,37 @@ Currently supported template presets include:
   - `typescript`
 
 - `repository`
+  - `vscode-extension` (short: `vse`)
+  
+- `skill` (short: `skill`)
+  - `skill`
+
+- `repository`
   - `monorepo`
 
 - `Others`
   - `Custom`
 
 You can use `.` for the project name to scaffold in the current directory.
+
+### Shortcuts
+
+You can use short names to create projects quickly:
+
+| Template | Short Name | Description |
+| :--- | :--- | :--- |
+| `react-ts` | `react` | React TypeScript Project |
+| `react-component-ts` | `reactc` | React Component |
+| `library-ts` | `lib` | TypeScript Library |
+| `library-react-component-ts` | `libc` | React Component Library |
+| `webpack-plugin` | `wp` | Webpack Plugin |
+| `vscode-extension` | `vse` | VS Code Extension |
+| `skill` | `skill` | Create a Skill |
+
+Example:
+```bash
+npm create chaos@latest my-lib --template lib
+```
 
 ### Custom
 

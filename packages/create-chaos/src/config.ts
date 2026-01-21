@@ -24,6 +24,7 @@ export interface Framework {
 export interface FrameworkVariant {
   showName?: string;
   name: string;
+  path: string;
   display: string;
   color: ColorFunc;
   customCommand?: string;
@@ -41,12 +42,14 @@ export const FRAMEWORKS: Framework[] = [
       {
         showName: 'react',
         name: 'react-ts',
+        path: 'react/ts',
         display: 'TypeScript Project',
         color: cyan,
       },
       {
         showName: 'reactc',
         name: 'react-component-ts',
+        path: 'react/component',
         display: 'Component',
         color: blue,
       },
@@ -60,12 +63,14 @@ export const FRAMEWORKS: Framework[] = [
       {
         showName: 'lib',
         name: 'library-ts',
+        path: 'library/ts',
         display: 'TypeScript',
         color: red,
       },
       {
         showName: 'libc',
         name: 'library-react-component-ts',
+        path: 'library/react-component',
         display: 'React Component',
         color: magenta,
       },
@@ -79,6 +84,7 @@ export const FRAMEWORKS: Framework[] = [
       {
         showName: 'wp',
         name: 'webpack-plugin',
+        path: 'webpack/plugin',
         display: 'Webpack Plugin',
         color: red,
         ignore: ['lib', 'dist', ...TEMPLATE_IGNORE],
@@ -91,11 +97,26 @@ export const FRAMEWORKS: Framework[] = [
     color: lightRed,
     variants: [
       {
-        showName: 'vsp',
-        name: 'vscode-plugin',
+        showName: 'vse',
+        name: 'vscode-extension',
+        path: 'vscode/extension',
         display: 'Vscode Extension',
         color: red,
         ignore: ['lib', 'dist', ...TEMPLATE_IGNORE],
+      },
+    ],
+  },
+  {
+    name: 'skill',
+    display: 'Skill',
+    color: lightMagenta,
+    variants: [
+      {
+        showName: 'skill',
+        name: 'skill',
+        path: 'skills',
+        display: 'Skill Project',
+        color: magenta,
       },
     ],
   },
@@ -107,6 +128,7 @@ export const FRAMEWORKS: Framework[] = [
       {
         showName: 'monorepo',
         name: 'monorepo',
+        path: 'repo/monorepo',
         display: 'Monorepo',
         color: green,
       },
@@ -119,6 +141,7 @@ export const FRAMEWORKS: Framework[] = [
     variants: [
       {
         name: 'custom',
+        path: '',
         display: 'Create By Custom ↗',
         color: yellow,
       },
@@ -126,13 +149,15 @@ export const FRAMEWORKS: Framework[] = [
   },
 ];
 
-export const TEMPLATES_MAP = new Map();
+export const TEMPLATES_MAP = new Map<string, string>(); // Map template name/alias to path
 
 export const TEMPLATES = FRAMEWORKS.map((f) => {
   if (f.variants) {
     return f.variants.map((v) => {
-      TEMPLATES_MAP.set(v.showName, v.name);
-      TEMPLATES_MAP.set(v.name, v.name);
+      if (v.showName) {
+        TEMPLATES_MAP.set(v.showName, v.path);
+      }
+      TEMPLATES_MAP.set(v.name, v.path);
 
       return v.showName || v.name;
     });
@@ -152,11 +177,11 @@ ${yellow('react-ts                      react         ')}
 ${green('react-component-ts            reactc        ')}
 ${cyan('library-ts                    lib           ')}
 ${cyan('library-react-component-ts    libc          ')}
-${magenta('webpack-plugin                webpack-plugin')}
-${lightRed('vscode-plugin                 vscode-plugin ')}
+${magenta('webpack-plugin                wp            ')}
+${lightRed('vscode-extension              vse           ')}
+${magenta('skill                         skill         ')}
 ${red('monorepo                      monorepo      ')}`;
 
-/* eslint-disable quote-props */
 export const renameFiles: Record<string, string | undefined> = {
   _vscode: '.vscode',
   _github: '.github',
