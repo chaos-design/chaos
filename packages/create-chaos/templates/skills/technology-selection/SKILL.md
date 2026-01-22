@@ -1,5 +1,5 @@
 ---
-title: Technology Selection
+title: technology-selection
 description: Select the appropriate technology stack, tools, and architecture for the project.
 ---
 
@@ -51,6 +51,7 @@ Identify what needs to be created:
 1.  **Frontend Application**
     - **Location**: `apps/<app-name>`
     - **Stack**: React + TypeScript + Vite + Tailwind CSS
+    - **Constraint**: **STRICTLY PROHIBITED**: Next.js, Remix, Nuxt, or any full-stack meta-frameworks. Use standard Client-Side Rendering (CSR) with Vite.
     - **Actions**: Setup Vite (with JSX source tracing), Tailwind, Shadcn/UI.
 
 2.  **Backend Application**
@@ -71,7 +72,8 @@ Identify what needs to be created:
 ### Step 3: Select Technology Stack Details
 
 #### Frontend Stack (Default)
-- **Framework**: React + TypeScript
+- **Framework**: React + TypeScript (Vite-based CSR)
+- **Prohibited**: Next.js, Remix, Nuxt, SvelteKit, or any SSR/Full-stack framework.
 - **Styling**: Tailwind CSS
 - **Icons**: lucide-react
 - **UI Library**: shadcn/ui
