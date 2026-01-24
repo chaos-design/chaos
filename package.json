@@ -1,6 +1,6 @@
 {
   "name": "@chaos-design/chaos",
-  "version": "0.0.8-alpha.1",
+  "version": "0.0.8",
   "description": "For fastly and easily to frontend development by the tool",
   "private": true,
   "main": "index.js",
