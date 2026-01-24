@@ -3,6 +3,10 @@
   "version": "0.0.8",
   "type": "module",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "bin": {
     "create-chaos": "index.js",
     "chaos": "index.js"

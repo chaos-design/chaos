@@ -70,14 +70,7 @@ jobs:
             echo "Publishing $NAME@$VERSION..."
             # Use pnpm publish for the specific package
             # --no-git-checks to avoid issues if CI git state isn't perfect, though checkout handles it.
-            pnpm publish --filter=create-chaos --no-git-checks
+            # Fix 403 error: Ensure we are using the correct registry and auth token configuration for .npmrc
+            echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > .npmrc
+            pnpm publish --filter="${NAME}" --no-git-checks
           fi
-
-      - name: Notify Slack
-        if: always() && github.event_name != 'pull_request' # Only notify on actual publish attempts
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
