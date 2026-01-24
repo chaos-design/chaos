@@ -1,6 +1,6 @@
 {
   "name": "create-chaos",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "type": "module",
   "license": "MIT",
   "keywords": [
@@ -25,6 +25,7 @@
   },
   "files": [
     "index.js",
+    "templates",
     "template-*",
     "dist"
   ],
