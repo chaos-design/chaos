@@ -10,8 +10,8 @@ const defaultBanner = 'Chaos - The Progressive JavaScript Framework';
 //
 
 // How to convert the color
-function removeColorCodes(text) {
-  // eslint-disable-next-line no-control-regex
+function _removeColorCodes(text) {
+  // biome-ignore lint/suspicious/noControlCharactersInRegex: This regex is used to strip ANSI color codes from strings.
   return text.replace(/\x1B\[\d{1,3}(;\d{1,3}){0,2}m/g, '');
 }
 

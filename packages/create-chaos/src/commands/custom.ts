@@ -1,15 +1,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import prompts from 'prompts';
 import { red, reset, yellow } from 'kolorist';
-import { colors, loadChaosConfig, TEMPLATE_IGNORE } from '../config.ts';
+import prompts from 'prompts';
 import type { ChaosConfigOptions } from '../config.ts';
-import { copy, writeDoneTip } from '../utils.ts';
+import { colors, loadChaosConfig, TEMPLATE_IGNORE } from '../config.ts';
 import { Command } from '../core/command.ts';
+import { copy, writeDoneTip } from '../utils.ts';
 
 export class CustomCommand extends Command {
   async execute() {
-    const { root, packageName, argTemplate, targetDir, pkgManager } = this.context;
+    const { root, packageName, argTemplate, pkgManager } = this.context;
 
     try {
       const config = await loadChaosConfig();
@@ -23,22 +23,22 @@ export class CustomCommand extends Command {
         },
         {
           type: () =>
-            argTemplate
-            && config.template.map(t => t.name).includes(argTemplate)
+            argTemplate &&
+            config.template.map((t) => t.name).includes(argTemplate)
               ? null
               : 'autocomplete',
           name: 'template',
           message:
-            typeof argTemplate === 'string'
-            && !config?.template.map(t => t.name).includes(argTemplate)
+            typeof argTemplate === 'string' &&
+            !config?.template.map((t) => t.name).includes(argTemplate)
               ? reset(
                   `"${argTemplate}" isn't a valid template. Please choose from below: `,
-              )
+                )
               : reset('Select a framework:'),
           initial: 0,
-          choices: (config?.template || []).map((t, i) => {
-            const frameworkColor
-              = colors[(Math.random() * colors.length - 1) | 0];
+          choices: (config?.template || []).map((t) => {
+            const frameworkColor =
+              colors[(Math.random() * colors.length - 1) | 0];
 
             if (!t.path) {
               console.log();
@@ -82,15 +82,15 @@ export class CustomCommand extends Command {
       // This looks like a bug in original code or I misunderstood.
       // If templatePath is relative, it should be resolved.
       // But assuming standard usage:
-      
+
       if (!fs.existsSync(templateDir)) {
-         // It seems the original code might have meant templateDir? 
-         // "The Path is not exist in targetDir" -> likely checking template source.
-         // Let's assume we check templateDir here.
-         console.log();
-         throw new Error(
-           `${yellow('The Path is not exist in')} ${red(templateDir)}.`,
-         );
+        // It seems the original code might have meant templateDir?
+        // "The Path is not exist in targetDir" -> likely checking template source.
+        // Let's assume we check templateDir here.
+        console.log();
+        throw new Error(
+          `${yellow('The Path is not exist in')} ${red(templateDir)}.`,
+        );
       }
 
       console.log(`\n🔍 Scaffolding project in ${root} ...`);
@@ -101,7 +101,7 @@ export class CustomCommand extends Command {
         renameFiles: ChaosConfigOptions['renameFiles'] = {},
       ) => {
         for (const file of files.filter(
-          f => ![...TEMPLATE_IGNORE, ...ignore].filter(Boolean).includes(f),
+          (f) => ![...TEMPLATE_IGNORE, ...ignore].filter(Boolean).includes(f),
         )) {
           const targetPath = path.join(root, renameFiles[file] ?? file);
           const filePath = path.join(templateDir, file);
@@ -109,14 +109,14 @@ export class CustomCommand extends Command {
           try {
             const stats = fs.statSync(filePath);
             if (stats.isFile()) {
-              const content
-                = typeof replace !== 'function'
+              const content =
+                typeof replace !== 'function'
                   ? ''
                   : replace(
-                    file,
-                    fs.readFileSync(filePath, 'utf-8'),
-                    packageName,
-                  );
+                      file,
+                      fs.readFileSync(filePath, 'utf-8'),
+                      packageName,
+                    );
 
               if (content) {
                 fs.writeFileSync(targetPath, `${content}`);

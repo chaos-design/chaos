@@ -3,7 +3,7 @@
     "module": "CommonJS",
     "moduleResolution": "Node",
     "esModuleInterop": true,
-    "declaration": true,
+    "declaration": true
   },
   "include": ["src/**/*.ts"]
 }

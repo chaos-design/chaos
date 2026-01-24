@@ -1,3 +1,1 @@
-export { type CounterProps } from './counter';
-
-export { default as Counter } from './counter';
+export { type CounterProps, default as Counter } from './counter';

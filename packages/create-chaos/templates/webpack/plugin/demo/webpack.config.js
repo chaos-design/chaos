@@ -14,7 +14,9 @@ module.exports = {
       },
     ],
   },
-  plugins: [new WebpackPlugin({
-    name: 'something',
-  })],
+  plugins: [
+    new WebpackPlugin({
+      name: 'something',
+    }),
+  ],
 };

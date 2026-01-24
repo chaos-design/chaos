@@ -59,7 +59,7 @@ export default class Create {
     Create.currentPanel = new Create(panel, extensionUri);
   }
 
-  public onDidReceiveMessage = (message: any) => {};
+  public onDidReceiveMessage = (_message: any) => {};
 
   public dispose() {
     Create.currentPanel = undefined;

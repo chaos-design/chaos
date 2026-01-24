@@ -1,9 +1,8 @@
 import type { Compiler } from 'webpack';
 
-interface WebpackPluginOptions {}
+type WebpackPluginOptions = {};
 
 class WebpackPlugin {
-  private name: string = 'WebpackPlugin';
   options: WebpackPluginOptions;
 
   constructor(options: WebpackPluginOptions) {
@@ -14,7 +13,7 @@ class WebpackPlugin {
     compiler.hooks.done.tap(
       'WebpackPluginName Plugin',
       (
-        stats /* stats is passed as an argument when done hook is tapped.  */,
+        _stats /* stats is passed as an argument when done hook is tapped.  */,
       ) => {
         console.log('Hello WebpackPluginName Plugin!', this.options);
       },

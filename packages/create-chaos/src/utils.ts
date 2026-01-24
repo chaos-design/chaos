@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import prompts from 'prompts';
+import type prompts from 'prompts';
 
 export function formatTargetDir(targetDir: string | undefined) {
   return targetDir?.trim().replace(/\/+$/g, '');
@@ -164,9 +164,7 @@ export function kebabCase2UpperCamelCase(word: string) {
 }
 
 export function kebabCase2CamelCase(word: string) {
-  return word.replace(/-([a-zA-Z\d])/g, (match, letter) =>
-    letter.toUpperCase(),
-  );
+  return word.replace(/-([a-zA-Z\d])/g, (_, letter) => letter.toUpperCase());
 }
 
 export function getPromptOptions(
@@ -188,9 +186,7 @@ export function writeDoneTip(root: string, pkgManager: string) {
 
   if (root !== process.cwd()) {
     console.log(
-      `  cd ${
-        cdProjectName.includes(' ') ? `"${cdProjectName}"` : cdProjectName
-      }`,
+      `  cd ${cdProjectName.includes(' ') ? `"${cdProjectName}"` : cdProjectName}`,
     );
   }
 

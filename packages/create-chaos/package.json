@@ -32,23 +32,23 @@
   "author": "rain120",
   "homepage": "https://github.com/chaos-design/chaos/blob/main/packages/create-chaos/README.md",
   "dependencies": {
-    "c12": "^1.11.1"
+    "c12": "^3.3.3"
   },
   "devDependencies": {
-    "eslint-config-chaos": "latest",
     "@chaos-design/tsconfig": "latest",
-    "@types/minimist": "^1.2.2",
-    "@types/node": "^20.14.11",
+    "@types/minimist": "^1.2.5",
+    "@types/node": "^25.0.10",
     "@types/prompts": "^2.4.9",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "cross-spawn": "^7.0.3",
-    "eslint": "^9.9.0",
+    "@types/react": "^19.2.9",
+    "@types/react-dom": "^19.2.3",
+    "cross-spawn": "^7.0.6",
+    "eslint": "^8.57.0",
+    "eslint-config-chaos": "latest",
     "kolorist": "^1.8.0",
     "minimist": "^1.2.8",
-    "next": "^13.4.12",
+    "next": "^16.1.4",
     "prompts": "^2.4.2",
-    "react-dom": "^18.3.1",
-    "typescript": "^5.1.6"
+    "react-dom": "^19.2.3",
+    "typescript": "~5.3.3"
   }
 }

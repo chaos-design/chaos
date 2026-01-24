@@ -1,4 +1,4 @@
-import { Uri, Webview } from 'vscode';
+import type { Uri, Webview } from 'vscode';
 import { getNonce } from '../utils/nonce';
 import { getUri } from '../utils/url';
 

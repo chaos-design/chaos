@@ -1,6 +1,6 @@
 import { execSync } from 'node:child_process';
-import { fs } from 'zx';
 import { getChangedPackages } from '@chaos-design/utils-pkg';
+import { fs } from 'zx';
 
 const changedPackages = getChangedPackages();
 

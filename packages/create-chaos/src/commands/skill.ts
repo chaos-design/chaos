@@ -1,21 +1,23 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import prompts from 'prompts';
 import { red, reset } from 'kolorist';
+import prompts from 'prompts';
 import { colors, renameFiles } from '../config.ts';
-import { copy, findPackageRoot } from '../utils.ts';
 import { Command } from '../core/command.ts';
+import { findPackageRoot } from '../utils.ts';
 
 export class SkillCommand extends Command {
   async execute() {
     const { root, packageName } = this.context;
-    
+
     const packageRoot = findPackageRoot(
       path.dirname(fileURLToPath(import.meta.url)),
     );
     const skillsDir = path.join(packageRoot, 'templates/skills');
-    const skills = fs.readdirSync(skillsDir).filter(f => fs.statSync(path.join(skillsDir, f)).isDirectory());
+    const skills = fs
+      .readdirSync(skillsDir)
+      .filter((f) => fs.statSync(path.join(skillsDir, f)).isDirectory());
 
     let skillName = '';
     try {
@@ -77,8 +79,10 @@ export class SkillCommand extends Command {
     };
 
     processSkillFiles(templateDir, root);
-    
+
     console.log(`\n✅ Skill "${skillName}" created in ${root}.`);
-    console.log(`\nNow you can check the SKILL.md file for usage instructions.\n`);
+    console.log(
+      '\nNow you can check the SKILL.md file for usage instructions.\n',
+    );
   }
 }

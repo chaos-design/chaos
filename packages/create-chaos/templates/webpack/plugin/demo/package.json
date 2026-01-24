@@ -6,15 +6,18 @@
   "private": true,
   "scripts": {
     "dev": "webpack -w --mode=development",
-    "build": "webpack --mode=production"
+    "build": "webpack --mode=production",
+    "lint": "biome check .",
+    "format": "biome format --write ."
   },
   "devDependencies": {
-    "@chaos-design/webpack-plugin": "link:../lib",
     "@chaos-design/tsconfig": "latest",
-    "ts-loader": "^9.2.9",
-    "typescript": "^4.6.4",
-    "webpack": "^5.72.0",
-    "webpack-cli": "^4.9.2",
-    "webpack-dev-server": "^4.8.1"
+    "@chaos-design/webpack-plugin": "link:../lib",
+    "ts-loader": "^9.5.4",
+    "typescript": "~5.3.3",
+    "webpack": "^5.104.1",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.3",
+    "@biomejs/biome": "^2.3.11"
   }
 }

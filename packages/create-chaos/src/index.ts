@@ -1,14 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import spawn from 'cross-spawn';
+import { red, reset } from 'kolorist';
 import minimist from 'minimist';
 import prompts from 'prompts';
-import { red, reset } from 'kolorist';
-import {
-  DEFAULT_TARGET_DIR,
-  FRAMEWORKS,
-  TEMPLATES,
-} from './config.ts';
+import { CustomCommand, SkillCommand, TemplateCommand } from './commands';
+import type { Framework } from './config.ts';
+import { DEFAULT_TARGET_DIR, FRAMEWORKS, TEMPLATES } from './config.ts';
+import type { CommandContext } from './core/context.ts';
 import {
   emptyDir,
   formatTargetDir,
@@ -17,9 +16,6 @@ import {
   pkgFromUserAgent,
   toValidPackageName,
 } from './utils.ts';
-import type { Framework } from './config.ts';
-import type { CommandContext } from './core/context.ts';
-import { CustomCommand, SkillCommand, TemplateCommand } from './commands';
 
 // Avoids autoconversion to number of the project name by defining that the args
 // non associated with an option ( _ ) needs to be parsed as a string. See #4606
@@ -44,8 +40,8 @@ async function init() {
 
   // Help message handling is usually done before init or inside init if it's simple
   // But here we focus on the scaffolding logic
-  // The original code had help message display here. 
-  // We can keep it or move it to a separate HelpCommand if needed, 
+  // The original code had help message display here.
+  // We can keep it or move it to a separate HelpCommand if needed,
   // but let's stick to the refactoring plan for main logic.
   // Assuming help handling is done or we just ignore it for now as user asked for decomposition of logic.
   // Actually, let's keep it simple.
@@ -101,41 +97,42 @@ async function init() {
         },
         {
           type:
-            argTemplate && TEMPLATES.includes(argTemplate) ? null : 'autocomplete',
+            argTemplate && TEMPLATES.includes(argTemplate)
+              ? null
+              : 'autocomplete',
           name: 'framework',
           message:
             typeof argTemplate === 'string' && !TEMPLATES.includes(argTemplate)
               ? reset(
                   `"${argTemplate}" isn't a valid template. Please choose from below: `,
-              )
+                )
               : reset('Select a framework:'),
           initial: 0,
           choices: FRAMEWORKS.map((framework) => {
             const frameworkColor = framework.color;
             const variantAliases = framework.variants
-              .map(v => v.showName)
+              .map((v) => v.showName)
               .filter(Boolean)
               .join(', ');
 
             return {
-              title: `🗂  ${frameworkColor(
-                framework.display || framework.name,
-              )}`,
+              title: `🗂  ${frameworkColor(framework.display || framework.name)}`,
               description: variantAliases,
               value: framework,
             };
           }),
           suggest: async (input: string, choices: any[]) => {
             const keyword = input.toLowerCase();
-            return choices.filter((choice) =>
-              choice.title.toLowerCase().includes(keyword)
-              || (choice.description || '').toLowerCase().includes(keyword),
+            return choices.filter(
+              (choice) =>
+                choice.title.toLowerCase().includes(keyword) ||
+                (choice.description || '').toLowerCase().includes(keyword),
             );
           },
         },
         {
           type: (framework: Framework) =>
-            framework && framework.variants ? 'autocomplete' : null,
+            framework?.variants ? 'autocomplete' : null,
           name: 'variant',
           message: reset('Select a variant:'),
           choices: (framework: Framework) =>
@@ -149,9 +146,10 @@ async function init() {
             }),
           suggest: async (input: string, choices: any[]) => {
             const keyword = input.toLowerCase();
-            return choices.filter((choice) =>
-              choice.title.toLowerCase().includes(keyword)
-              || (choice.description || '').toLowerCase().includes(keyword),
+            return choices.filter(
+              (choice) =>
+                choice.title.toLowerCase().includes(keyword) ||
+                (choice.description || '').toLowerCase().includes(keyword),
             );
           },
         },
@@ -184,10 +182,10 @@ async function init() {
 
   // determine template
   let template: string = variant || framework?.name || argTemplate;
-  
+
   // SWC check logic from original code, kept here or moved to TemplateCommand?
   // It modifies 'template' variable.
-  if (template && template.includes('-swc')) {
+  if (template?.includes('-swc')) {
     // isReactSwc = true; // Not used in current simplified logic but was in original
     template = template.replace('-swc', '');
   }
@@ -196,9 +194,9 @@ async function init() {
   // This logic was in index.ts before scaffolding.
   // It seems to be a pre-scaffolding step to potentially delegate to another CLI.
   const isYarn1 = pkgManager === 'yarn' && pkgInfo?.version.startsWith('1.');
-  const { customCommand, ignore = [] }
-    = FRAMEWORKS.flatMap(f => f.variants).find(
-      v => v.showName === template || v.name === template,
+  const { customCommand, ignore = [] } =
+    FRAMEWORKS.flatMap((f) => f.variants).find(
+      (v) => v.showName === template || v.name === template,
     ) ?? {};
 
   if (customCommand) {
@@ -216,7 +214,7 @@ async function init() {
       });
 
     const [command, ...args] = fullCustomCommand.split(' ');
-    const replacedArgs = args.map(arg =>
+    const replacedArgs = args.map((arg) =>
       arg.replace('TARGET_DIR', targetDir),
     );
 

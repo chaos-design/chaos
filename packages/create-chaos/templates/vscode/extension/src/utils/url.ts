@@ -1,4 +1,4 @@
-import { Uri, Webview } from "vscode";
+import { Uri, type Webview } from 'vscode';
 
 export function getUri(
   webview: Webview,

@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-
 import c from 'classnames';
+import { useState } from 'react';
 
 import s from './index.module.scss';
 
@@ -12,14 +11,15 @@ const ComponentName = ({ className }: ComponentNameProps) => {
   const [counter, setCounter] = useState<number>(0);
 
   return (
-    <div
+    <button
       className={c(s.ComponentNameContainer, className)}
       onClick={() => {
         setCounter((counter: number) => counter + 1);
       }}
+      type="button"
     >
       Counter: {counter}
-    </div>
+    </button>
   );
 };
 

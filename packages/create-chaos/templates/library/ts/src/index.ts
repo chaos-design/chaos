@@ -2,8 +2,14 @@ export function setupCounter(initial: number = 0) {
   let counter = initial;
 
   return {
-    increase: () => (counter += 1),
-    decrease: () => (counter -= 1),
+    increase: () => {
+      counter += 1;
+      return counter;
+    },
+    decrease: () => {
+      counter -= 1;
+      return counter;
+    },
     get: () => counter,
   };
 }

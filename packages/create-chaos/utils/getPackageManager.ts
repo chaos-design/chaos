@@ -5,10 +5,10 @@ export const getPackageManager = () => {
   const packageManager = /pnpm/.test(userAgent)
     ? 'pnpm'
     : /yarn/.test(userAgent)
-    ? 'yarn'
-    : /bun/.test(userAgent)
-    ? 'bun'
-    : 'npm';
+      ? 'yarn'
+      : /bun/.test(userAgent)
+        ? 'bun'
+        : 'npm';
 
   return packageManager;
 };

@@ -10,7 +10,10 @@ function App() {
       <h1>Vite + React + ts</h1>
       <h3>create by chaos</h3>
       <div className="card">
-        <button onClick={() => setCount((count: number) => count + 1)}>
+        <button
+          type="button"
+          onClick={() => setCount((count: number) => count + 1)}
+        >
           count is {count}
         </button>
         <p>

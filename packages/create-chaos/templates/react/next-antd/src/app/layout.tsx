@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {
   LaptopOutlined,
   NotificationOutlined,
@@ -7,6 +5,7 @@ import {
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
+import React from 'react';
 import { inter } from '../config/layout';
 
 import './globals.css';
@@ -40,11 +39,7 @@ const items2: MenuProps['items'] = [
   };
 });
 
-export default function Container({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Container({ children }: { children: React.ReactNode }) {
   const {
     token: { colorBgContainer },
   } = theme.useToken();

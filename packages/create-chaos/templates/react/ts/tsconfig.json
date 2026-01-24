@@ -1,7 +1,7 @@
 {
   "extends": "@chaos-design/tsconfig",
   "compilerOptions": {
-    "jsx": "react-jsx",
+    "jsx": "react-jsx"
   },
   "include": ["vite.config.ts", "src/**/*"]
 }

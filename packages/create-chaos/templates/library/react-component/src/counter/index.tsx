@@ -1,6 +1,5 @@
-import { useState } from 'react';
-
 import c from '@chaos-design/classnames';
+import { useState } from 'react';
 
 import s from './index.module.scss';
 
@@ -12,14 +11,15 @@ const Counter = ({ className }: CounterProps) => {
   const [count, setCount] = useState(0);
 
   return (
-    <div
+    <button
       className={c(s.counter, className)}
       onClick={() => {
-        setCount((count: number) => count + 1)
+        setCount((count: number) => count + 1);
       }}
+      type="button"
     >
       Counter: {count}
-    </div>
+    </button>
   );
 };
 

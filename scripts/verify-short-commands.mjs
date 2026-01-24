@@ -1,6 +1,6 @@
-import { execSync } from 'child_process';
-import fs from 'fs';
-import path from 'path';
+import { execSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const cwd = process.cwd();
 const cliPath = path.join(cwd, 'packages/create-chaos/dist/index.mjs');
@@ -32,7 +32,9 @@ for (const cmd of shortCommands) {
 
     // Run create-chaos command with short template name
     // Assuming short names are mapped in config and can be passed via --template
-    execSync(`node ${cliPath} ${projectName} --template ${cmd.name}`, { stdio: 'inherit' });
+    execSync(`node ${cliPath} ${projectName} --template ${cmd.name}`, {
+      stdio: 'inherit',
+    });
 
     // Verify project directory exists
     if (!fs.existsSync(projectPath)) {
@@ -47,14 +49,13 @@ for (const cmd of shortCommands) {
 
     // Verify expected file
     if (cmd.expectedPath) {
-        const expectedFile = path.join(projectPath, cmd.expectedPath);
-        if (!fs.existsSync(expectedFile)) {
-             throw new Error(`Expected file not found: ${cmd.expectedPath}`);
-        }
+      const expectedFile = path.join(projectPath, cmd.expectedPath);
+      if (!fs.existsSync(expectedFile)) {
+        throw new Error(`Expected file not found: ${cmd.expectedPath}`);
+      }
     }
 
     console.log(`✅ Short command ${cmd.name} verified successfully.`);
-
   } catch (error) {
     console.error(`❌ Failed to verify short command ${cmd.name}:`, error);
   } finally {

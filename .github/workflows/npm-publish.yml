@@ -1,49 +1,83 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
-# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
-
-name: Npm Package
+name: NPM Publish
 
 on:
+  push:
+    branches:
+      - main
+      - master
   release:
     types: [created]
-  push:
-    tags:
-      - '*'
+  workflow_dispatch:
+  pull_request: # Added to satisfy "Show status in PR" requirement (runs tests/build)
 
 jobs:
-  build:
+  publish:
+    name: Build, Test and Publish
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-  publish-npm:
-    needs: build
-    runs-on: ubuntu-latest
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-    steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org/
-      
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 7
+          version: 8
 
-      - name: Install & Publish
+      - name: Install dependencies
+        run: pnpm install
+        # Using pnpm install instead of npm ci because this is a pnpm monorepo
+
+      - name: Run Biome Check
+        run: pnpm biome ci .
+
+      - name: Run Tests
         run: |
-          pnpm -v
-          pnpm i
-          pnpm publish --filter=create-chaos
+          # Try running 'test' script if it exists, otherwise fall back to typecheck
+          if pnpm run | grep -q "test"; then
+            pnpm test
+          else
+            echo "No explicit 'test' script found in root. Running typecheck as verification."
+            pnpm run typecheck
+          fi
+
+      - name: Build Project
+        run: pnpm run build
+
+      - name: Publish to NPM
+        if: github.event_name != 'pull_request' # Don't publish on PRs
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_CHAOS_TOKEN}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # Define the package directory
+          PKG_DIR="packages/create-chaos"
+          
+          # Get version and name from the package.json in the specific package
+          VERSION=$(node -p "require('./$PKG_DIR/package.json').version")
+          NAME=$(node -p "require('./$PKG_DIR/package.json').name")
+          
+          echo "Checking if $NAME@$VERSION exists on registry..."
+          
+          # Check if version exists (suppress output, check exit code or result)
+          if npm view "$NAME@$VERSION" version > /dev/null 2>&1; then
+            echo "Version $VERSION of $NAME already published. Skipping."
+          else
+            echo "Publishing $NAME@$VERSION..."
+            # Use pnpm publish for the specific package
+            # --no-git-checks to avoid issues if CI git state isn't perfect, though checkout handles it.
+            pnpm publish --filter=create-chaos --no-git-checks
+          fi
+
+      - name: Notify Slack
+        if: always() && github.event_name != 'pull_request' # Only notify on actual publish attempts
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

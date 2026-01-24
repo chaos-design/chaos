@@ -1,5 +1,5 @@
-import { AppProps } from "../types/app";
+import type { AppProps } from '../types/app';
 
 export const getAppsList = (): AppProps[] => {
-    return [];
-}
+  return [];
+};
