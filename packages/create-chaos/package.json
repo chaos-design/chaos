@@ -3,6 +3,18 @@
   "version": "0.0.8",
   "type": "module",
   "license": "MIT",
+  "keywords": [
+    "chaos",
+    "cli",
+    "scaffold",
+    "generator",
+    "template",
+    "boilerplate",
+    "starter",
+    "skill",
+    "react",
+    "react-component"
+  ],
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
