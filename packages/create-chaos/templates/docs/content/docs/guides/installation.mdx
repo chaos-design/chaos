@@ -1,0 +1,64 @@
+---
+title: 安装
+description: 了解如何使用或手动安装组件。
+icon: Download
+---
+
+
+## 安装（官方仓库）
+
+<BodyText>
+您可以直接安装组件，无需任何配置。
+</BodyText>
+
+<FeatureCard title="无需配置" variant="info">
+直接安装组件即可使用！
+</FeatureCard>
+
+## 安装组件
+
+<Tabs items={['pnpm', 'npm', 'yarn']}>
+
+<Tab value="pnpm">
+
+```bash
+pnpm add xxx
+```
+
+</Tab>
+
+<Tab value="npm">
+
+```bash
+npm install xxx
+```
+
+</Tab>
+
+<Tab value="yarn">
+
+```bash
+yarn add xxx
+```
+
+</Tab>
+
+</Tabs>
+
+## 使用组件
+
+<BodyText>
+在您的 React 应用程序中导入并使用已安装的组件：
+</BodyText>
+
+```tsx
+import { Comp } from "@/components/xxx"
+
+export default function App() {
+  return (
+    <div>
+      <Comp />
+    </div>
+  )
+}
+```

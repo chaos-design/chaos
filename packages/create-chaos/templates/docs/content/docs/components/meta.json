@@ -1,0 +1,12 @@
+{
+  "title": "组件",
+  "description": "局部组件",
+  "icon": "LayoutDashboard",
+  "root": true,
+  "pages": [
+    "---指南---",
+    "index",
+    "---组件---",
+    "foo"
+  ]
+}

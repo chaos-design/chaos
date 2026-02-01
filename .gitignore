@@ -133,3 +133,4 @@ dist
 
 # for get changed pkg path
 cache-changed-pkg-path.sh
+package-lock.json

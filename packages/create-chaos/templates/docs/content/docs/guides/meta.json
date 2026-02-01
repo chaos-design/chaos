@@ -1,0 +1,12 @@
+{
+  "title": "指南",
+  "description": "文档指南",
+  "icon": "Book",
+  "root": true,
+  "pages": [
+    "---指南---",
+    "index",
+    "installation",
+    "changelog"
+  ]
+}

@@ -135,6 +135,20 @@ export const FRAMEWORKS: Framework[] = [
     ],
   },
   {
+    name: 'docs',
+    display: 'Docs',
+    color: lightCyan,
+    variants: [
+      {
+        showName: 'docs',
+        name: 'docs',
+        path: 'docs',
+        display: 'Documentation Site',
+        color: yellow,
+      },
+    ],
+  },
+  {
     name: 'others',
     display: 'Others',
     color: lightMagenta,
@@ -180,7 +194,8 @@ ${cyan('library-react-component-ts    libc          ')}
 ${magenta('webpack-plugin                wp            ')}
 ${lightRed('vscode-extension              vse           ')}
 ${magenta('skill                         skill         ')}
-${red('monorepo                      monorepo      ')}`;
+${red('monorepo                      monorepo      ')}
+${yellow('docs                          docs          ')}`;
 
 export const renameFiles: Record<string, string | undefined> = {
   _vscode: '.vscode',
