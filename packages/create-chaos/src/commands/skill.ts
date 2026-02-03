@@ -78,9 +78,12 @@ export class SkillCommand extends Command {
       }
     };
 
-    processSkillFiles(templateDir, root);
+    // Create a new directory for the skill in the current root
+    const targetSkillDir = path.join(root, skillName);
 
-    console.log(`\n✅ Skill "${skillName}" created in ${root}.`);
+    processSkillFiles(templateDir, targetSkillDir);
+
+    console.log(`\n✅ Skill "${skillName}" created in ${targetSkillDir}.`);
     console.log(
       '\nNow you can check the SKILL.md file for usage instructions.\n',
     );

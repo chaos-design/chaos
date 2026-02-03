@@ -77,6 +77,9 @@ You can use short names to create projects quickly:
 | `webpack-plugin` | `wp` | Webpack Plugin |
 | `vscode-extension` | `vse` | VS Code Extension |
 | `skill` | `skill` | Create a Skill |
+| `monorepo` | `monorepo` | Create a Monorepo |
+| `doc` | `doc` | Create a Document |
+
 
 Example:
 ```bash
