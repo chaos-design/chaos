@@ -70,27 +70,21 @@ export class CustomCommand extends Command {
       } = template;
       const templateDir = tPath || templatePath;
 
-      // Note: targetDir check logic might need adjustment if we want strict separation
-      // but keeping it close to original logic for now.
-      // In original code, targetDir is used for existence check of template path?
-      // Wait, original code:
-      // if (!fs.existsSync(targetDir)) { ... throw Error ... }
-      // It seems it was checking if the TEMPLATE directory exists, but using targetDir variable?
-      // Actually looking at original code:
-      // const templateDir = tPath || templatePath;
-      // if (!fs.existsSync(targetDir)) ...
-      // This looks like a bug in original code or I misunderstood.
-      // If templatePath is relative, it should be resolved.
-      // But assuming standard usage:
-
       if (!fs.existsSync(templateDir)) {
-        // It seems the original code might have meant templateDir?
-        // "The Path is not exist in targetDir" -> likely checking template source.
-        // Let's assume we check templateDir here.
         console.log();
         throw new Error(
           `${yellow('The Path is not exist in')} ${red(templateDir)}.`,
         );
+      }
+
+      let metadata = { ignores: [] };
+      const metadataPath = path.join(templateDir, 'metadata.json');
+      if (fs.existsSync(metadataPath)) {
+        try {
+          metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
+        } catch (e) {
+          console.warn(`Failed to parse metadata.json at ${metadataPath}`);
+        }
       }
 
       console.log(`\n🔍 Scaffolding project in ${root} ...`);
@@ -101,7 +95,15 @@ export class CustomCommand extends Command {
         renameFiles: ChaosConfigOptions['renameFiles'] = {},
       ) => {
         for (const file of files.filter(
-          (f) => ![...TEMPLATE_IGNORE, ...ignore].filter(Boolean).includes(f),
+          (f) =>
+            ![
+              ...TEMPLATE_IGNORE,
+              ...ignore,
+              ...(metadata.ignores || []),
+              'metadata.json',
+            ]
+              .filter(Boolean)
+              .includes(f),
         )) {
           const targetPath = path.join(root, renameFiles[file] ?? file);
           const filePath = path.join(templateDir, file);

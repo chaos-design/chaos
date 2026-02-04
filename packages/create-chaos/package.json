@@ -1,6 +1,6 @@
 {
   "name": "create-chaos",
-  "version": "0.0.12",
+  "version": "0.0.18",
   "type": "module",
   "license": "MIT",
   "keywords": [
@@ -33,6 +33,7 @@
     "dev": "unbuild --stub",
     "build": "unbuild",
     "typecheck": "tsc --noEmit",
+    "generate-metadata": "node scripts/generate-metadata.mjs",
     "prepublishOnly": "pnpm run build"
   },
   "engines": {

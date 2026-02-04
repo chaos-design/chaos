@@ -79,7 +79,7 @@ export class SkillCommand extends Command {
     };
 
     // Create a new directory for the skill in the current root
-    const targetSkillDir = path.join(root, skillName);
+    const targetSkillDir = path.join(process.cwd(), skillName);
 
     processSkillFiles(templateDir, targetSkillDir);
 

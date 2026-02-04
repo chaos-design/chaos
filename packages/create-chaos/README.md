@@ -130,7 +130,27 @@ npm create chaos@latest my-lib --template lib
   };
   ```
 
+  **Configuration Options**
+
+  | Option | Type | Description |
+  | :--- | :--- | :--- |
+  | `name` | `string` | The name of the template. |
+  | `path` | `string` | The path to the template directory. |
+  | `ignore` | `string[]` | Files to ignore when copying. |
+  | `renameFiles` | `Record<string, string>` | Files to rename when copying. |
+  | `replace` | `(file: string, content: string) => string` | Function to replace file content. |
+
   Note: When both `package.json` and `chaos.config.[js, cjs, mjs, ts]` files exist in the project, the configurations are merged. Also, if you don't have any configurations, you can simply input the path to your template based on the command.
+
+  You can also include a `metadata.json` in your template root to define files to ignore.
+
+  **metadata.json**
+
+  ```json
+  {
+    "ignores": ["node_modules", "dist", ".git"]
+  }
+  ```
 
 - Run `pnpm create chaos@latest`.
 

@@ -1,0 +1,28 @@
+{
+  "configs": [
+    ".gitignore",
+    "fumadocs.config.ts",
+    "next.config.ts",
+    "package.json",
+    "postcss.config.mjs",
+    "source.config.ts",
+    "tsconfig.json",
+    "vercel.json"
+  ],
+  "ignores": [
+    "node_modules",
+    "dist",
+    ".DS_Store",
+    "Thumbs.db",
+    ".git",
+    ".idea",
+    ".vscode",
+    "coverage",
+    ".next",
+    ".nuxt",
+    ".output",
+    "build",
+    "temp",
+    "tmp"
+  ]
+}

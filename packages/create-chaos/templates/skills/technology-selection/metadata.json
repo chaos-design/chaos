@@ -1,0 +1,19 @@
+{
+  "configs": [],
+  "ignores": [
+    "node_modules",
+    "dist",
+    ".DS_Store",
+    "Thumbs.db",
+    ".git",
+    ".idea",
+    ".vscode",
+    "coverage",
+    ".next",
+    ".nuxt",
+    ".output",
+    "build",
+    "temp",
+    "tmp"
+  ]
+}

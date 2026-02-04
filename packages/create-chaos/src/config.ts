@@ -260,9 +260,11 @@ export async function loadChaosConfig(
     name: DEFAULT_CONFIG_NAME,
     packageJson: true,
     cwd,
-    overrides: {
-      ...(overrides as ChaosConfig),
-    },
+    overrides: overrides
+      ? {
+          template: [overrides as ChaosConfigOptions],
+        }
+      : undefined,
   });
 
   return config!;

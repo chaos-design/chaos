@@ -1,0 +1,25 @@
+{
+  "configs": [
+    ".eslintrc.json",
+    ".gitignore",
+    "next.config.js",
+    "package.json",
+    "tsconfig.json"
+  ],
+  "ignores": [
+    "node_modules",
+    "dist",
+    ".DS_Store",
+    "Thumbs.db",
+    ".git",
+    ".idea",
+    ".vscode",
+    "coverage",
+    ".next",
+    ".nuxt",
+    ".output",
+    "build",
+    "temp",
+    "tmp"
+  ]
+}
