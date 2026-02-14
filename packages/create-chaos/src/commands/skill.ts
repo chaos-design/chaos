@@ -65,7 +65,13 @@ export class SkillCommand extends Command {
       const items = fs.readdirSync(srcDir);
       for (const item of items) {
         const srcPath = path.join(srcDir, item);
-        const destPath = path.join(destDir, renameFiles[item] ?? item);
+        let fileName = renameFiles[item] ?? item;
+
+        if (fileName === 'SKILL.md') {
+          fileName = `${skillName}.md`;
+        }
+
+        const destPath = path.join(destDir, fileName);
         const stat = fs.statSync(srcPath);
 
         if (stat.isDirectory()) {
@@ -79,13 +85,13 @@ export class SkillCommand extends Command {
     };
 
     // Create a new directory for the skill in the current root
-    const targetSkillDir = path.join(process.cwd(), skillName);
+    const targetSkillDir = process.cwd();
 
     processSkillFiles(templateDir, targetSkillDir);
 
     console.log(`\n✅ Skill "${skillName}" created in ${targetSkillDir}.`);
     console.log(
-      '\nNow you can check the SKILL.md file for usage instructions.\n',
+      `\nNow you can check the ${skillName}.md file for usage instructions.\n`,
     );
   }
 }
