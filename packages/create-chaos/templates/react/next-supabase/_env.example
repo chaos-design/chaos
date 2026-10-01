@@ -1,0 +1,7 @@
+# Supabase 邮箱认证。
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+
+# 仅供 scripts/setup-project.sh 进程使用，不要写入此文件：
+# SUPABASE_ACCESS_TOKEN
+# SUPABASE_DB_PASSWORD

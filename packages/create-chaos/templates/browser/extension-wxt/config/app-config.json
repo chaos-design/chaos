@@ -1,0 +1,32 @@
+{
+  "description": "基于 WXT、React 和 TypeScript 的浏览器扩展脚手架。",
+  "documentTitle": "Browser Extension",
+  "name": "Browser Extension Scaffold",
+  "shortName": "SCAFFOLD",
+  "github": {
+    "repositoryUrl": "https://github.com/chaos-design/chaos"
+  },
+  "contentScript": {
+    "matches": ["https://example.com/*"]
+  },
+  "surfaces": {
+    "floatingBall": {
+      "defaultEnabled": true,
+      "defaultPosition": "bottom-right",
+      "defaultSize": 52,
+      "defaultVerticalRatio": 1,
+      "offset": 20
+    },
+    "popup": {
+      "defaultHeight": 420,
+      "defaultWidth": 360,
+      "maxHeight": 600,
+      "maxWidth": 480,
+      "minHeight": 300,
+      "minWidth": 320
+    },
+    "sidePanel": {
+      "defaultToolbarMode": false
+    }
+  }
+}

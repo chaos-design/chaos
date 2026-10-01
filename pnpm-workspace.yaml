@@ -1,0 +1,6 @@
+packages:
+  # Only real publishable packages. Templates live under packages/create-chaos/templates
+  # and are payload, not workspace members: keeping them out avoids installing their
+  # dependencies, avoids polluting the npm tarball, and prevents `pnpm publish -r`
+  # from ever trying to publish a template.
+  - 'packages/*'

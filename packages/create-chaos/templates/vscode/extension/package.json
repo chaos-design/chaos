@@ -1,0 +1,52 @@
+{
+  "name": "vscode-extension-template",
+  "displayName": "vscode-extension-template",
+  "description": "fast to create app",
+  "private": true,
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "template.create",
+        "title": "Create",
+        "category": "Create"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "template.create",
+        "key": "ctrl+alt+p",
+        "mac": "cmd+alt+p"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run build",
+    "build": "pnpm run compile && pnpm --dir webview-ui run build",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "pnpm run compile && pnpm run lint",
+    "lint": "biome check .",
+    "test": "vscode-test",
+    "format": "biome format --write ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.12",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "~25.0.10",
+    "@types/vscode": "^1.108.1",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
+    "typescript": "^5.9.3"
+  }
+}

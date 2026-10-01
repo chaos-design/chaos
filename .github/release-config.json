@@ -1,0 +1,17 @@
+{
+  "$schema": "https://unpkg.com/changelogithub@5.4.3/schema.json",
+  "title": "Chaos",
+  "excludeMergeCommits": true,
+  "excludeCommits": ["chore", "ci", "docs", "style", "test"],
+  "labels": {
+    "feature": "Features",
+    "fix": "Bug Fixes",
+    "perf": "Performance",
+    "docs": "Documentation",
+    "refactor": "Refactors",
+    "chore": "Chores"
+  },
+  "baseBranches": ["main"],
+  "baseUrl": "https://github.com/chaos-design/chaos",
+  "prerelease": false
+}

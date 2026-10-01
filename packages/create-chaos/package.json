@@ -1,0 +1,82 @@
+{
+  "name": "create-chaos",
+  "version": "0.1.1",
+  "type": "module",
+  "description": "Scaffold modern frontend projects from curated templates: React, Next.js, libraries, browser extensions, VS Code extensions, monorepos and docs sites.",
+  "license": "MIT",
+  "keywords": [
+    "chaos",
+    "chaos-design",
+    "cli",
+    "scaffold",
+    "generator",
+    "template",
+    "boilerplate",
+    "starter",
+    "skill",
+    "create",
+    "react",
+    "next",
+    "monorepo",
+    "vite",
+    "vscode-extension"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "bin": {
+    "create-chaos": "index.js",
+    "chaos": "index.js"
+  },
+  "files": [
+    "index.js",
+    "dist",
+    "templates",
+    "!templates/**/node_modules",
+    "!templates/**/.wxt",
+    "!templates/**/dist",
+    "!templates/**/.output",
+    "!templates/**/.next",
+    "!templates/**/coverage",
+    "!templates/**/*.tsbuildinfo",
+    "!templates/**/next-env.d.ts"
+  ],
+  "scripts": {
+    "dev": "unbuild --stub",
+    "build": "unbuild",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm run build"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chaos-design/chaos.git",
+    "directory": "packages/create-chaos"
+  },
+  "bugs": {
+    "url": "https://github.com/chaos-design/chaos/issues"
+  },
+  "author": "rain120",
+  "homepage": "https://github.com/chaos-design/chaos",
+  "dependencies": {
+    "c12": "^3.3.3"
+  },
+  "devDependencies": {
+    "@chaos-design/tsconfig": "0.0.23",
+    "@types/minimist": "^1.2.5",
+    "@types/node": "^25.0.10",
+    "@types/prompts": "^2.4.9",
+    "@types/react": "^19.2.9",
+    "@types/react-dom": "^19.2.3",
+    "cross-spawn": "^7.0.6",
+    "kolorist": "^1.8.0",
+    "minimist": "^1.2.8",
+    "next": "^16.1.4",
+    "prompts": "^2.4.2",
+    "react-dom": "^19.2.3",
+    "typescript": "~5.3.3"
+  }
+}

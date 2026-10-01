@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="400" viewBox="0 0 1280 400" role="img" aria-label="Chaos - Next Generation Frontend Tooling">
+  <defs>
+    <!-- depth: near-black core opening into a cold indigo horizon -->
+    <linearGradient id="bg" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0%" stop-color="#050914" />
+      <stop offset="48%" stop-color="#0a1226" />
+      <stop offset="100%" stop-color="#070b18" />
+    </linearGradient>
+    <radialGradient id="core" cx="0.62" cy="0.52" r="0.55">
+      <stop offset="0%" stop-color="#1d4ed8" stop-opacity="0.28" />
+      <stop offset="55%" stop-color="#0e7490" stop-opacity="0.10" />
+      <stop offset="100%" stop-color="#050914" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- neon: cyan -> violet -> magenta, the one accent ramp used everywhere -->
+    <linearGradient id="neon" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22d3ee" />
+      <stop offset="50%" stop-color="#818cf8" />
+      <stop offset="100%" stop-color="#e879f9" />
+    </linearGradient>
+    <linearGradient id="bolt" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#e0f7ff" />
+      <stop offset="45%" stop-color="#22d3ee" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+    <linearGradient id="word" x1="0" y1="0" x2="1" y2="0.3">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="62%" stop-color="#dbeafe" />
+      <stop offset="100%" stop-color="#a5b4fc" />
+    </linearGradient>
+
+    <pattern id="scan" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="1" fill="#93c5fd" fill-opacity="0.045" />
+    </pattern>
+
+    <filter id="blur-lg" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="34" />
+    </filter>
+    <filter id="blur-sm" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="9" />
+    </filter>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="3.5" result="b" />
+      <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    <clipPath id="screen"><rect x="0" y="0" width="1280" height="400" /></clipPath>
+  </defs>
+
+  <g clip-path="url(#screen)">
+    <rect width="1280" height="400" fill="url(#bg)" />
+    <rect width="1280" height="400" fill="url(#core)" />
+
+    <!-- ambient light sources -->
+    <circle cx="300" cy="150" r="190" fill="#22d3ee" fill-opacity="0.16" filter="url(#blur-lg)" />
+    <circle cx="1080" cy="120" r="170" fill="#a855f7" fill-opacity="0.15" filter="url(#blur-lg)" />
+    <circle cx="640" cy="430" r="210" fill="#0ea5e9" fill-opacity="0.13" filter="url(#blur-lg)" />
+
+    <!-- perspective floor: a grid that recedes instead of tiling flat -->
+    <g stroke="#38bdf8" stroke-opacity="0.16" stroke-width="1">
+      <line x1="0" y1="271.5" x2="1280" y2="271.5" stroke-opacity="0.30" />
+      <line x1="0" y1="281.2" x2="1280" y2="281.2" />
+      <line x1="0" y1="295.1" x2="1280" y2="295.1" />
+      <line x1="0" y1="314.2" x2="1280" y2="314.2" />
+      <line x1="0" y1="339.5" x2="1280" y2="339.5" />
+      <line x1="0" y1="372" x2="1280" y2="372" />
+      <line x1="0" y1="399.5" x2="1280" y2="399.5" stroke-opacity="0.30" />
+    </g>
+    <g stroke="#38bdf8" stroke-opacity="0.13" stroke-width="1">
+      <line x1="640" y1="271" x2="640" y2="400" />
+      <line x1="523" y1="271" x2="352" y2="400" />
+      <line x1="757" y1="271" x2="928" y2="400" />
+      <line x1="406" y1="271" x2="96" y2="400" />
+      <line x1="874" y1="271" x2="1184" y2="400" />
+      <line x1="289" y1="271" x2="-118" y2="400" />
+      <line x1="991" y1="271" x2="1398" y2="400" />
+      <line x1="172" y1="271" x2="-318" y2="400" />
+      <line x1="1108" y1="271" x2="1604" y2="400" />
+    </g>
+
+    <!-- constellation: the scaffolding graph the CLI walks -->
+    <g stroke="#22d3ee" stroke-opacity="0.22" stroke-width="1">
+      <path d="M742 54 L836 112 L944 44 L1046 98 L1152 38 L1246 92" fill="none" />
+      <path d="M836 112 L906 176 L1046 98 L1094 168 L1246 92" fill="none" />
+      <path d="M742 54 L690 122 L836 112" fill="none" />
+    </g>
+    <g fill="#67e8f9" fill-opacity="0.55">
+      <circle cx="742" cy="54" r="2.4" /><circle cx="836" cy="112" r="2.4" />
+      <circle cx="944" cy="44" r="2.4" /><circle cx="1046" cy="98" r="2.4" />
+      <circle cx="1152" cy="38" r="2.4" /><circle cx="1246" cy="92" r="2.4" />
+      <circle cx="906" cy="176" r="2.4" /><circle cx="1094" cy="168" r="2.4" />
+      <circle cx="690" cy="122" r="2.4" />
+    </g>
+    <g fill="#e879f9" fill-opacity="0.85">
+      <circle cx="1046" cy="98" r="3.4" />
+      <circle cx="944" cy="44" r="2" />
+    </g>
+
+    <!-- CRT scanlines over the whole frame -->
+    <rect width="1280" height="400" fill="url(#scan)" />
+
+    <!-- logo: a chip on a board, bolt on the die -->
+    <g transform="translate(72 116)">
+      <g stroke="#22d3ee" stroke-opacity="0.45" stroke-width="1.5" fill="none">
+        <path d="M-18 -34 h-26 M-18 -12 h-26 M-18 10 h-26 M-18 32 h-26" />
+        <path d="M162 -34 h26 M162 -12 h26 M162 10 h26 M162 32 h26" />
+        <path d="M36 -18 v-28 M64 -18 v-28 M92 -18 v-28 M120 -18 v-28" />
+        <path d="M36 162 v28 M64 162 v28 M92 162 v28 M120 162 v28" />
+      </g>
+      <g fill="#67e8f9" fill-opacity="0.75">
+        <circle cx="-44" cy="-34" r="2.2" /><circle cx="-44" cy="10" r="2.2" />
+        <circle cx="188" cy="-12" r="2.2" /><circle cx="188" cy="32" r="2.2" />
+        <circle cx="36" cy="-46" r="2.2" /><circle cx="120" cy="-46" r="2.2" />
+        <circle cx="64" cy="190" r="2.2" /><circle cx="92" cy="190" r="2.2" />
+      </g>
+      <rect x="0" y="0" width="144" height="144" rx="30" fill="#0b1226" fill-opacity="0.9" stroke="url(#neon)" stroke-opacity="0.85" stroke-width="2" />
+      <rect x="11" y="11" width="122" height="122" rx="22" fill="none" stroke="#22d3ee" stroke-opacity="0.20" stroke-width="1" />
+      <path d="M86 24 L38 84 H64 L54 122 L104 60 H76 Z" fill="url(#bolt)" filter="url(#glow)" />
+    </g>
+
+    <!-- wordmark -->
+    <text x="268" y="196" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="96" font-weight="800" letter-spacing="-3" fill="url(#word)">Chaos</text>
+    <g transform="translate(272 226)">
+      <rect x="0" y="0" width="292" height="40" rx="8" fill="#22d3ee" fill-opacity="0.09" stroke="#22d3ee" stroke-opacity="0.30" stroke-width="1" />
+      <text x="16" y="27" font-family="'SF Mono', Menlo, Consolas, monospace" font-size="19" font-weight="500" fill="#67e8f9">&gt; create-chaos</text>
+    </g>
+    <text x="272" y="308" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="25" font-weight="500" fill="#93c5fd">Next Generation Frontend Tooling</text>
+    <text x="272" y="342" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="21" font-weight="400" fill="#94a3b8">下一代前端工具链 · 一条命令，产出生产级工程</text>
+
+    <!-- terminal: the real command, the real catalogue -->
+    <g transform="translate(844 84)">
+      <rect x="0" y="0" width="372" height="248" rx="14" fill="#030617" fill-opacity="0.86" stroke="url(#neon)" stroke-opacity="0.35" stroke-width="1.5" />
+      <line x1="0" y1="36" x2="372" y2="36" stroke="#22d3ee" stroke-opacity="0.18" stroke-width="1" />
+      <circle cx="22" cy="18" r="5" fill="#f87171" />
+      <circle cx="40" cy="18" r="5" fill="#fbbf24" />
+      <circle cx="58" cy="18" r="5" fill="#4ade80" />
+      <text x="76" y="23" font-family="'SF Mono', Menlo, Consolas, monospace" font-size="13" fill="#475569">~/my-app</text>
+
+      <text x="22" y="68" font-family="'SF Mono', Menlo, Consolas, monospace" font-size="16" fill="#475569">$</text>
+      <text x="38" y="68" font-family="'SF Mono', Menlo, Consolas, monospace" font-size="16" fill="#e2e8f0">npm create chaos@latest</text>
+      <text x="38" y="92" font-family="'SF Mono', Menlo, Consolas, monospace" font-size="16" fill="#a5b4fc">my-app -t react</text>
+
+      <line x1="22" y1="114" x2="350" y2="114" stroke="#22d3ee" stroke-opacity="0.14" stroke-width="1" />
+      <text x="22" y="138" font-family="'SF Mono', Menlo, Consolas, monospace" font-size="12" fill="#475569">12 templates ready</text>
+
+      <!-- every alias declared in src/config.ts, nothing invented -->
+      <g font-family="'SF Mono', Menlo, Consolas, monospace" font-size="12" fill="#67e8f9">
+        <text x="22" y="162">react</text>
+        <text x="22" y="184">reactc</text>
+        <text x="22" y="206">next-shadcn</text>
+        <text x="22" y="228">next-supabase</text>
+
+        <text x="132" y="162">wxt</text>
+        <text x="132" y="184">lib</text>
+        <text x="132" y="206">libc</text>
+        <text x="132" y="228">wp</text>
+
+        <text x="240" y="162">vse</text>
+        <text x="240" y="184">monorepo</text>
+        <text x="240" y="206">docs</text>
+        <text x="240" y="228">skill</text>
+      </g>
+    </g>
+
+    <!-- frame edges -->
+    <rect x="0.5" y="0.5" width="1279" height="399" fill="none" stroke="#22d3ee" stroke-opacity="0.18" stroke-width="1" />
+
+    <!-- bottom light bar -->
+    <rect x="0" y="392" width="1280" height="8" fill="url(#neon)" />
+    <rect x="0" y="388" width="1280" height="4" fill="#22d3ee" fill-opacity="0.35" filter="url(#blur-sm)" />
+  </g>
+</svg>

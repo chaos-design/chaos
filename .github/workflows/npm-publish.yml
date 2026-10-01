@@ -1,0 +1,72 @@
+name: NPM Publish
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  release:
+    types: [created]
+  workflow_dispatch:
+  pull_request:
+
+# Only one publish job may run at a time; a queued run re-checks the registry
+# and skips if a newer version already landed.
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build, Test and Publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Biome Check
+        run: pnpm run lint
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Verify template output and custom-template handling
+        if: github.event_name != 'pull_request'
+        run: |
+          node scripts/verify-pack.mjs --strict
+          node scripts/verify-custom.mjs
+
+      - name: Publish create-chaos to npm
+        if: github.event_name != 'pull_request'
+        working-directory: packages/create-chaos
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PKG_NAME: create-chaos
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "Checking if $PKG_NAME@$VERSION is already on the registry..."
+
+          if npm view "$PKG_NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "$PKG_NAME@$VERSION already published. Skipping."
+            exit 0
+          fi
+
+          echo "Publishing $PKG_NAME@$VERSION..."
+          # prepublishOnly rebuilds dist so the tarball can never ship a stale build.
+          pnpm publish --access public --no-git-checks

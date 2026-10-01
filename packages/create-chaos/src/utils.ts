@@ -1,0 +1,233 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import type prompts from 'prompts';
+
+export function formatTargetDir(targetDir: string | undefined) {
+  return targetDir?.trim().replace(/\/+$/g, '');
+}
+
+export type RenameFiles = Record<string, string | undefined>;
+
+export function copy(
+  src: string,
+  dest: string,
+  ignore: string[] = [],
+  renameFiles: RenameFiles = {},
+) {
+  const stat = fs.statSync(src);
+
+  if (stat.isDirectory()) {
+    copyDir(src, dest, ignore, renameFiles);
+  } else {
+    fs.copyFileSync(src, dest);
+  }
+}
+
+export function isValidPackageName(projectName: string) {
+  return /^(?:@[a-z\d\-*~][a-z\d\-*._~]*\/)?[a-z\d\-~][a-z\d\-._~]*$/.test(
+    projectName,
+  );
+}
+
+export function toValidPackageName(projectName: string) {
+  return projectName
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/^[._]/, '')
+    .replace(/[^a-z\d\-~]+/g, '-');
+}
+
+export function copyDir(
+  srcDir: string,
+  destDir: string,
+  ignore: string[] = [],
+  renameFiles: RenameFiles = {},
+) {
+  fs.mkdirSync(destDir, { recursive: true });
+
+  for (const file of fs.readdirSync(srcDir)) {
+    if (ignore.includes(file)) {
+      continue;
+    }
+
+    const srcFile = path.resolve(srcDir, file);
+    const destFile = path.resolve(destDir, renameFiles[file] ?? file);
+
+    copy(srcFile, destFile, ignore, renameFiles);
+  }
+}
+
+export function findPackageRoot(startDir: string) {
+  let dir = startDir;
+  while (true) {
+    if (fs.existsSync(path.join(dir, 'package.json'))) {
+      return dir;
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) {
+      return startDir;
+    }
+    dir = parent;
+  }
+}
+
+export function isEmpty(path: string) {
+  const files = fs.readdirSync(path);
+
+  return files.length === 0 || (files.length === 1 && files[0] === '.git');
+}
+
+export function isObject(value: unknown): value is Record<string, unknown> {
+  return Object.prototype.toString.call(value) === '[object Object]';
+}
+
+export function emptyDir(dir: string) {
+  if (!fs.existsSync(dir)) {
+    return;
+  }
+
+  for (const file of fs.readdirSync(dir)) {
+    if (file === '.git') {
+      continue;
+    }
+
+    fs.rmSync(path.resolve(dir, file), { recursive: true, force: true });
+  }
+}
+
+export function pkgFromUserAgent(userAgent: string | undefined) {
+  if (!userAgent) {
+    return undefined;
+  }
+
+  const pkgSpec = userAgent.split(' ')[0];
+  const pkgSpecArr = pkgSpec.split('/');
+
+  return {
+    name: pkgSpecArr[0],
+    version: pkgSpecArr[1],
+  };
+}
+
+export function setupReactComponent(root: string, name: string) {
+  editFile(path.resolve(root, 'index.tsx'), (content) => {
+    return content
+      .replace(
+        /ComponentNameContainer/g,
+        `${kebabCase2CamelCase(name)}Container`,
+      )
+      .replace(/ComponentName/g, kebabCase2UpperCamelCase(name));
+  });
+
+  editFile(path.resolve(root, 'index.module.scss'), (content) => {
+    return content.replace(/ComponentName/g, kebabCase2CamelCase(name));
+  });
+}
+
+export function setupWebpack(root: string, name: string) {
+  editFile(path.resolve(root, 'src/index.ts'), (content) => {
+    return content.replace(
+      /WebpackPlugin/g,
+      `${kebabCase2UpperCamelCase(name)}`,
+    );
+  });
+
+  editFile(path.resolve(root, 'demo/package.json'), (content) => {
+    return content.replace(/WebpackPlugin/g, `${name}`);
+  });
+
+  editFile(path.resolve(root, 'demo/webpack.config.js'), (content) => {
+    return content
+      .replace(/WebpackPlugin/g, `${kebabCase2UpperCamelCase(name)}`)
+      .replace(/@chaos-design\/webpack-plugin/g, name);
+  });
+
+  editFile(path.resolve(root, 'README.md'), (content) => {
+    return content
+      .replace(/WebpackPlugin/g, `${kebabCase2UpperCamelCase(name)}`)
+      .replace(/@chaos-design\/webpack-plugin/g, name);
+  });
+}
+
+// export function setupReactSwc(root: string, isTs: boolean) {
+//   editFile(path.resolve(root, 'package.json'), (content) => {
+//     return content.replace(
+//       /"@vitejs\/plugin-react": ".+?"/,
+//       '"@vitejs/plugin-react-swc": "^3.0.0"',
+//     );
+//   });
+
+//   editFile(
+//     path.resolve(root, `vite.config.${isTs ? 'ts' : 'js'}`),
+//     (content) => {
+//       return content.replace('@vitejs/plugin-react', '@vitejs/plugin-react-swc')
+//     },
+//   )
+// }
+
+export function editFile(file: string, callback: (content: string) => string) {
+  const content = fs.readFileSync(file, 'utf-8');
+
+  fs.writeFileSync(file, callback(content), 'utf-8');
+}
+
+export function kebabCase2UpperCamelCase(word: string) {
+  return word.replace(/(^|\s|-)\w/g, (match: string) =>
+    match.replace(/-|\s/g, '').toUpperCase(),
+  );
+}
+
+export function kebabCase2CamelCase(word: string) {
+  return word.replace(/-([a-zA-Z\d])/g, (_, letter) => letter.toUpperCase());
+}
+
+export function getPromptOptions(
+  choices: { title: string; value: unknown; description?: string }[],
+  message: string,
+) {
+  return {
+    type: 'select',
+    name: 'value',
+    message,
+    choices,
+    initial: 0,
+  } as prompts.PromptObject;
+}
+
+export function writeDoneTip(root: string, pkgManager: string) {
+  const relativeRoot = path.relative(process.cwd(), root) || '.';
+  const displayRoot = relativeRoot.includes(' ')
+    ? `"${relativeRoot}"`
+    : relativeRoot;
+  const packageJsonPath = path.join(root, 'package.json');
+
+  console.log(`\n✅ Project created in ${displayRoot}.\n`);
+
+  if (!fs.existsSync(packageJsonPath)) {
+    return;
+  }
+
+  const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8')) as {
+    scripts?: Record<string, string>;
+  };
+  const nextScript = ['dev', 'start', 'compile'].find(
+    (script) => pkg.scripts?.[script],
+  );
+
+  if (root !== process.cwd()) {
+    console.log(`  cd ${displayRoot}`);
+  }
+
+  console.log(`  ${pkgManager === 'yarn' ? 'yarn' : `${pkgManager} install`}`);
+
+  if (nextScript) {
+    const runCommand =
+      pkgManager === 'yarn'
+        ? `yarn ${nextScript}`
+        : `${pkgManager} run ${nextScript}`;
+    console.log(`  ${runCommand}`);
+  }
+
+  console.log();
+}

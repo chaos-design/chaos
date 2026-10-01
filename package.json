@@ -1,0 +1,61 @@
+{
+  "name": "@chaos-design/chaos",
+  "version": "0.0.1",
+  "description": "For fastly and easily to frontend development by the tool",
+  "private": true,
+  "main": "index.js",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "postinstall": "simple-git-hooks",
+    "test": "pnpm run typecheck && pnpm run lint && pnpm run verify:pack && pnpm run verify:custom",
+    "typecheck": "pnpm --filter=create-chaos run typecheck",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "build": "pnpm -r --filter='./packages/*' run build",
+    "dev": "pnpm -r --parallel --filter='./packages/*' run dev",
+    "banner": "node scripts/render-banner.mjs",
+    "verify:pack": "node scripts/verify-pack.mjs --strict",
+    "verify:alias": "node scripts/verify-alias.mjs",
+    "verify:custom": "node scripts/verify-custom.mjs",
+    "verify:short": "node scripts/verify-short-commands.mjs",
+    "release": "bumpp packages/*/package.json",
+    "publish-pkg": "sh ./scripts/publish-to-npm.sh"
+  },
+  "keywords": [
+    "chaos",
+    "create-chaos",
+    "chaos",
+    "create tool"
+  ],
+  "license": "MIT",
+  "author": "Rain120",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chaos-design/chaos.git"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm exec lint-staged --concurrent false"
+  },
+  "lint-staged": {
+    "*": [
+      "biome check --write --no-errors-on-unmatched"
+    ]
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.12",
+    "@types/cross-spawn": "^6.0.6",
+    "@types/node": "^25.0.10",
+    "bumpp": "^10.4.0",
+    "lint-staged": "^16.2.7",
+    "npm-run-all": "^4.1.5",
+    "simple-git-hooks": "^2.13.1",
+    "typescript": "^5.9.3",
+    "unbuild": "^3.6.1",
+    "zx": "^8.8.5"
+  },
+  "packageManager": "pnpm@10.28.1+sha512.7d7dbbca9e99447b7c3bf7a73286afaaf6be99251eb9498baefa7d406892f67b879adb3a1d7e687fc4ccc1a388c7175fbaae567a26ab44d1067b54fcb0d6a316"
+}

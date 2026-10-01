@@ -1,0 +1,8 @@
+{
+  "packageName": "next-supabase-scaffold",
+  "displayName": "next-supabase-scaffold",
+  "brandInitials": "N/S",
+  "description": "Next.js 16 + Supabase SSR 邮箱认证脚手架。",
+  "supabaseProjectId": "next-supabase-scaffold",
+  "devPort": 3344
+}

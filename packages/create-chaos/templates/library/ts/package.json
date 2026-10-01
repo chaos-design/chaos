@@ -1,0 +1,35 @@
+{
+  "name": "chaos-project",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "exports": {
+    "development": "./src/index.ts",
+    "types": "./index.d.ts",
+    "require": "./lib/index.cjs",
+    "import": "./lib/index.js"
+  },
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "types": "./index.d.ts",
+  "files": [
+    "lib",
+    "index.d.ts"
+  ],
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "preinstall": "npx only-allow pnpm",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "release": "bumpp package.json"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.12",
+    "@types/node": "^25.0.10",
+    "bumpp": "^10.4.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  }
+}
