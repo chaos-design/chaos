@@ -55,9 +55,15 @@
 ### Packaging
 
 - Added `scripts/verify-pack.mjs`, which asserts the tarball is publishable: `dist`
-  is present and not a stub, no `node_modules` or npm-stripped filenames exist under
-  `templates/`, every path declared in `config.ts` exists, and the real
-  `npm pack --dry-run` list drops nothing from disk. Wired into `pnpm test` and CI.
+  is present and not a stub, the tarball actually contains `dist/index.mjs`,
+  `index.js` and every `bin` target, no `node_modules`, npm-stripped filenames or
+  generated scratch files are included, every path declared in `config.ts` exists,
+  and the real `npm pack --dry-run` list drops nothing from disk. Wired into
+  `pnpm test` and CI.
+- `cache-changed-pkg-path.sh` no longer ships. The monorepo template's own
+  pre-commit hook writes it into `templates/`; it is gitignored, so it was
+  invisible in diffs, but npm packed it and shipped a 30 kB file containing local
+  filesystem paths to every user.
 - Added `scripts/verify-custom.mjs`, which covers the `--custom` paths that the
   interactive prompts make hard to reach by hand.
 - `files` excludes template build output; `lib` is deliberately **not** excluded

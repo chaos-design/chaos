@@ -76,6 +76,27 @@ function walk(dir, acc = []) {
 
 const onDisk = walk(templatesDir).map((file) => rel(templatesDir, file));
 
+// 1b. Generated scratch files. These are gitignored, so they never show up in a
+// diff, but they still sit in templates/ and npm packs whatever is on disk. The
+// monorepo template's own pre-commit hook writes one of these, so it appears the
+// moment anyone commits from this repo.
+//
+// Being present on disk is fine as long as the tarball excludes it, which is what
+// step 5 below asserts. This check exists so the exclusion cannot be dropped by
+// accident without anyone noticing why it mattered.
+const GENERATED = new Set([
+  'cache-changed-pkg-path.sh',
+  '.eslintcache',
+  '.stylelintcache',
+  'npm-debug.log',
+  'yarn-error.log',
+  'pnpm-debug.log',
+]);
+
+const generated = onDisk.filter((file) =>
+  GENERATED.has(file.split('/').at(-1)),
+);
+
 // 2. no node_modules may live inside templates/.
 const nestedModules = onDisk.filter((file) =>
   file.split('/').includes('node_modules'),
@@ -170,6 +191,27 @@ try {
 }
 
 if (packed.length > 0) {
+  const packedSet = new Set(packed);
+
+  // The tarball must actually be runnable. Checking dist/ on disk is not enough:
+  // a `files` entry that accidentally omits "dist" produces a package that
+  // installs cleanly and then fails on first run with a missing entry file.
+  for (const required of ['dist/index.mjs', 'index.js', 'package.json']) {
+    if (!packedSet.has(required)) {
+      fail(
+        `${required} is not in the tarball. The package would install but not run; ` +
+          'check the "files" field in packages/create-chaos/package.json.',
+      );
+    }
+  }
+
+  // Every bin target must resolve to a file that is actually published.
+  for (const bin of Object.values(pkg.bin ?? {})) {
+    if (!packedSet.has(bin)) {
+      fail(`bin target "${bin}" is not in the tarball.`);
+    }
+  }
+
   const packedModules = packed.filter((file) => file.includes('node_modules'));
   if (packedModules.length > 0) {
     fail(
@@ -177,11 +219,49 @@ if (packed.length > 0) {
     );
   }
 
-  // Nothing under templates/ should be missing from the tarball.
-  const packedSet = new Set(packed);
+  // Generated scratch files must never be in the tarball. They are gitignored, so
+  // they are invisible in a diff but still get packed, and they embed local
+  // paths. The monorepo template's own pre-commit hook writes one, so it appears
+  // as soon as anyone commits from this repo.
+  const generatedInTarball = packed.filter((file) =>
+    GENERATED.has(file.split('/').at(-1)),
+  );
+  if (generatedInTarball.length > 0) {
+    fail(
+      `Generated scratch file(s) are in the tarball: ${generatedInTarball.join(', ')}. ` +
+        'They are gitignored, which hides them from diffs but not from npm pack. ' +
+        'Add them to the "files" exclusions in packages/create-chaos/package.json.',
+    );
+  }
+
+  const generatedExcluded = generated.filter(
+    (file) => !packedSet.has(`templates/${file}`),
+  );
+  if (generatedExcluded.length > 0) {
+    notes.push(
+      `${generatedExcluded.length} generated scratch file(s) correctly kept out of the tarball: ${generatedExcluded.join(', ')}`,
+    );
+  }
+
+  // Every template file on disk must reach the tarball, unless it is deliberately
+  // excluded. Three categories are legitimately absent:
+  //   - names npm strips on its own (.gitignore, .npmrc, .git, .DS_Store);
+  //   - node_modules, which must never be published at all;
+  //   - generated scratch files, which are covered by their own check above.
+
+  const excluded = new Set(
+    onDisk
+      .filter((file) => ALWAYS_STRIPPED.has(file.split('/').at(-1)))
+      .map((file) => `templates/${file}`),
+  );
+  for (const file of [...nestedModules, ...generated]) {
+    excluded.add(`templates/${file}`);
+  }
+
   const missing = onDisk
     .map((file) => `templates/${file}`)
-    .filter((file) => !packedSet.has(file));
+    .filter((file) => !packedSet.has(file) && !excluded.has(file));
+
   if (missing.length > 0) {
     fail(
       `${missing.length} template file(s) exist on disk but not in the tarball: ${missing.slice(0, 10).join(', ')}`,

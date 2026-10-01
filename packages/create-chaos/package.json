@@ -40,7 +40,8 @@
     "!templates/**/.next",
     "!templates/**/coverage",
     "!templates/**/*.tsbuildinfo",
-    "!templates/**/next-env.d.ts"
+    "!templates/**/next-env.d.ts",
+    "!templates/**/cache-changed-pkg-path.sh"
   ],
   "scripts": {
     "dev": "unbuild --stub",

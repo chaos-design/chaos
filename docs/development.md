@@ -148,16 +148,27 @@ Two scripts guard behaviour that is easy to break and hard to notice.
 
 `scripts/verify-pack.mjs` asserts:
 
-1. `dist/index.mjs` exists and is not a stub.
+1. `dist/index.mjs` exists on disk and is not a stub build.
 2. No `node_modules` anywhere under `templates/`.
 3. No filename npm strips at pack time (`.gitignore`, `.npmrc`, `.git`,
    `.DS_Store`) exists under `templates/`.
 4. Every path declared in `config.ts` exists on disk.
-5. The real `npm pack --dry-run` file list contains no `node_modules` and drops
-   nothing that exists on disk.
+5. Against the real `npm pack --dry-run` list: the tarball contains
+   `dist/index.mjs`, `index.js` and `package.json`; every `bin` target is
+   present; no `node_modules` and no generated scratch file is included; and
+   nothing on disk was silently dropped.
 
-Point 5 is the one that catches "the template silently lost a file in
-publishing". Run it before every release.
+Points 1 and 5 are deliberately different checks. A missing `dist/` on disk is a
+"forgot to build" mistake, while a missing `dist/` in the tarball is a `files`
+mistake — the second produces a package that installs cleanly and then fails on
+first run, which is much harder to notice.
+
+`cache-changed-pkg-path.sh` is worth calling out: the monorepo template's own
+pre-commit hook writes it into `templates/`, and because it is gitignored it never
+appears in a diff — but npm packs whatever is on disk. It carried local
+filesystem paths into the published package until it was excluded.
+
+Run `verify-pack` before every release.
 
 `scripts/verify-custom.mjs` covers the `--custom` path, which is unreachable by
 hand because it sits behind interactive prompts. It asserts that a missing config,

@@ -101,7 +101,8 @@ design.
   "!templates/**/.next",
   "!templates/**/coverage",
   "!templates/**/*.tsbuildinfo",
-  "!templates/**/next-env.d.ts"
+  "!templates/**/next-env.d.ts",
+  "!templates/**/cache-changed-pkg-path.sh"
 ]
 ```
 
@@ -110,6 +111,13 @@ directory (`react/next-shadcn/lib`, `browser/extension-wxt/lib`,
 `react/next-supabase/src/lib`, `docs/app/lib`). Excluding it would silently delete
 real source files. Only `.gitignore` excludes `lib` for the two templates where it
 is build output.
+
+The last entry matters more than it looks. The monorepo template's own pre-commit
+hook (`getchanged`) writes `cache-changed-pkg-path.sh` into `templates/`. It is
+gitignored, so it never appears in a diff or a review, but npm packs whatever is
+on disk — it shipped a 30 kB file containing the maintainer's local paths to every
+user until it was excluded. `verify-pack.mjs` now fails if any generated scratch
+file reaches the tarball.
 
 Two npm behaviours drive these rules:
 
