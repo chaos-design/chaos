@@ -1,5 +1,5 @@
 {
-  "extends": "@chaos-design/tsconfig",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
