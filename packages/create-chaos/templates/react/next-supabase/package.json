@@ -24,7 +24,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "check": "pnpm lint && pnpm typecheck && pnpm test"
+    "check:screenshots": "node scripts/check-screenshots.mjs",
+    "check": "pnpm check:screenshots && pnpm lint && pnpm typecheck && pnpm test"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

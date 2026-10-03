@@ -7,6 +7,10 @@ Storage, or an administrative server client. All project SQL is kept in
 `platform.sql`, which currently creates the Auth Hook function used to restrict
 registration email domains.
 
+Non-technical readers should start with the
+[quick start guide](../docs/non-technical-quick-start.en.md). This document
+covers the full Dashboard-side details.
+
 ## Environment Variables
 
 Get the project URL and Publishable key from Supabase Dashboard Project Settings:

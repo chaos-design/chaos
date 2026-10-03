@@ -1,7 +1,13 @@
 # 非技术人员简易操作手册
 
+[中文](./non-technical-quick-start.md) | [English](./non-technical-quick-start.en.md)
+
 本手册用于把模板快速配置成自己的项目。全程只需要操作 Supabase 网页、
 复制终端命令并修改少量文字。
+
+> 本手册中的界面图片均为**示意图**，使用示例项目名 `customer-portal`、示例 Project Ref
+> `abcdefghijklmnopqrst` 和脱敏内容，用来说明“应该看到什么”。真实界面以 Supabase 和
+> 浏览器实际显示为准，版本号、按钮位置等细节可能随官方改版变化。
 
 ## 开始前准备
 
@@ -24,11 +30,13 @@ git --version
 
 三个命令都能显示版本号即可继续。出现“command not found”时，请让技术人员先安装对应工具。
 
+![环境检查：node、pnpm 和 git 三个命令都输出版本号](./screenshots/01-environment-check.png)
+
 > **截图 1：环境检查**
 >
-> 截图范围：终端窗口。
+> 画面应包含 `node`、`pnpm` 和 `git` 三个版本号。
 >
-> 画面中应看到 `node`、`pnpm` 和 `git` 的版本号。不要截取电脑用户名、目录中的个人信息。
+> 不要出现电脑用户名、目录中的个人信息。
 
 ## 第一步：下载模板
 
@@ -58,13 +66,14 @@ https://supabase.com/dashboard/project/abcdefghijklmnopqrst
 
 最后的 20 位小写字母 `abcdefghijklmnopqrst` 就是 Project Ref。
 
+![Project Ref：浏览器地址栏中 /project/ 后面的 20 位小写字母](./screenshots/02-project-ref.png)
+
 > **截图 2：Project Ref**
 >
-> 截图范围：Supabase 项目页面顶部和浏览器地址栏。
+> 画面应包含 Supabase 项目页面顶部和浏览器地址栏，用方框标出地址中 `/project/` 后面的
+> 20 位字母。
 >
-> 用方框标出地址中 `/project/` 后面的 20 位字母。
->
-> 不要截取 API Key、数据库密码或用户数据。
+> 不要出现 API Key、数据库密码或用户数据。
 
 ### 创建 Personal Access Token
 
@@ -74,13 +83,14 @@ https://supabase.com/dashboard/project/abcdefghijklmnopqrst
 4. 点击 **Generate new token**。
 5. 名称填写项目英文名，创建后立即复制 token。
 
+![Access Tokens 页面：用方框标出 Generate new token 按钮](./screenshots/03-access-token.png)
+
 > **截图 3：创建 Access Token**
 >
-> 截图范围：**Account Settings > Access Tokens** 页面。
+> 画面应包含 **Account Settings > Access Tokens** 页面，用方框标出
+> **Generate new token** 按钮。
 >
-> 用方框标出 **Generate new token** 按钮。
->
-> 不要截图生成后的 token。token 只会完整显示一次，也不要发送到聊天或邮件。
+> 不要出现生成后的 token。token 只会完整显示一次，也不要发送到聊天或邮件。
 
 ## 第三步：一键配置
 
@@ -91,6 +101,9 @@ PROJECT_NAME="customer-portal"
 DISPLAY_NAME="客户服务平台"
 PROJECT_REF="abcdefghijklmnopqrst"
 ```
+
+页面左上角的品牌缩写会根据 `DISPLAY_NAME` 自动生成，不需要额外设置。
+`客户服务平台` 会生成 `客/户`。
 
 然后输入以下命令：
 
@@ -138,11 +151,12 @@ Project setup completed.
 unset SUPABASE_ACCESS_TOKEN
 ```
 
+![配置成功：终端输出 Project setup completed 与项目摘要](./screenshots/04-setup-completed.png)
+
 > **截图 4：配置成功**
 >
-> 截图范围：终端最后约 10 行。
->
-> 画面中应包含 `Project setup completed.`、项目名称和 Supabase Project Ref。
+> 画面应包含终端最后约 10 行，其中有 `Project setup completed.`、项目名称和 Supabase
+> Project Ref。
 >
 > 截图前确认画面中没有 `SUPABASE_ACCESS_TOKEN`、`sbp_` 开头的 token 或 API Key。
 
@@ -169,13 +183,13 @@ pnpm dev
 
 停止项目时，回到终端按 `Control + C`。
 
+![项目首页：方框标出新的项目名称和登录按钮](./screenshots/05-project-home.png)
+
 > **截图 5：项目首页**
 >
-> 截图范围：浏览器完整页面。
+> 画面应包含浏览器完整页面，用方框标出新的项目名称和登录按钮。
 >
-> 用方框标出新的项目名称和登录按钮。
->
-> 不要展示测试账户邮箱、验证码或浏览器保存的密码。
+> 不要出现测试账户邮箱、验证码或浏览器保存的密码。
 
 ## 遇到问题
 

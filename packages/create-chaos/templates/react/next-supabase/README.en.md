@@ -92,6 +92,12 @@ setup.
 
 ## One-Command Setup After Clone
 
+If you are not a developer, follow
+[`docs/non-technical-quick-start.en.md`](./docs/non-technical-quick-start.en.md)
+instead. It covers the same flow with five annotated screenshots. The Chinese
+version is
+[`docs/non-technical-quick-start.md`](./docs/non-technical-quick-start.md).
+
 Prepare a Supabase Personal Access Token and the 20-character Project Ref. The
 token is read only from the environment:
 

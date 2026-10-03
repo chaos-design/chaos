@@ -5,6 +5,9 @@
 当前脚手架只使用 Supabase Auth，不包含业务表、Storage 或服务端管理客户端。所有项目
 SQL 统一维护在 `platform.sql`，当前用于创建注册邮箱域名限制所需的 Auth Hook 函数。
 
+非技术人员请先阅读 [简易操作手册](../docs/non-technical-quick-start.md)，本文补充
+Dashboard 侧的完整配置细节。
+
 ## 环境变量
 
 从 Supabase Dashboard 的 Project Settings 获取项目 URL 和 Publishable key：

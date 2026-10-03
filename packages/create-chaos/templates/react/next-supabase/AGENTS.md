@@ -21,6 +21,9 @@
 - `src/server/`：仅服务端使用的认证与业务逻辑。
 - `src/proxy.ts`：Next.js 16 私有页面会话刷新与路由保护入口。
 - `docs/`：面向维护者的项目规范；样式变更需同步样式规范。
+- `docs/screenshots/`：简易操作手册引用的示意图，只使用示例值和脱敏内容。
+  修改 `devPort`、首页文案或 `setup-project.sh` 输出后必须重新出图，并运行
+  `pnpm check:screenshots`。
 
 ## 代码规则
 

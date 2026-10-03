@@ -86,7 +86,9 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 ## Clone 后一键配置
 
 非技术人员请直接阅读
-[`docs/non-technical-quick-start.md`](./docs/non-technical-quick-start.md)，按截图说明操作。
+[`docs/non-technical-quick-start.md`](./docs/non-technical-quick-start.md)，手册内含 5 张带标注的
+界面示意图，逐图说明该看哪里、该复制什么。英文版见
+[`docs/non-technical-quick-start.en.md`](./docs/non-technical-quick-start.en.md)。
 
 准备 Supabase Personal Access Token 和 20 位 Project Ref。令牌只通过环境变量读取：
 
