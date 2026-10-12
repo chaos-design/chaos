@@ -65,8 +65,10 @@ npm create chaos@latest my-app -- --template react
 | `vse` | `vscode-extension` | VS Code extension with React webview |
 | `monorepo` | `monorepo` | pnpm workspace monorepo |
 | `docs` | `docs` | Next.js + Fumadocs documentation site |
-| `skill` | `skill` | Agent skill package |
 | — | `custom` | Build from your own local template |
+
+> Agent skill templates have been removed — get them from
+> [chaos-design/skills](https://github.com/chaos-design/skills).
 
 Every template ships with Biome, TypeScript, `.npmrc` and `.gitignore` already
 configured.
@@ -79,7 +81,6 @@ Usage: create-chaos [OPTION]... [DIRECTORY]
 Options:
   -t, --template NAME        use a specific template
   -c, --custom               create from a local custom template
-  -s, --skill                create a skill project
   -w, --web                  open the visual template composer
       --port NUMBER          use a specific composer port (0-65535)
       --no-open              start the composer without opening a browser

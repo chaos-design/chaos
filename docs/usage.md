@@ -170,14 +170,9 @@ See [custom-templates.md](./custom-templates.md) for a full walkthrough.
 
 ## Skills
 
-```bash
-npm create chaos@latest my-skill --skill
-```
-
-Presents an autocomplete list of the skill packages under
-`templates/skills/`, copies the chosen one, and substitutes `{{PROJECT_NAME}}`
-in every file. The bundled `technology-selection` skill helps an agent pick a
-technology stack and architecture.
+Skill templates were removed from this CLI. Agent skills now live in their own
+repository — browse and install them at
+**[chaos-design/skills](https://github.com/chaos-design/skills)**.
 
 ## Template file conventions
 

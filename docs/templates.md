@@ -16,8 +16,10 @@ aliases are interchangeable on the command line.
 | `vse` | `vscode-extension` | VS Code |
 | `monorepo` | `monorepo` | Repository |
 | `docs` | `docs` | Docs |
-| `skill` | `skill` | Skill |
 | — | `custom` | Others |
+
+> Agent skills no longer ship with this CLI. Browse and install them from the
+> dedicated repository: **[chaos-design/skills](https://github.com/chaos-design/skills)**.
 
 ---
 
@@ -206,17 +208,8 @@ helpers), `content/docs/`, `examples/`, `hooks/`, `utils/`, `source.config.ts`,
 
 ---
 
-## Skill
+## Skills
 
-### `skill` — Agent skill package
-
-Generates an instruction package for coding agents rather than a runnable app.
-
-**Contains** `SKILL.md` with YAML frontmatter (`title`, `description`) and a
-`data/` directory of reference material. `{{PROJECT_NAME}}` placeholders are
-substituted during generation.
-
-Bundled skill: **`technology-selection`** — helps an agent choose a technology
-stack and architecture for a new project.
-
-**Next** edit `SKILL.md` and the `data/` files to match your own workflow.
+Skill templates have been removed from this CLI. Agent skills live in their own
+repository now — browse, install and contribute at
+**[chaos-design/skills](https://github.com/chaos-design/skills)**.
