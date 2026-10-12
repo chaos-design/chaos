@@ -9,6 +9,7 @@ window.CHAOS_TEMPLATES = [
     categoryLabel: 'React',
     title: 'TypeScript Project',
     description: 'Vite, React, and TypeScript for browser applications.',
+    color: 'cyan',
   },
   {
     id: 'react-component-ts',
@@ -17,6 +18,7 @@ window.CHAOS_TEMPLATES = [
     categoryLabel: 'React',
     title: 'Component',
     description: 'A focused React component with scoped Sass styles.',
+    color: 'blue',
   },
   {
     id: 'react-next-shadcn',
@@ -25,6 +27,7 @@ window.CHAOS_TEMPLATES = [
     categoryLabel: 'React',
     title: 'Next.js + shadcn/ui',
     description: 'Next.js App Router with Tailwind CSS and shadcn/ui.',
+    color: 'blue',
   },
   {
     id: 'react-next-supabase',
@@ -34,6 +37,7 @@ window.CHAOS_TEMPLATES = [
     title: 'Next.js + Supabase',
     description:
       'Next.js App Router with Supabase SSR auth, Tailwind CSS, and shadcn/ui.',
+    color: 'green',
   },
   {
     id: 'browser-extension-wxt',
@@ -43,6 +47,7 @@ window.CHAOS_TEMPLATES = [
     title: 'WXT Browser Extension',
     description:
       'A cross-browser extension with React, TypeScript, Tailwind CSS, and shadcn/ui.',
+    color: 'magenta',
   },
   {
     id: 'library-ts',
@@ -51,6 +56,7 @@ window.CHAOS_TEMPLATES = [
     categoryLabel: 'Library',
     title: 'TypeScript',
     description: 'A publishable TypeScript library built with tsup.',
+    color: 'red',
   },
   {
     id: 'library-react-component-ts',
@@ -59,6 +65,7 @@ window.CHAOS_TEMPLATES = [
     categoryLabel: 'Library',
     title: 'React Component',
     description: 'A tested React component library with a playground.',
+    color: 'magenta',
   },
   {
     id: 'webpack-plugin',
@@ -67,6 +74,7 @@ window.CHAOS_TEMPLATES = [
     categoryLabel: 'Webpack',
     title: 'Webpack Plugin',
     description: 'A typed Webpack plugin with an executable demo.',
+    color: 'red',
   },
   {
     id: 'vscode-extension',
@@ -75,6 +83,7 @@ window.CHAOS_TEMPLATES = [
     categoryLabel: 'VS Code',
     title: 'VS Code Extension',
     description: 'A VS Code extension with a React-powered webview.',
+    color: 'red',
   },
   {
     id: 'skill',
@@ -83,6 +92,7 @@ window.CHAOS_TEMPLATES = [
     categoryLabel: 'Skill',
     title: 'Skill Project',
     description: 'An agent skill package with usage instructions.',
+    color: 'magenta',
   },
   {
     id: 'monorepo',
@@ -91,6 +101,7 @@ window.CHAOS_TEMPLATES = [
     categoryLabel: 'Repository',
     title: 'Monorepo',
     description: 'A pnpm workspace with shared repository tooling.',
+    color: 'green',
   },
   {
     id: 'docs',
@@ -99,5 +110,6 @@ window.CHAOS_TEMPLATES = [
     categoryLabel: 'Docs',
     title: 'Documentation Site',
     description: 'A Next.js documentation site powered by Fumadocs.',
+    color: 'yellow',
   },
 ];

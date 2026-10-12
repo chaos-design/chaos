@@ -13,6 +13,15 @@
     "Avenir Next", Avenir, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
     "Microsoft YaHei", sans-serif;
   --shadow: 0 12px 32px rgba(24, 24, 20, 0.08);
+
+  /* Terminal palette: one-dark-ish approximations of the kolorist colors the
+     CLI paints templates with, plus the prompt chrome colors. */
+  --term-bg: #23272e;
+  --term-chrome: #1b1f25;
+  --term-line: #14171c;
+  --term-fg: #e8e6df;
+  --term-dim: #7f8794;
+  --term-cursor: #6ccfe0;
 }
 
 * {
@@ -91,178 +100,248 @@ body {
   border-bottom-color: var(--accent);
 }
 
-/* ---------- controls ---------- */
+/* ---------- terminal window ---------- */
 
-.controls {
-  display: flex;
-  gap: 22px;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  padding: 26px 0 20px;
-}
-
-.control {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.control-grow {
-  flex: 1;
-  min-width: 220px;
-}
-
-.control-label {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.segmented {
-  display: inline-flex;
-  border: 1px solid var(--line-strong);
-  border-radius: 8px;
+.terminal {
+  margin: 34px 0 30px;
+  border: 1px solid var(--term-line);
+  border-radius: 12px;
+  background: var(--term-bg);
+  color: var(--term-fg);
+  box-shadow: var(--shadow);
   overflow: hidden;
-  background: var(--panel);
 }
 
-.seg {
-  appearance: none;
-  border: 0;
-  background: transparent;
+.terminal-chrome {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  background: var(--term-chrome);
+  border-bottom: 1px solid var(--term-line);
+}
+
+.dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+.dot-r {
+  background: var(--accent);
+}
+
+.dot-y {
+  background: #e5c07b;
+}
+
+.dot-g {
+  background: #7ec97e;
+}
+
+.terminal-title {
+  margin-left: 8px;
   font-family: var(--mono);
-  font-size: 13px;
-  color: var(--muted);
-  padding: 8px 16px;
-  cursor: pointer;
+  font-size: 12px;
+  color: var(--term-dim);
 }
 
-.seg + .seg {
-  border-left: 1px solid var(--line);
-}
-
-.seg:hover {
-  color: var(--ink);
-}
-
-.seg.is-active {
-  background: var(--ink);
-  color: var(--panel);
-}
-
-.input {
-  appearance: none;
-  border: 1px solid var(--line-strong);
-  border-radius: 8px;
-  background: var(--panel);
+.terminal-body {
+  padding: 18px 20px 20px;
   font-family: var(--mono);
-  font-size: 13px;
-  color: var(--ink);
-  padding: 9px 12px;
-  width: 100%;
-  max-width: 320px;
+  font-size: 13.5px;
+  line-height: 1.95;
+  overflow-x: auto;
 }
 
-.input:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
-  border-color: var(--accent);
-}
+/* ---------- prompts ---------- */
 
-/* ---------- catalog ---------- */
-
-.category {
-  margin-bottom: 34px;
-}
-
-.category-title {
+.prompt-line {
   display: flex;
   align-items: baseline;
-  gap: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin: 0 0 14px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--line);
-}
-
-.category-count {
-  font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--line-strong);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 14px;
-}
-
-.card {
-  display: flex;
-  flex-direction: column;
   gap: 8px;
-  text-align: left;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.p-symbol {
+  color: #c678dd;
+  font-weight: 700;
+}
+
+.p-symbol.is-done {
+  color: #7ec97e;
+}
+
+.p-msg {
+  color: var(--term-fg);
+  font-weight: 700;
+}
+
+.p-delimiter {
+  color: var(--term-dim);
+}
+
+.p-hint {
+  color: var(--term-dim);
+}
+
+.keys-hint {
+  margin: 4px 0 0;
+}
+
+.prompt-input {
   appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--term-fg);
+  caret-color: var(--term-cursor);
+  width: 26ch;
+  min-width: 8ch;
+}
+
+.prompt-input::placeholder {
+  color: #4f545e;
+}
+
+.prompt-input:focus-visible {
+  outline: none;
+}
+
+.tok-list {
+  display: inline-flex;
+  gap: 14px;
+  white-space: nowrap;
+}
+
+.tok {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--term-dim);
   cursor: pointer;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 16px;
-  font-family: inherit;
-  font-size: inherit;
+}
+
+.tok:hover {
+  color: #b9bec8;
+}
+
+.tok.is-active {
+  color: var(--term-cursor);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- template rows (prompts' select list) ---------- */
+
+.t-rows {
+  margin-top: 4px;
+  min-width: 560px;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  width: 100%;
+  font: inherit;
+  line-height: 1.95;
+  text-align: left;
   color: inherit;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
-.card:hover {
-  border-color: var(--line-strong);
-  box-shadow: var(--shadow);
-  transform: translateY(-1px);
+.row-prefix {
+  display: inline-block;
+  width: 4ch;
+  color: var(--term-cursor);
+  white-space: pre;
 }
 
-.card:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+.row.is-cursor .row-title {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  filter: brightness(1.2);
 }
 
-.card.is-selected {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-  box-shadow: var(--shadow);
+.row:focus-visible {
+  outline: 1px solid var(--term-cursor);
+  outline-offset: -1px;
 }
 
-.card-title {
-  font-size: 15px;
-  font-weight: 600;
+.row-desc {
+  margin: 0 0 2px;
+  padding-left: 4ch;
+  color: var(--term-dim);
+  line-height: 1.7;
+  white-space: normal;
+  max-width: 88ch;
 }
 
-.card-alias {
-  align-self: flex-start;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--accent-dark);
-  background: var(--accent-soft);
-  border: 1px solid rgba(241, 83, 53, 0.25);
-  border-radius: 999px;
-  padding: 1px 10px;
+.row-desc .d-meta {
+  color: #9aa1ad;
 }
 
-.card-desc {
-  font-size: 13px;
-  color: var(--muted);
-  line-height: 1.55;
+.d-meta::after {
+  content: " · ";
 }
 
-.empty {
-  text-align: center;
-  color: var(--muted);
-  padding: 48px 0;
+/* kolorist names -> terminal colors (approximated on a dark background). */
+.c-blue {
+  color: #7aa6da;
+}
+
+.c-cyan {
+  color: #6ccfe0;
+}
+
+.c-green {
+  color: #7ec97e;
+}
+
+.c-lightCyan {
+  color: #a9e6ef;
+}
+
+.c-lightGreen {
+  color: #a9e2a9;
+}
+
+.c-lightMagenta {
+  color: #d3a7e2;
+}
+
+.c-lightRed {
+  color: #ef8fa8;
+}
+
+.c-magenta {
+  color: #c678dd;
+}
+
+.c-red {
+  color: #e06c75;
+}
+
+.c-yellow {
+  color: #e5c07b;
+}
+
+.c-default {
+  color: var(--term-fg);
+}
+
+.warn-line {
+  margin: 4px 0 0;
+  color: #e5c07b;
 }
 
 /* ---------- command bar ---------- */
@@ -341,21 +420,17 @@ body {
   .copy-btn {
     width: 100%;
   }
+
+  .terminal-body {
+    font-size: 12.5px;
+    padding: 14px 14px 16px;
+  }
 }
 
 /* Motion is opt-in: transitions only run when the user has no preference. */
 @media (prefers-reduced-motion: no-preference) {
-  .seg {
-    transition:
-      background 120ms ease,
-      color 120ms ease;
-  }
-
-  .card {
-    transition:
-      border-color 120ms ease,
-      box-shadow 120ms ease,
-      transform 120ms ease;
+  .tok {
+    transition: color 120ms ease;
   }
 
   .copy-btn {

@@ -86,15 +86,25 @@ function extractFrameworks(source) {
 
 function loadFrameworks(source) {
   const literal = extractFrameworks(source);
-  const stubs = COLOR_STUBS.map(() => (value) => value);
+  // Each stub remembers its own kolorist name; config.ts stores the function
+  // reference itself, so the map turns it back into a color name for the site.
+  const stubNames = new Map();
+  const stubs = COLOR_STUBS.map((name) => {
+    const fn = () => name;
+    stubNames.set(fn, name);
+    return fn;
+  });
 
-  return new Function('TEMPLATE_IGNORE', ...COLOR_STUBS, `return ${literal};`)(
-    ['node_modules', '.git', '.DS_Store'],
-    ...stubs,
-  );
+  const frameworks = new Function(
+    'TEMPLATE_IGNORE',
+    ...COLOR_STUBS,
+    `return ${literal};`,
+  )(['node_modules', '.git', '.DS_Store'], ...stubs);
+
+  return { frameworks, colorName: (fn) => stubNames.get(fn) ?? 'default' };
 }
 
-function buildTemplates(frameworks) {
+function buildTemplates(frameworks, colorName) {
   const templates = [];
 
   for (const framework of frameworks) {
@@ -114,6 +124,8 @@ function buildTemplates(frameworks) {
         categoryLabel: framework.display,
         title: variant.display || variant.name,
         description: variant.description,
+        // The color the CLI paints this template with (kolorist name).
+        color: colorName(variant.color),
       });
     }
   }
@@ -164,7 +176,8 @@ function render(templates) {
 
 function main() {
   const source = fs.readFileSync(configPath, 'utf8');
-  const templates = buildTemplates(loadFrameworks(source));
+  const { frameworks, colorName } = loadFrameworks(source);
+  const templates = buildTemplates(frameworks, colorName);
   const relative = path.relative(repoRoot, outFile);
 
   if (templates.length === 0) {

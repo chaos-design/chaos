@@ -29,49 +29,60 @@
     </header>
 
     <main class="wrap">
-      <section class="controls" aria-label="命令生成选项">
-        <div class="control">
-          <span class="control-label" id="pm-label">包管理器</span>
-          <div class="segmented">
-            <button type="button" class="seg" data-pm="npm">npm</button>
-            <button
-              type="button"
-              class="seg is-active"
-              data-pm="pnpm"
-              aria-pressed="true"
-            >
-              pnpm
-            </button>
-            <button type="button" class="seg" data-pm="yarn">yarn</button>
-            <button type="button" class="seg" data-pm="bun">bun</button>
-          </div>
+      <section class="terminal" aria-label="模拟 create-chaos 终端交互">
+        <div class="terminal-chrome">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span
+          ><span class="dot dot-g"></span>
+          <span class="terminal-title">create-chaos — 模板选择</span>
         </div>
-        <div class="control">
-          <label class="control-label" for="dir-input">项目目录</label>
-          <input
-            id="dir-input"
-            class="input"
-            type="text"
-            value="my-app"
-            spellcheck="false"
-            autocomplete="off"
-          />
-        </div>
-        <div class="control control-grow">
-          <label class="control-label" for="filter-input">筛选模板</label>
-          <input
-            id="filter-input"
-            class="input"
-            type="search"
-            placeholder="按名称、别名或描述搜索…"
-            spellcheck="false"
-            autocomplete="off"
-          />
+        <div class="terminal-body">
+          <p class="prompt-line">
+            <span class="p-symbol" aria-hidden="true">?</span>
+            <label class="p-msg" for="filter-input">Filter templates:</label>
+            <span class="p-delimiter" aria-hidden="true">›</span>
+            <input
+              id="filter-input"
+              class="prompt-input"
+              type="text"
+              spellcheck="false"
+              autocomplete="off"
+              aria-describedby="filter-hint"
+              placeholder="(all)"
+            />
+            <span class="p-hint" id="filter-hint">- Leave empty to list all.</span>
+          </p>
+          <p class="prompt-line">
+            <span class="p-symbol" aria-hidden="true">?</span>
+            <label class="p-msg" for="dir-input">Project name:</label>
+            <span class="p-delimiter" aria-hidden="true">›</span>
+            <input
+              id="dir-input"
+              class="prompt-input"
+              type="text"
+              value="my-app"
+              spellcheck="false"
+              autocomplete="off"
+            />
+          </p>
+          <p class="prompt-line">
+            <span class="p-symbol" aria-hidden="true">?</span>
+            <span class="p-msg" id="pm-label">Package manager:</span>
+            <span class="p-delimiter" aria-hidden="true">›</span>
+            <span class="tok-list" id="pm-list"></span>
+          </p>
+          <p class="prompt-line">
+            <span class="p-symbol" id="select-symbol" aria-hidden="true">✔</span>
+            <span class="p-msg">Select a template:</span>
+            <span class="p-delimiter" aria-hidden="true">›</span>
+            <span id="select-value"></span>
+          </p>
+          <div class="t-rows" id="catalog"></div>
+          <p class="warn-line" id="empty-state" hidden></p>
+          <p class="p-hint keys-hint">
+            - Hover or use ↑/↓ to browse. Click or press Enter to submit.
+          </p>
         </div>
       </section>
-
-      <div id="catalog"></div>
-      <p class="empty" id="empty-state" hidden>没有匹配的模板，换个关键词试试。</p>
     </main>
 
     <footer class="command-bar">

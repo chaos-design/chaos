@@ -5,6 +5,7 @@
     dir: 'my-app',
     templateId: templates.length > 0 ? templates[0].id : null,
     filter: '',
+    cursor: 0,
   };
 
   const catalogEl = document.getElementById('catalog');
@@ -13,7 +14,11 @@
   const copyBtn = document.getElementById('copy-btn');
   const dirInput = document.getElementById('dir-input');
   const filterInput = document.getElementById('filter-input');
-  const pmGroup = document.querySelector('.segmented');
+  const pmListEl = document.getElementById('pm-list');
+  const selectValueEl = document.getElementById('select-value');
+  const selectSymbolEl = document.getElementById('select-symbol');
+
+  const PM_ORDER = ['npm', 'pnpm', 'yarn', 'bun'];
 
   const escapeHtml = (value) =>
     String(value)
@@ -56,53 +61,16 @@
     return haystack.includes(keyword);
   };
 
-  const renderCatalog = () => {
-    const keyword = state.filter.trim().toLowerCase();
-    const groups = [];
-    const groupIndex = new Map();
+  const colorClass = (template) => `c-${template.color || 'default'}`;
 
-    for (const template of templates) {
-      if (!matchesFilter(template, keyword)) {
-        continue;
-      }
-
-      if (!groupIndex.has(template.category)) {
-        groupIndex.set(template.category, groups.length);
-        groups.push({ label: template.categoryLabel, items: [] });
-      }
-
-      groups[groupIndex.get(template.category)].items.push(template);
-    }
-
-    catalogEl.innerHTML = groups
-      .map((group) => {
-        const cards = group.items
-          .map((template) => {
-            const selected = template.id === state.templateId;
-
-            return (
-              `<button type="button" class="card${selected ? ' is-selected' : ''}"` +
-              ` data-id="${escapeHtml(template.id)}"` +
-              ` aria-pressed="${selected ? 'true' : 'false'}">` +
-              `<span class="card-title">${escapeHtml(template.title)}</span>` +
-              `<span class="card-alias">-t ${escapeHtml(template.alias)}</span>` +
-              `<span class="card-desc">${escapeHtml(template.description)}</span>` +
-              '</button>'
-            );
-          })
-          .join('');
-
-        return (
-          `<section class="category">` +
-          `<h2 class="category-title">${escapeHtml(group.label)}` +
-          ` <span class="category-count">${group.items.length}</span></h2>` +
-          `<div class="grid">${cards}</div>` +
-          '</section>'
-        );
-      })
-      .join('');
-
-    emptyEl.hidden = groups.length > 0;
+  // The choice description the CLI prints under the active row:
+  // `${categoryDisplay} | ${name}${alias}` with alias = ` | ${showName}`.
+  const choiceMeta = (template) => {
+    const alias =
+      template.alias && template.alias !== template.id
+        ? ` | ${template.alias}`
+        : '';
+    return `${template.categoryLabel} | ${template.id}${alias}`;
   };
 
   const renderCommand = () => {
@@ -118,26 +86,134 @@
     commandEl.textContent = buildCommand(state.pm, state.dir, template.alias);
   };
 
-  const render = () => {
-    renderCatalog();
-    renderCommand();
+  // prompts' select head flips to its "done" state once a value exists:
+  // green ✔ instead of the magenta ?, and the submitted title after ›.
+  const renderSelectHead = () => {
+    const template = findTemplate(state.templateId);
+
+    if (!template) {
+      selectSymbolEl.textContent = '?';
+      selectSymbolEl.classList.remove('is-done');
+      selectValueEl.className = 'p-hint';
+      selectValueEl.textContent = '- Pick a template below.';
+      return;
+    }
+
+    selectSymbolEl.textContent = '✔';
+    selectSymbolEl.classList.add('is-done');
+    selectValueEl.className = colorClass(template);
+    selectValueEl.textContent = template.title;
   };
 
-  const selectTemplate = (id) => {
-    state.templateId = id;
-    render();
+  const renderPm = () => {
+    pmListEl.innerHTML = PM_ORDER.map(
+      (pm) =>
+        `<button type="button" class="tok${pm === state.pm ? ' is-active' : ''}"` +
+        ` data-pm="${pm}" aria-pressed="${pm === state.pm ? 'true' : 'false'}"` +
+        `>${pm}</button>`,
+    ).join('');
   };
 
-  const setActivePm = (pm) => {
-    state.pm = pm;
+  const renderCatalog = () => {
+    const keyword = state.filter.trim().toLowerCase();
+    const visible = templates.filter((template) =>
+      matchesFilter(template, keyword),
+    );
 
-    for (const button of pmGroup.querySelectorAll('.seg')) {
-      const active = button.dataset.pm === pm;
-      button.classList.toggle('is-active', active);
-      button.setAttribute('aria-pressed', active ? 'true' : 'false');
+    // Keep the cursor on the submitted template when it survives the filter.
+    const selected = visible.findIndex((item) => item.id === state.templateId);
+    state.cursor =
+      selected >= 0
+        ? selected
+        : Math.min(state.cursor, Math.max(0, visible.length - 1));
+
+    catalogEl.innerHTML = visible
+      .map((template, index) => {
+        const isCursor = index === state.cursor;
+        const row =
+          `<button type="button" class="row${isCursor ? ' is-cursor' : ''}"` +
+          ` data-index="${index}" data-id="${escapeHtml(template.id)}"` +
+          ` aria-pressed="${template.id === state.templateId ? 'true' : 'false'}">` +
+          `<span class="row-prefix" aria-hidden="true">${isCursor ? '❯' : ''}</span>` +
+          `<span class="row-title ${colorClass(template)}">${escapeHtml(template.title)}</span>` +
+          '</button>';
+
+        // prompts shows the description only under the active row; every row
+        // carries one here so moving the cursor is a pure class toggle.
+        const desc =
+          `<div class="row-desc"${isCursor ? '' : ' hidden'}>` +
+          `<span class="d-meta">${escapeHtml(choiceMeta(template))}</span>` +
+          escapeHtml(template.description) +
+          '</div>';
+
+        return row + desc;
+      })
+      .join('');
+
+    emptyEl.hidden = visible.length > 0;
+
+    if (!emptyEl.hidden) {
+      emptyEl.textContent = `- No templates match "${state.filter.trim()}".`;
+    }
+
+    renderSelectHead();
+  };
+
+  // Moves the ❯ pointer without rebuilding the list: prompts redraws in
+  // place, and this keeps focus and scroll position stable while hovering.
+  const setCursor = (index) => {
+    const rows = catalogEl.querySelectorAll('.row');
+
+    if (rows.length === 0) {
+      return;
+    }
+
+    const next = Math.min(Math.max(index, 0), rows.length - 1);
+
+    if (next === state.cursor) {
+      return;
+    }
+
+    const previous = rows[state.cursor];
+
+    if (previous) {
+      previous.classList.remove('is-cursor');
+      previous.querySelector('.row-prefix').textContent = '';
+      const previousDesc = previous.nextElementSibling;
+
+      if (previousDesc?.classList.contains('row-desc')) {
+        previousDesc.hidden = true;
+      }
+    }
+
+    const target = rows[next];
+    target.classList.add('is-cursor');
+    target.querySelector('.row-prefix').textContent = '❯';
+    const targetDesc = target.nextElementSibling;
+
+    if (targetDesc?.classList.contains('row-desc')) {
+      targetDesc.hidden = false;
+    }
+
+    state.cursor = next;
+  };
+
+  const submitTemplate = (index) => {
+    const rows = catalogEl.querySelectorAll('.row');
+    const row = rows[index];
+
+    if (!row) {
+      return;
+    }
+
+    state.templateId = row.dataset.id;
+
+    for (const item of rows) {
+      item.setAttribute('aria-pressed', item === row ? 'true' : 'false');
     }
 
     renderCommand();
+    renderSelectHead();
   };
 
   const resetCopyButton = () => {
@@ -168,17 +244,6 @@
     return ok;
   };
 
-  // Last resort when both clipboard paths are blocked (permissions policy,
-  // insecure context, headless): select the command so Ctrl/Cmd+C works.
-  const selectCommand = () => {
-    const range = document.createRange();
-    range.selectNodeContents(commandEl);
-
-    const selection = window.getSelection();
-    selection?.removeAllRanges();
-    selection?.addRange(range);
-  };
-
   const copyCommand = () => {
     const text = commandEl.textContent;
 
@@ -192,7 +257,12 @@
       window.setTimeout(resetCopyButton, 1600);
 
       if (!ok) {
-        selectCommand();
+        const range = document.createRange();
+        range.selectNodeContents(commandEl);
+
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(range);
       }
     };
 
@@ -207,19 +277,29 @@
     done(legacyCopy(text));
   };
 
-  catalogEl.addEventListener('click', (event) => {
-    const card = event.target.closest('.card');
+  catalogEl.addEventListener('mouseover', (event) => {
+    const row = event.target.closest('.row');
 
-    if (card) {
-      selectTemplate(card.dataset.id);
+    if (row) {
+      setCursor(Number(row.dataset.index));
     }
   });
 
-  pmGroup.addEventListener('click', (event) => {
-    const button = event.target.closest('.seg');
+  catalogEl.addEventListener('click', (event) => {
+    const row = event.target.closest('.row');
 
-    if (button) {
-      setActivePm(button.dataset.pm);
+    if (row) {
+      submitTemplate(Number(row.dataset.index));
+    }
+  });
+
+  pmListEl.addEventListener('click', (event) => {
+    const button = event.target.closest('.tok');
+
+    if (button && button.dataset.pm !== state.pm) {
+      state.pm = button.dataset.pm;
+      renderPm();
+      renderCommand();
     }
   });
 
@@ -233,7 +313,28 @@
     renderCatalog();
   });
 
+  // Arrow-keys move the pointer and Enter submits, like the real prompt.
+  // Skipped while typing in an input so text editing keeps its keys.
+  document.addEventListener('keydown', (event) => {
+    if (event.target instanceof HTMLInputElement) {
+      return;
+    }
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setCursor(state.cursor + 1);
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setCursor(state.cursor - 1);
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      submitTemplate(state.cursor);
+    }
+  });
+
   copyBtn.addEventListener('click', copyCommand);
 
-  render();
+  renderPm();
+  renderCatalog();
+  renderCommand();
 })();
