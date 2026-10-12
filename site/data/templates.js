@@ -23,8 +23,8 @@ window.CHAOS_TEMPLATES = [
   {
     id: 'react-next-shadcn',
     alias: 'next-shadcn',
-    category: 'react',
-    categoryLabel: 'React',
+    category: 'next',
+    categoryLabel: 'Next.js',
     title: 'Next.js + shadcn/ui',
     description: 'Next.js App Router with Tailwind CSS and shadcn/ui.',
     color: 'blue',
@@ -32,8 +32,8 @@ window.CHAOS_TEMPLATES = [
   {
     id: 'react-next-supabase',
     alias: 'next-supabase',
-    category: 'react',
-    categoryLabel: 'React',
+    category: 'next',
+    categoryLabel: 'Next.js',
     title: 'Next.js + Supabase',
     description:
       'Next.js App Router with Supabase SSR auth, Tailwind CSS, and shadcn/ui.',
