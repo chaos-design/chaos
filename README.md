@@ -111,7 +111,7 @@ npm create chaos@latest . --template lib
 | --- | --- | --- | --- |
 | **React** | `react-ts` | `react` | Vite + React + TypeScript 应用 |
 | | `react-component-ts` | `reactc` | 单一 React 组件 + scoped Sass 样式 |
-| | `react-next-shadcn` | `next-shadcn` | Next.js App Router + Tailwind + shadcn/ui |
+| **Next.js** | `react-next-shadcn` | `next-shadcn` | Next.js App Router + Tailwind + shadcn/ui |
 | | `react-next-supabase` | `next-supabase` | Next.js + Supabase SSR 登录 + Tailwind + shadcn/ui |
 | **Browser** | `browser-extension-wxt` | `wxt` | WXT + React + Tailwind 跨浏览器扩展 |
 | **Library** | `library-ts` | `lib` | 可发布的 TypeScript 库（tsup） |

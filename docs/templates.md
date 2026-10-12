@@ -7,8 +7,8 @@ aliases are interchangeable on the command line.
 | --- | --- | --- |
 | `react` | `react-ts` | React |
 | `reactc` | `react-component-ts` | React |
-| `next-shadcn` | `react-next-shadcn` | React |
-| `next-supabase` | `react-next-supabase` | React |
+| `next-shadcn` | `react-next-shadcn` | Next.js |
+| `next-supabase` | `react-next-supabase` | Next.js |
 | `wxt` | `browser-extension-wxt` | Browser |
 | `lib` | `library-ts` | Library |
 | `libc` | `library-react-component-ts` | Library |
@@ -50,6 +50,8 @@ files is rewritten to your project name.
 **Next** drop it into your app and import it.
 
 ---
+
+## Next
 
 ### `next-shadcn` — Next.js + shadcn/ui
 

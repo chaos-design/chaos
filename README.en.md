@@ -118,7 +118,7 @@ Every template has a long name and a short alias. Either works with
 | --- | --- | --- | --- |
 | **React** | `react-ts` | `react` | Vite + React + TypeScript app |
 | | `react-component-ts` | `reactc` | Single React component with scoped Sass |
-| | `react-next-shadcn` | `next-shadcn` | Next.js App Router + Tailwind + shadcn/ui |
+| **Next.js** | `react-next-shadcn` | `next-shadcn` | Next.js App Router + Tailwind + shadcn/ui |
 | | `react-next-supabase` | `next-supabase` | Next.js + Supabase SSR auth + Tailwind + shadcn/ui |
 | **Browser** | `browser-extension-wxt` | `wxt` | WXT cross-browser extension with React |
 | **Library** | `library-ts` | `lib` | Publishable TypeScript library (tsup) |

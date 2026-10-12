@@ -181,7 +181,7 @@ are all honoured. These paths used to swallow their errors and exit 0.
 Biome, configured in `biome.json`:
 
 - 2-space indent, 80-column lines, single quotes, semicolons, trailing commas;
-- templates under `react/next-supabase` intentionally use double quotes and no
+- templates under `next/next-supabase` intentionally use double quotes and no
   semicolons (they mirror an upstream Supabase example), with an 88-column width.
 
 Do not reformat templates to match the root style.

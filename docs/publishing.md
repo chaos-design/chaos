@@ -107,8 +107,8 @@ design.
 ```
 
 Note what is **not** excluded: `lib`. Several templates use `lib/` as a source
-directory (`react/next-shadcn/lib`, `browser/extension-wxt/lib`,
-`react/next-supabase/src/lib`, `docs/app/lib`). Excluding it would silently delete
+directory (`next/next-shadcn/lib`, `browser/extension-wxt/lib`,
+`next/next-supabase/src/lib`, `docs/app/lib`). Excluding it would silently delete
 real source files. Only `.gitignore` excludes `lib` for the two templates where it
 is build output.
 

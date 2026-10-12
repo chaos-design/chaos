@@ -61,10 +61,17 @@ export const FRAMEWORKS: Framework[] = [
         description: 'A focused React component with scoped Sass styles.',
         color: blue,
       },
+    ],
+  },
+  {
+    name: 'next',
+    display: 'Next.js',
+    color: lightCyan,
+    variants: [
       {
         showName: 'next-shadcn',
         name: 'react-next-shadcn',
-        path: 'react/next-shadcn',
+        path: 'next/next-shadcn',
         display: 'Next.js + shadcn/ui',
         description: 'Next.js App Router with Tailwind CSS and shadcn/ui.',
         color: blue,
@@ -73,7 +80,7 @@ export const FRAMEWORKS: Framework[] = [
       {
         showName: 'next-supabase',
         name: 'react-next-supabase',
-        path: 'react/next-supabase',
+        path: 'next/next-supabase',
         display: 'Next.js + Supabase',
         description:
           'Next.js App Router with Supabase SSR auth, Tailwind CSS, and shadcn/ui.',

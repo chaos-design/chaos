@@ -28,6 +28,7 @@ const WEB_CATEGORY_LABELS_ZH: Record<string, string> = {
   browser: '浏览器',
   docs: '文档',
   library: '库',
+  next: 'Next.js',
   react: 'React',
   repository: '仓库',
   vscode: 'VS Code',
