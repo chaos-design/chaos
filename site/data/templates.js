@@ -86,15 +86,6 @@ window.CHAOS_TEMPLATES = [
     color: 'red',
   },
   {
-    id: 'skill',
-    alias: 'skill',
-    category: 'skill',
-    categoryLabel: 'Skill',
-    title: 'Skill Project',
-    description: 'An agent skill package with usage instructions.',
-    color: 'magenta',
-  },
-  {
     id: 'monorepo',
     alias: 'monorepo',
     category: 'repository',

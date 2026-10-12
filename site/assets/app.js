@@ -83,7 +83,17 @@
     }
 
     copyBtn.disabled = false;
-    commandEl.textContent = buildCommand(state.pm, state.dir, template.alias);
+    const next = buildCommand(state.pm, state.dir, template.alias);
+
+    // Highlight briefly when the command actually changed, so switching a
+    // template, manager or directory draws the eye to the updated line.
+    if (commandEl.textContent && commandEl.textContent !== next) {
+      commandEl.classList.remove('flash');
+      void commandEl.offsetWidth;
+      commandEl.classList.add('flash');
+    }
+
+    commandEl.textContent = next;
   };
 
   // prompts' select head flips to its "done" state once a value exists:
