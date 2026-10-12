@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chaos Design · 模板库</title>
+    <meta
+      name="description"
+      content="选择任意 chaos 模板，复制可直接执行的 CLI 命令，快速创建项目。"
+    />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="./">
+          <span class="brand-mark">chaos</span>
+          <span class="brand-sub">/ design</span>
+        </a>
+        <p class="tagline">选一个模板，复制命令，直接开跑。</p>
+        <a
+          class="header-link"
+          href="https://github.com/chaos-design/chaos/blob/main/docs/templates.md"
+          rel="noreferrer"
+          target="_blank"
+          >模板文档</a
+        >
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="controls" aria-label="命令生成选项">
+        <div class="control">
+          <span class="control-label" id="pm-label">包管理器</span>
+          <div class="segmented">
+            <button type="button" class="seg" data-pm="npm">npm</button>
+            <button
+              type="button"
+              class="seg is-active"
+              data-pm="pnpm"
+              aria-pressed="true"
+            >
+              pnpm
+            </button>
+            <button type="button" class="seg" data-pm="yarn">yarn</button>
+            <button type="button" class="seg" data-pm="bun">bun</button>
+          </div>
+        </div>
+        <div class="control">
+          <label class="control-label" for="dir-input">项目目录</label>
+          <input
+            id="dir-input"
+            class="input"
+            type="text"
+            value="my-app"
+            spellcheck="false"
+            autocomplete="off"
+          />
+        </div>
+        <div class="control control-grow">
+          <label class="control-label" for="filter-input">筛选模板</label>
+          <input
+            id="filter-input"
+            class="input"
+            type="search"
+            placeholder="按名称、别名或描述搜索…"
+            spellcheck="false"
+            autocomplete="off"
+          />
+        </div>
+      </section>
+
+      <div id="catalog"></div>
+      <p class="empty" id="empty-state" hidden>没有匹配的模板，换个关键词试试。</p>
+    </main>
+
+    <footer class="command-bar">
+      <div class="wrap command-inner">
+        <div class="command-block">
+          <span class="command-prompt" aria-hidden="true">$</span>
+          <code id="command-text" class="command-text"></code>
+        </div>
+        <button type="button" id="copy-btn" class="copy-btn">复制命令</button>
+      </div>
+    </footer>
+
+    <script src="data/templates.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>
