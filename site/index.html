@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07090e" />
+    <title>Chaos Design · 模板库</title>
+    <meta
+      name="description"
+      content="选择任意 chaos 模板，复制可直接执行的 CLI 命令，快速创建项目。"
+    />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="./">
+          <span class="brand-mark">chaos</span>
+          <span class="brand-sub">/ design</span>
+        </a>
+        <p class="tagline">选一个模板，复制命令，直接开跑。</p>
+        <a
+          class="header-link"
+          href="https://github.com/chaos-design/chaos/blob/main/docs/templates.md"
+          rel="noreferrer"
+          target="_blank"
+          >模板文档</a
+        >
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="terminal" aria-label="模拟 create-chaos 终端交互">
+        <div class="terminal-chrome">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span
+          ><span class="dot dot-g"></span>
+          <span class="terminal-title">create-chaos — 模板选择</span>
+        </div>
+        <div class="terminal-body">
+          <p class="prompt-line">
+            <span class="p-symbol" aria-hidden="true">?</span>
+            <label class="p-msg" for="filter-input">Filter templates:</label>
+            <span class="p-delimiter" aria-hidden="true">›</span>
+            <input
+              id="filter-input"
+              class="prompt-input"
+              type="text"
+              spellcheck="false"
+              autocomplete="off"
+              aria-describedby="filter-hint"
+              placeholder="(all)"
+            />
+            <span class="p-hint" id="filter-hint">- Leave empty to list all.</span>
+          </p>
+          <p class="prompt-line">
+            <span class="p-symbol" aria-hidden="true">?</span>
+            <label class="p-msg" for="dir-input">Project name:</label>
+            <span class="p-delimiter" aria-hidden="true">›</span>
+            <input
+              id="dir-input"
+              class="prompt-input"
+              type="text"
+              value="my-app"
+              spellcheck="false"
+              autocomplete="off"
+            />
+          </p>
+          <p class="prompt-line">
+            <span class="p-symbol" aria-hidden="true">?</span>
+            <span class="p-msg" id="pm-label">Package manager:</span>
+            <span class="p-delimiter" aria-hidden="true">›</span>
+            <span class="tok-list" id="pm-list"></span>
+          </p>
+          <p class="prompt-line">
+            <span class="p-symbol" id="select-symbol" aria-hidden="true">✔</span>
+            <span class="p-msg">Select a template:</span>
+            <span class="p-delimiter" aria-hidden="true">›</span>
+            <span id="select-value"></span>
+          </p>
+          <div class="t-rows" id="catalog"></div>
+          <p class="warn-line" id="empty-state" hidden></p>
+          <p class="p-hint keys-hint">
+            - Hover or use ↑/↓ to browse. Click or press Enter to submit.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="command-bar">
+      <div class="wrap command-inner">
+        <div class="command-block">
+          <span class="command-prompt" aria-hidden="true">$</span>
+          <code id="command-text" class="command-text"></code>
+        </div>
+        <button type="button" id="copy-btn" class="copy-btn">复制命令</button>
+      </div>
+    </footer>
+
+    <script src="data/templates.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>
