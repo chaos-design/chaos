@@ -60,7 +60,7 @@
       }
     },
     {
-      "includes": ["packages/create-chaos/templates/react/next-supabase/**"],
+      "includes": ["packages/create-chaos/templates/next/next-supabase/**"],
       "formatter": {
         "lineWidth": 88
       },

@@ -1,6 +1,6 @@
 {
   "name": "create-chaos",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
   "description": "Scaffold modern frontend projects from curated templates: React, Next.js, libraries, browser extensions, VS Code extensions, monorepos and docs sites.",
   "license": "MIT",

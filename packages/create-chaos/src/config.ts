@@ -61,10 +61,17 @@ export const FRAMEWORKS: Framework[] = [
         description: 'A focused React component with scoped Sass styles.',
         color: blue,
       },
+    ],
+  },
+  {
+    name: 'next',
+    display: 'Next.js',
+    color: lightCyan,
+    variants: [
       {
         showName: 'next-shadcn',
         name: 'react-next-shadcn',
-        path: 'react/next-shadcn',
+        path: 'next/next-shadcn',
         display: 'Next.js + shadcn/ui',
         description: 'Next.js App Router with Tailwind CSS and shadcn/ui.',
         color: blue,
@@ -73,7 +80,7 @@ export const FRAMEWORKS: Framework[] = [
       {
         showName: 'next-supabase',
         name: 'react-next-supabase',
-        path: 'react/next-supabase',
+        path: 'next/next-supabase',
         display: 'Next.js + Supabase',
         description:
           'Next.js App Router with Supabase SSR auth, Tailwind CSS, and shadcn/ui.',
@@ -167,21 +174,6 @@ export const FRAMEWORKS: Framework[] = [
         description: 'A VS Code extension with a React-powered webview.',
         color: red,
         ignore: ['lib', 'dist', ...TEMPLATE_IGNORE],
-      },
-    ],
-  },
-  {
-    name: 'skill',
-    display: 'Skill',
-    color: lightMagenta,
-    variants: [
-      {
-        showName: 'skill',
-        name: 'skill',
-        path: 'skills',
-        display: 'Skill Project',
-        description: 'An agent skill package with usage instructions.',
-        color: magenta,
       },
     ],
   },
@@ -285,7 +277,6 @@ Usage: create-chaos [OPTION]... [DIRECTORY]
 Options:
   -t, --template NAME        use a specific template
   -c, --custom               create from a local custom template
-  -s, --skill                create a skill project
   -w, --web                  open the visual template composer
       --port NUMBER          use a specific composer port
       --no-open              start the composer without opening a browser
@@ -297,7 +288,6 @@ ${availableTemplates}
 Examples:
   create-chaos my-app --template react
   create-chaos my-docs -t docs
-  create-chaos my-skill --skill
   create-chaos web
   create-chaos --web my-app`;
 

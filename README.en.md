@@ -118,7 +118,7 @@ Every template has a long name and a short alias. Either works with
 | --- | --- | --- | --- |
 | **React** | `react-ts` | `react` | Vite + React + TypeScript app |
 | | `react-component-ts` | `reactc` | Single React component with scoped Sass |
-| | `react-next-shadcn` | `next-shadcn` | Next.js App Router + Tailwind + shadcn/ui |
+| **Next.js** | `react-next-shadcn` | `next-shadcn` | Next.js App Router + Tailwind + shadcn/ui |
 | | `react-next-supabase` | `next-supabase` | Next.js + Supabase SSR auth + Tailwind + shadcn/ui |
 | **Browser** | `browser-extension-wxt` | `wxt` | WXT cross-browser extension with React |
 | **Library** | `library-ts` | `lib` | Publishable TypeScript library (tsup) |
@@ -127,8 +127,10 @@ Every template has a long name and a short alias. Either works with
 | **VS Code** | `vscode-extension` | `vse` | VS Code extension with React webview |
 | **Repo** | `monorepo` | `monorepo` | pnpm workspace monorepo |
 | **Docs** | `docs` | `docs` | Next.js + Fumadocs documentation site |
-| **Skill** | `skill` | `skill` | Agent skill package |
 | **Others** | `custom` | — | Build from your own local template |
+
+> Agent skill templates have been removed — get them from
+> [chaos-design/skills](https://github.com/chaos-design/skills).
 
 ```bash
 # Vite + React app
@@ -219,11 +221,9 @@ option reference.
 
 ### Skills
 
-Ship an agent skill (an instruction package with a `SKILL.md`) instead of an app:
-
-```bash
-npm create chaos@latest my-skill --skill
-```
+Skill templates have been removed from the CLI. Agent skills now live in their
+own repository — browse and install them at
+**[chaos-design/skills](https://github.com/chaos-design/skills)**.
 
 ## 🔧 CLI reference
 
@@ -233,7 +233,6 @@ Usage: create-chaos [OPTION]... [DIRECTORY]
 Options:
   -t, --template NAME        use a specific template
   -c, --custom               create from a local custom template
-  -s, --skill                create a skill project
   -w, --web                  open the visual template composer
       --port NUMBER          use a specific composer port
       --no-open              start the composer without opening a browser
@@ -247,7 +246,6 @@ create-chaos                              # fully interactive
 create-chaos my-app -t react              # non-interactive
 create-chaos . -t lib                     # scaffold into the current directory
 create-chaos my-app --custom              # from a local template
-create-chaos my-skill --skill             # a skill package
 create-chaos web --port 4173              # visual composer
 ```
 
@@ -273,7 +271,7 @@ chaos/
 │       │   ├── index.ts             # argument parsing and prompt flow
 │       │   ├── config.ts            # the single source of truth for templates
 │       │   ├── core/                # command execution and context
-│       │   ├── commands/            # template / custom / skill / web
+│       │   ├── commands/            # template / custom / web
 │       │   └── web/web-app.ts       # the visual composer UI
 │       └── templates/               # everything that gets copied into projects
 └── scripts/                         # release and verification scripts

@@ -42,7 +42,6 @@ const shortCommands = [
     expectedPath: 'source.config.ts',
     expectFiles: ['.gitignore'],
   },
-  // 'skill' needs interactive selection, so it is not scaffolded here.
 ];
 
 console.log('Starting short command verification...');

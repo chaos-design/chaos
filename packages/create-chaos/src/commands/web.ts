@@ -22,12 +22,13 @@ import { TemplateCommand } from './template.ts';
 
 const HOST = '127.0.0.1';
 const MAX_BODY_SIZE = 32 * 1024;
-const WEB_TEMPLATE_EXCLUSIONS = new Set(['custom', 'skill']);
+const WEB_TEMPLATE_EXCLUSIONS = new Set(['custom']);
 const PACKAGE_MANAGERS = new Set(['npm', 'pnpm', 'yarn', 'bun']);
 const WEB_CATEGORY_LABELS_ZH: Record<string, string> = {
   browser: '浏览器',
   docs: '文档',
   library: '库',
+  next: 'Next.js',
   react: 'React',
   repository: '仓库',
   vscode: 'VS Code',

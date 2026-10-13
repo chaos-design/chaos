@@ -111,7 +111,7 @@ npm create chaos@latest . --template lib
 | --- | --- | --- | --- |
 | **React** | `react-ts` | `react` | Vite + React + TypeScript 应用 |
 | | `react-component-ts` | `reactc` | 单一 React 组件 + scoped Sass 样式 |
-| | `react-next-shadcn` | `next-shadcn` | Next.js App Router + Tailwind + shadcn/ui |
+| **Next.js** | `react-next-shadcn` | `next-shadcn` | Next.js App Router + Tailwind + shadcn/ui |
 | | `react-next-supabase` | `next-supabase` | Next.js + Supabase SSR 登录 + Tailwind + shadcn/ui |
 | **Browser** | `browser-extension-wxt` | `wxt` | WXT + React + Tailwind 跨浏览器扩展 |
 | **Library** | `library-ts` | `lib` | 可发布的 TypeScript 库（tsup） |
@@ -120,8 +120,9 @@ npm create chaos@latest . --template lib
 | **VS Code** | `vscode-extension` | `vse` | 带 React webview 的 VS Code 扩展 |
 | **Repo** | `monorepo` | `monorepo` | pnpm workspace Monorepo |
 | **Docs** | `docs` | `docs` | Next.js + Fumadocs 文档站 |
-| **Skill** | `skill` | `skill` | Agent Skill 包 |
 | **其他** | `custom` | — | 从你自己的本地模板生成 |
+
+> Agent Skill 模板已移除，请前往 [chaos-design/skills](https://github.com/chaos-design/skills) 获取。
 
 ```bash
 # Vite + React 应用
@@ -209,11 +210,8 @@ npm create chaos@latest my-app -t gallery --custom
 
 ### Skills
 
-除了生成应用，你也可以生成一个 agent skill（含 `SKILL.md` 的指令包）：
-
-```bash
-npm create chaos@latest my-skill --skill
-```
+Skill 模板已从 CLI 中移除。Agent Skill 现在在独立仓库中维护，请前往
+**[chaos-design/skills](https://github.com/chaos-design/skills)** 浏览、安装与贡献。
 
 ## 🔧 CLI 参数参考
 
@@ -223,7 +221,6 @@ Usage: create-chaos [OPTION]... [DIRECTORY]
 Options:
   -t, --template NAME        use a specific template
   -c, --custom               create from a local custom template
-  -s, --skill                create a skill project
   -w, --web                  open the visual template composer
       --port NUMBER          use a specific composer port
       --no-open              start the composer without opening a browser
@@ -237,7 +234,6 @@ create-chaos                              # 完全交互式
 create-chaos my-app -t react              # 非交互式
 create-chaos . -t lib                     # 在当前目录创建
 create-chaos my-app --custom              # 使用本地模板
-create-chaos my-skill --skill             # 生成 Skill 包
 create-chaos web --port 4173              # 可视化编排台
 ```
 
@@ -262,7 +258,7 @@ chaos/
 │       │   ├── index.ts             # 参数解析与交互流程
 │       │   ├── config.ts            # 模板的唯一事实来源
 │       │   ├── core/                # 命令执行与上下文
-│       │   ├── commands/            # template / custom / skill / web
+│       │   ├── commands/            # template / custom / web
 │       │   └── web/web-app.ts       # 可视化编排台
 │       └── templates/               # 会被复制进工程的全部内容
 └── scripts/                         # 发布与校验脚本

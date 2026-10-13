@@ -7,7 +7,6 @@ import prompts from 'prompts';
 import {
   CustomCommand,
   parseWebPort,
-  SkillCommand,
   TemplateCommand,
   WebCommand,
 } from './commands';
@@ -34,7 +33,6 @@ const argv = minimist<{
   template?: string;
   help?: boolean;
   custom?: boolean;
-  skill?: boolean;
   web?: boolean;
   open?: boolean;
   port?: string;
@@ -44,10 +42,9 @@ const argv = minimist<{
     h: 'help',
     t: 'template',
     c: 'custom',
-    s: 'skill',
     w: 'web',
   },
-  boolean: ['help', 'custom', 'skill', 'web', 'open'],
+  boolean: ['help', 'custom', 'web', 'open'],
   string: ['_', 'template', 'port'],
 });
 const cwd = process.cwd();
@@ -75,12 +72,12 @@ async function init() {
 
   const argTargetDir = formatTargetDir(argv._[0]);
 
-  // `--custom` / `--skill` select a mode, while a template name names something
-  // inside that mode. The name can arrive either as `-t <name>` or as a bare
+  // `--custom` selects a mode, while a template name names something inside
+  // that mode. The name can arrive either as `-t <name>` or as a bare
   // positional after the directory (`create-chaos app --custom gallery`), so
   // both must be read. Routing the mode first is what prevents `-t gallery` from
   // silently overriding `--custom`.
-  const modeTemplate = argv.custom ? 'custom' : argv.skill ? 'skill' : null;
+  const modeTemplate = argv.custom ? 'custom' : null;
   const namedTemplate =
     modeTemplate === null ? argv.template : argv.template || argv._[1];
   const argTemplate = modeTemplate ?? (argv.template || undefined);
@@ -137,7 +134,7 @@ async function init() {
             isValidPackageName(dir) || 'Invalid package.json name',
         },
         {
-          // The built-in picker must not intercept an explicit --custom/--skill,
+          // The built-in picker must not intercept an explicit --custom,
           // because those modes run their own selection flow.
           type:
             modeTemplate !== null ||
@@ -245,8 +242,6 @@ async function init() {
 
   if (template === 'custom') {
     await new CustomCommand(context).execute();
-  } else if (template === 'skill') {
-    await new SkillCommand(context).execute();
   } else {
     await new TemplateCommand(context).execute();
   }
