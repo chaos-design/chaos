@@ -27,14 +27,21 @@
     border-color: hsl(var(--border));
   }
 
+  html,
+  body {
+    height: 100%;
+  }
+
+  /* The app shell (`h-dvh` + flex column) owns every scroll region: the
+     catalog scrolls inside the terminal, the page itself never does. */
   body {
     background-color: #07090e;
     color: #e6e9ef;
     font-family: "Avenir Next", Avenir, "Segoe UI", "PingFang SC",
       "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    min-height: 100vh;
+    overflow: hidden;
+    overscroll-behavior: none;
     position: relative;
-    padding-bottom: 108px;
   }
 
   /* Ambient backdrop: a faint engineering grid plus two color glows. */
@@ -88,4 +95,34 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* Slim terminal-flavoured scrollbar for the inner scroll regions (the template
+   catalog, the inspector body). `scrollbar-gutter: stable` keeps the track
+   reserved so the content never shifts when a list becomes scrollable. */
+.chaos-scroll {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 196, 0.28) transparent;
+}
+
+.chaos-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.chaos-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chaos-scroll::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 196, 0.24);
+  background-clip: content-box;
+  border: 2px solid transparent;
+  border-radius: 999px;
+}
+
+.chaos-scroll:hover::-webkit-scrollbar-thumb {
+  background: rgba(108, 207, 224, 0.42);
+  background-clip: content-box;
 }

@@ -16,6 +16,8 @@ interface TemplateInspectorProps {
   pm: Pm;
   dir: string;
   onSubmit: () => void;
+  /** Height comes from the caller: it stretches with the grid on wide screens. */
+  className?: string;
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
@@ -47,13 +49,17 @@ export function TemplateInspector({
   pm,
   dir,
   onSubmit,
+  className,
 }: TemplateInspectorProps) {
   return (
     <aside
       aria-live="polite"
-      className="relative flex h-[26rem] flex-col overflow-hidden rounded-xl border border-chaos-line bg-[rgba(13,17,24,0.72)]"
+      className={cn(
+        "relative flex min-h-0 flex-col overflow-hidden rounded-xl border border-chaos-line bg-[rgba(13,17,24,0.72)]",
+        className,
+      )}
     >
-      <div className="flex items-center gap-2 border-b border-chaos-line px-4 py-2.5">
+      <div className="flex shrink-0 items-center gap-2 border-b border-chaos-line px-4 py-2.5">
         <span className="font-mono text-[10.5px] uppercase tracking-[0.2em] text-chaos-term-dim">
           inspector
         </span>
@@ -72,7 +78,7 @@ export function TemplateInspector({
           // Re-keyed on the pointer so the copy animates in as the highlight
           // moves. Opacity + transform only: the swap cannot shift anything.
           key={template.id}
-          className="animate-panel-in flex-1 space-y-4 overflow-y-auto px-4 py-3.5"
+          className="chaos-scroll animate-panel-in flex-1 space-y-4 overflow-y-auto px-4 py-3.5"
         >
           <div>
             <h2
@@ -167,7 +173,7 @@ export function TemplateInspector({
         </div>
       )}
 
-      <div className="flex items-center gap-3 border-t border-chaos-line px-4 py-3">
+      <div className="flex shrink-0 items-center gap-3 border-t border-chaos-line px-4 py-2.5">
         {template && isSelected ? (
           <p className="font-mono text-[11.5px] text-chaos-success">
             ✔ 已选用，底部命令已就绪

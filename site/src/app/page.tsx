@@ -21,8 +21,21 @@ import { TemplateInspector } from "@/components/template-inspector";
 
 // Every catalog row is exactly this tall, and the sliding pointer highlight is
 // positioned with `translateY(index * ROW_HEIGHT)`. A fixed row height is what
-// lets the pointer move without any row measuring or reflowing.
+// lets the pointer move without any row measuring or reflowing, and it also
+// makes `scrollTop` a multiple of the row height for keyboard scrolling.
 const ROW_HEIGHT = 30;
+
+// A prompt input that reads as part of the terminal rather than as a form
+// field: a filled chip with a hairline border, a cyan caret, and a soft cyan
+// halo once focused. Border widths stay per-side-agnostic on purpose —
+// tailwind-merge will not fold `border` into `border-b`, so mixing them leaks a
+// box onto every side.
+//
+// On narrow screens the width is flexible (`flex-1` + a small `min-w`), which
+// keeps every prompt on a single line instead of wrapping the field onto its
+// own row — wrapping is what used to eat the whole catalog viewport.
+const inputClass =
+  "h-[26px] w-auto min-w-[7ch] flex-1 rounded-[4px] border border-chaos-line bg-[rgba(148,163,196,0.06)] px-1.5 py-0 font-mono text-chaos-term-fg caret-[#6ccfe0] shadow-none outline-none transition-[background-color,border-color,box-shadow] placeholder:text-chaos-term-dim/55 selection:bg-[rgba(108,207,224,0.28)] focus-visible:border-[rgba(108,207,224,0.55)] focus-visible:bg-[rgba(108,207,224,0.09)] focus-visible:shadow-[0_0_0_3px_rgba(108,207,224,0.10)] focus-visible:ring-0 sm:w-[22ch] sm:flex-none";
 
 async function copyText(text: string): Promise<boolean> {
   try {
@@ -100,22 +113,29 @@ export default function Page() {
     el.classList.add("animate-command-flash");
   }, [command]);
 
-  // Keyboard browsing can walk the pointer off-screen; nudge the page only when
-  // the highlighted row actually leaves the viewport, so nothing moves while it
-  // is already visible.
+  // Keyboard browsing walks the pointer through a list that is now its own
+  // scroll region: move only that region, and only when the row it targets is
+  // actually out of view. The page itself never scrolls.
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false;
       return;
     }
-    const el = listRef.current?.querySelector<HTMLElement>(
-      `[data-index="${activeIndex}"]`,
-    );
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const margin = 140;
-    if (rect.top < margin || rect.bottom > window.innerHeight - margin) {
-      el.scrollIntoView({ block: "center", behavior: "smooth" });
+    const scroller = listRef.current;
+    if (!scroller) return;
+
+    const top = activeIndex * ROW_HEIGHT;
+    const bottom = top + ROW_HEIGHT;
+    const viewTop = scroller.scrollTop;
+    const viewBottom = viewTop + scroller.clientHeight;
+
+    if (top < viewTop) {
+      scroller.scrollTo({ top, behavior: "smooth" });
+    } else if (bottom > viewBottom) {
+      scroller.scrollTo({
+        top: bottom - scroller.clientHeight,
+        behavior: "smooth",
+      });
     }
   }, [activeIndex]);
 
@@ -203,7 +223,9 @@ export default function Page() {
           e.preventDefault();
           setPm(
             (p) =>
-              PM_ORDER[(PM_ORDER.indexOf(p) + PM_ORDER.length - 1) % PM_ORDER.length],
+              PM_ORDER[
+                (PM_ORDER.indexOf(p) + PM_ORDER.length - 1) % PM_ORDER.length
+              ],
           );
           break;
         case "Enter":
@@ -240,9 +262,9 @@ export default function Page() {
         ).padStart(2, "0")}`;
 
   return (
-    <div className="min-h-screen">
-      <header className="sticky top-0 z-20 border-b border-chaos-line bg-[rgba(10,13,19,0.82)] backdrop-blur-md">
-        <div className="mx-auto flex max-w-[1180px] flex-wrap items-baseline gap-4 px-6 py-5">
+    <div className="flex h-dvh flex-col overflow-hidden">
+      <header className="relative z-20 shrink-0 border-b border-chaos-line bg-[rgba(10,13,19,0.82)] backdrop-blur-md">
+        <div className="mx-auto flex max-w-[1180px] flex-wrap items-baseline gap-x-4 gap-y-1 px-4 py-3 sm:px-6 sm:py-3.5">
           <a
             href="./"
             className="font-mono text-lg font-bold text-chaos-term-fg no-underline"
@@ -255,7 +277,7 @@ export default function Page() {
             </span>
             <span className="font-normal text-chaos-term-dim"> / design</span>
           </a>
-          <p className="m-0 flex-1 text-chaos-term-dim">
+          <p className="m-0 hidden flex-1 text-chaos-term-dim sm:block">
             选一个模板，复制命令，直接开跑。
           </p>
           <a
@@ -269,9 +291,9 @@ export default function Page() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1180px] px-6">
-        <Card className="animate-rise relative mt-10 mb-8 overflow-hidden rounded-2xl border-chaos-line bg-chaos-term-bg shadow-terminal">
-          <div className="relative z-10 flex items-center gap-2 border-b border-chaos-line bg-chaos-term-chrome px-4 py-3">
+      <main className="mx-auto flex w-full max-w-[1180px] min-h-0 flex-1 px-4 pt-4 pb-3 sm:px-6 sm:pt-5 sm:pb-4">
+        <Card className="animate-rise flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border-chaos-line bg-chaos-term-bg shadow-terminal">
+          <div className="relative z-10 flex shrink-0 items-center gap-2 border-b border-chaos-line bg-chaos-term-chrome px-4 py-2.5">
             <span
               className="h-2.5 w-2.5 rounded-full"
               style={{
@@ -299,7 +321,7 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="relative">
+          <div className="relative flex min-h-0 flex-1 flex-col">
             {/* Sci-fi ambience: one sweeping scanline, transform-only, sitting
                 above the backdrop but below the content. */}
             <span
@@ -307,11 +329,13 @@ export default function Page() {
               className="animate-scan pointer-events-none absolute inset-x-0 top-0 h-24 bg-[linear-gradient(to_bottom,transparent,rgba(108,207,224,0.05),transparent)]"
             />
 
-            <div className="relative z-10 grid gap-5 px-5 py-5 lg:grid-cols-[minmax(0,1fr)_21.5rem]">
-              <div className="min-w-0 overflow-x-auto font-mono text-[13.5px] leading-[1.95]">
-                <div className="min-w-[34rem] px-2">
+            <div className="relative z-10 grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_auto] gap-3 px-4 py-3 sm:gap-4 sm:px-5 sm:py-4 lg:grid-cols-[minmax(0,1fr)_21.5rem] lg:grid-rows-[minmax(0,1fr)]">
+              <div className="flex min-h-0 min-w-0 flex-col font-mono text-[13.5px] leading-[1.9]">
+                {/* The prompt block keeps its natural height; the catalog below
+                    takes whatever is left and scrolls on its own. */}
+                <div className="shrink-0">
                   {/* Filter */}
-                  <div className="flex flex-wrap items-baseline gap-2">
+                  <div className="group flex flex-wrap items-baseline gap-2">
                     <span className="font-bold text-[#c678dd]">?</span>
                     <label
                       htmlFor="filter-input"
@@ -319,7 +343,9 @@ export default function Page() {
                     >
                       Filter templates:
                     </label>
-                    <span className="text-chaos-term-dim">›</span>
+                    <span className="text-chaos-term-dim transition-colors group-focus-within:text-chaos-term-cursor">
+                      ›
+                    </span>
                     <Input
                       id="filter-input"
                       ref={filterRef}
@@ -328,19 +354,23 @@ export default function Page() {
                       placeholder="(all)"
                       spellCheck={false}
                       autoComplete="off"
-                      className="h-auto w-[18ch] min-w-[8ch] border-0 bg-transparent p-0 font-mono text-chaos-term-fg caret-[#6ccfe0] focus-visible:ring-0"
+                      aria-describedby="filter-hint"
+                      className={inputClass}
                     />
-                    <span className="text-chaos-term-dim">
+                    <span
+                      id="filter-hint"
+                      className="hidden text-[11.5px] text-chaos-term-dim sm:inline"
+                    >
                       {filtered
-                        ? `- ${visible.length} match${
+                        ? `${visible.length} match${
                             visible.length === 1 ? "" : "es"
-                          }, Esc to clear.`
-                        : "- Leave empty to list all."}
+                          } · Esc to clear`
+                        : "空白即列出全部"}
                     </span>
                   </div>
 
                   {/* Project name */}
-                  <div className="flex flex-wrap items-baseline gap-2">
+                  <div className="group flex flex-wrap items-baseline gap-2">
                     <span className="font-bold text-[#c678dd]">?</span>
                     <label
                       htmlFor="dir-input"
@@ -348,17 +378,20 @@ export default function Page() {
                     >
                       Project name:
                     </label>
-                    <span className="text-chaos-term-dim">›</span>
+                    <span className="text-chaos-term-dim transition-colors group-focus-within:text-chaos-term-cursor">
+                      ›
+                    </span>
                     <Input
                       id="dir-input"
                       value={dir}
                       onChange={(e) => setDir(e.target.value)}
+                      placeholder="chaos-project"
                       spellCheck={false}
                       autoComplete="off"
-                      className="h-auto w-[20ch] min-w-[8ch] border-0 bg-transparent p-0 font-mono text-chaos-term-fg caret-[#6ccfe0] focus-visible:ring-0"
+                      className={inputClass}
                     />
-                    <span className="text-chaos-term-dim">
-                      - Blank falls back to chaos-project.
+                    <span className="hidden text-[11.5px] text-chaos-term-dim sm:inline">
+                      {dir.trim() ? `→ ${dir.trim()}` : "留空回退 chaos-project"}
                     </span>
                   </div>
 
@@ -383,10 +416,7 @@ export default function Page() {
                           )}
                           style={
                             pm === p
-                              ? {
-                                  textShadow:
-                                    "0 0 14px rgba(108,207,224,0.35)",
-                                }
+                              ? { textShadow: "0 0 14px rgba(108,207,224,0.35)" }
                               : undefined
                           }
                         >
@@ -394,8 +424,8 @@ export default function Page() {
                         </button>
                       ))}
                     </div>
-                    <span className="text-chaos-term-dim">
-                      - ←/→ to switch.
+                    <span className="hidden text-[11.5px] text-chaos-term-dim sm:inline">
+                      ←/→
                     </span>
                   </div>
 
@@ -407,7 +437,9 @@ export default function Page() {
                     <span
                       className={cn(
                         "font-bold",
-                        selectedTemplate ? "text-chaos-success" : "text-[#c678dd]",
+                        selectedTemplate
+                          ? "text-chaos-success"
+                          : "text-[#c678dd]",
                       )}
                     >
                       {selectedTemplate ? "✔" : "?"}
@@ -418,10 +450,7 @@ export default function Page() {
                     <span className="text-chaos-term-dim">›</span>
                     {selectedTemplate ? (
                       <span
-                        className={cn(
-                          "font-bold",
-                          colorClass(selectedTemplate),
-                        )}
+                        className={cn("font-bold", colorClass(selectedTemplate))}
                       >
                         {selectedTemplate.title}
                       </span>
@@ -431,55 +460,60 @@ export default function Page() {
                       </span>
                     )}
                   </div>
+                </div>
 
-                  {/*
-                   * Catalog. Rows are a fixed height and carry no inline
-                   * description: the pointer is drawn by one absolutely
-                   * positioned bar that slides with a transform, so moving it
-                   * never reflows the list. Details live in the panel beside.
-                   */}
-                  <div ref={listRef} className="relative mt-1">
-                    {visible.length > 0 && (
-                      <span
-                        aria-hidden
-                        className="pointer-events-none absolute inset-x-0 top-0 rounded-md border-l-2 border-chaos-term-cursor bg-[rgba(108,207,224,0.07)] transition-transform duration-200 ease-out will-change-transform motion-reduce:transition-none"
-                        style={{
-                          height: ROW_HEIGHT,
-                          transform: `translateY(${activeIndex * ROW_HEIGHT}px)`,
-                        }}
-                      />
-                    )}
+                {/*
+                 * Catalog. Its own scroll region: rows are a fixed height and
+                 * carry no inline description, and the pointer is one
+                 * absolutely positioned bar that slides with a transform, so
+                 * moving it never reflows anything.
+                 */}
+                <div
+                  ref={listRef}
+                  className="chaos-scroll relative mt-1.5 min-h-0 flex-1 overflow-y-auto"
+                >
+                  {visible.length > 0 && (
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute inset-x-0 top-0 rounded-md border-l-2 border-chaos-term-cursor bg-[rgba(108,207,224,0.07)] transition-transform duration-200 ease-out will-change-transform motion-reduce:transition-none"
+                      style={{
+                        height: ROW_HEIGHT,
+                        transform: `translateY(${activeIndex * ROW_HEIGHT}px)`,
+                      }}
+                    />
+                  )}
 
-                    {visible.map((t, i) => {
-                      const isCursor = i === activeIndex;
-                      const isChosen = t.id === templateId;
-                      return (
-                        <button
-                          key={t.id}
-                          type="button"
-                          data-index={i}
-                          onClick={() => selectTemplate(t.id)}
-                          onMouseEnter={() => setCursor(i)}
-                          onFocus={() => setCursor(i)}
-                          aria-pressed={isChosen}
-                          title={`${t.title} — ${choiceMeta(t)}`}
-                          className="relative flex w-full items-center gap-2 rounded-md px-2 text-left font-mono text-[13.5px] text-inherit"
-                          style={{ height: ROW_HEIGHT }}
+                  {visible.map((t, i) => {
+                    const isCursor = i === activeIndex;
+                    const isChosen = t.id === templateId;
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        data-index={i}
+                        onClick={() => selectTemplate(t.id)}
+                        onMouseEnter={() => setCursor(i)}
+                        onFocus={() => setCursor(i)}
+                        aria-pressed={isChosen}
+                        title={`${t.title} — ${choiceMeta(t)}`}
+                        className="relative flex w-full items-center gap-2 rounded-md px-2 text-left font-mono text-[13.5px] text-inherit"
+                        style={{ height: ROW_HEIGHT }}
+                      >
+                        <span
+                          className="inline-block w-[2ch] shrink-0 text-chaos-term-cursor transition-[opacity,transform] duration-150 ease-out motion-reduce:transition-none"
+                          style={{
+                            opacity: isCursor ? 1 : 0,
+                            transform: isCursor
+                              ? "translateX(0)"
+                              : "translateX(-4px)",
+                          }}
                         >
-                          <span
-                            className="inline-block w-[2ch] shrink-0 text-chaos-term-cursor transition-[opacity,transform] duration-150 ease-out motion-reduce:transition-none"
-                            style={{
-                              opacity: isCursor ? 1 : 0,
-                              transform: isCursor
-                                ? "translateX(0)"
-                                : "translateX(-4px)",
-                            }}
-                          >
-                            ❯
-                          </span>
+                          ❯
+                        </span>
+                        <span className="flex min-w-0 items-baseline gap-2">
                           <span
                             className={cn(
-                              "shrink-0 font-bold transition-[filter] duration-200",
+                              "truncate font-bold transition-[filter] duration-200",
                               colorClass(t),
                               isCursor &&
                                 "underline underline-offset-[3px] [filter:brightness(1.18)_drop-shadow(0_0_10px_rgba(108,207,224,0.25))]",
@@ -487,54 +521,55 @@ export default function Page() {
                           >
                             {t.title}
                           </span>
-                          <span className="min-w-0 truncate text-[11.5px] text-chaos-term-dim/80">
-                            {t.alias !== t.id ? t.alias : ""}
-                          </span>
-                          <span className="ml-auto w-[5.5rem] shrink-0 truncate text-right text-[11px] text-chaos-term-dim/70">
-                            {t.categoryLabel}
-                          </span>
-                          <span
-                            className="w-[1.5ch] shrink-0 text-right text-chaos-success transition-opacity duration-150"
-                            style={{ opacity: isChosen ? 1 : 0 }}
-                          >
-                            ✔
-                          </span>
-                        </button>
-                      );
-                    })}
+                          {t.alias !== t.id ? (
+                            <span className="hidden shrink-0 text-[11.5px] text-chaos-term-dim/80 sm:inline">
+                              {t.alias}
+                            </span>
+                          ) : null}
+                        </span>
+                        <span className="ml-auto hidden w-[5.5rem] shrink-0 truncate text-right text-[11px] text-chaos-term-dim/70 md:inline">
+                          {t.categoryLabel}
+                        </span>
+                        <span
+                          className="w-[1.5ch] shrink-0 text-right text-chaos-success transition-opacity duration-150"
+                          style={{ opacity: isChosen ? 1 : 0 }}
+                        >
+                          ✔
+                        </span>
+                      </button>
+                    );
+                  })}
 
-                    {visible.length === 0 && (
-                      <p className="mt-1 animate-fade-in text-[#e5c07b]">
-                        - No templates match &quot;{filter.trim()}&quot;.
-                      </p>
-                    )}
-                  </div>
-
-                  <p className="mt-2 text-[12px] text-chaos-term-dim">
-                    - ↑/↓ or j/k browse · Enter choose · / filter · c copy ·
-                    ←/→ package manager.
-                  </p>
+                  {visible.length === 0 && (
+                    <p className="mt-1 animate-fade-in text-[#e5c07b]">
+                      - No templates match &quot;{filter.trim()}&quot;.
+                    </p>
+                  )}
                 </div>
+
+                <p className="hidden shrink-0 pt-1.5 text-[11.5px] text-chaos-term-dim sm:block">
+                  - ↑/↓ or j/k browse · Enter choose · / filter · c copy · ←/→
+                  package manager.
+                </p>
               </div>
 
               <TemplateInspector
                 template={activeTemplate}
                 detail={activeDetail}
-                isSelected={
-                  !!activeTemplate && activeTemplate.id === templateId
-                }
+                isSelected={!!activeTemplate && activeTemplate.id === templateId}
                 pm={pm}
                 dir={dir}
                 onSubmit={submitActive}
+                className="h-[9.5rem] lg:h-auto"
               />
             </div>
           </div>
         </Card>
       </main>
 
-      <footer className="fixed inset-x-0 bottom-0 z-20 border-t border-chaos-line bg-[rgba(10,13,19,0.88)] backdrop-blur-md">
-        <div className="mx-auto flex max-w-[1180px] items-center gap-4 px-6 py-3.5">
-          <div className="flex min-w-0 flex-1 items-center gap-2.5 overflow-x-auto rounded-xl border border-chaos-line bg-chaos-panel-raised px-4 py-3">
+      <footer className="relative z-20 shrink-0 border-t border-chaos-line bg-[rgba(10,13,19,0.88)] backdrop-blur-md">
+        <div className="mx-auto flex max-w-[1180px] items-center gap-3 px-4 py-2.5 sm:gap-4 sm:px-6 sm:py-3">
+          <div className="flex min-w-0 flex-1 items-center gap-2.5 overflow-x-auto rounded-xl border border-chaos-line bg-chaos-panel-raised px-4 py-2.5">
             <span
               className="select-none font-mono text-chaos-accent"
               style={{ textShadow: "0 0 14px rgba(241,83,53,0.45)" }}
@@ -557,7 +592,7 @@ export default function Page() {
             onClick={handleCopy}
             disabled={!command}
             className={cn(
-              "shrink-0 rounded-xl border border-[rgba(241,83,53,0.5)] bg-gradient-to-b from-[#ff6a4a] to-[#e8481f] px-5 py-3 text-sm font-semibold text-white shadow-glow-accent transition-transform hover:-translate-y-px",
+              "shrink-0 rounded-xl border border-[rgba(241,83,53,0.5)] bg-gradient-to-b from-[#ff6a4a] to-[#e8481f] px-5 py-2.5 text-sm font-semibold text-white shadow-glow-accent transition-transform hover:-translate-y-px",
               copied &&
                 "border-[rgba(88,214,141,0.6)] bg-gradient-to-b from-[#47c77a] to-[#2ea25e] shadow-[0_6px_22px_rgba(88,214,141,0.22)]",
             )}
