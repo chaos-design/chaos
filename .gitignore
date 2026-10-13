@@ -160,3 +160,9 @@ packages/create-chaos/templates/vscode/extension/lib/
 !packages/create-chaos/templates/browser/extension-wxt/lib/**
 !packages/create-chaos/templates/react/next-supabase/src/lib/
 !packages/create-chaos/templates/react/next-supabase/src/lib/**
+
+# `site` is the deployable Next.js app; its `src/lib` is source (holds the
+# `cn` helper at `@/lib/utils`), not build output, so it must not be swallowed
+# by the bare `lib` rule above.
+!site/src/lib/
+!site/src/lib/**
