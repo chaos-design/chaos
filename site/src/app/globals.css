@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+
+  --background: 222 47% 5%;
+  --foreground: 213 27% 92%;
+  --card: 222 30% 8%;
+  --card-foreground: 213 27% 92%;
+  --primary: 8 86% 58%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 217 24% 14%;
+  --secondary-foreground: 213 27% 92%;
+  --muted: 217 24% 14%;
+  --muted-foreground: 215 16% 60%;
+  --accent: 217 24% 16%;
+  --accent-foreground: 213 27% 92%;
+  --border: 215 19% 24%;
+  --input: 215 19% 24%;
+  --ring: 187 60% 60%;
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: #07090e;
+    color: #e6e9ef;
+    font-family: "Avenir Next", Avenir, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    min-height: 100vh;
+    position: relative;
+    padding-bottom: 108px;
+  }
+
+  /* Ambient backdrop: a faint engineering grid plus two color glows. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(rgba(148, 163, 196, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148, 163, 196, 0.045) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(
+      ellipse 90% 70% at 50% 0%,
+      #000 30%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(
+      ellipse 90% 70% at 50% 0%,
+      #000 30%,
+      transparent 100%
+    );
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(
+        ellipse 560px 340px at 12% -4%,
+        rgba(241, 83, 53, 0.16),
+        transparent 70%
+      ),
+      radial-gradient(
+        ellipse 640px 380px at 92% 4%,
+        rgba(108, 207, 224, 0.12),
+        transparent 70%
+      );
+  }
+}
+
+/* Motion is opt-in: animations and transitions only run when the user has
+   no preference against them. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
