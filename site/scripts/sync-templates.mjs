@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Regenerates site/data/templates.js from the CLI's single source of truth:
+ * Regenerates site/src/data/templates.ts from the CLI's single source of truth:
  * the FRAMEWORKS array in packages/create-chaos/src/config.ts.
  *
  * The array is read as a literal (bracket matching, no TS toolchain) and
@@ -11,45 +11,45 @@
  *   node site/scripts/sync-templates.mjs           # regenerate the data file
  *   node site/scripts/sync-templates.mjs --check   # fail if it is stale
  */
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(here, '..', '..');
+const repoRoot = path.resolve(here, "..", "..");
 const configPath = path.join(
   repoRoot,
-  'packages',
-  'create-chaos',
-  'src',
-  'config.ts',
+  "packages",
+  "create-chaos",
+  "src",
+  "config.ts",
 );
-const outFile = path.resolve(here, '..', 'data', 'templates.js');
+const outFile = path.resolve(here, "..", "src", "data", "templates.ts");
 
 // Color helpers referenced by the literal are runtime values from kolorist;
 // the site only needs the data around them.
 const COLOR_STUBS = [
-  'blue',
-  'cyan',
-  'green',
-  'lightCyan',
-  'lightGreen',
-  'lightRed',
-  'lightMagenta',
-  'magenta',
-  'red',
-  'yellow',
+  "blue",
+  "cyan",
+  "green",
+  "lightCyan",
+  "lightGreen",
+  "lightRed",
+  "lightMagenta",
+  "magenta",
+  "red",
+  "yellow",
 ];
 
 function extractFrameworks(source) {
-  const start = source.indexOf('export const FRAMEWORKS');
+  const start = source.indexOf("export const FRAMEWORKS");
 
   if (start === -1) {
-    throw new Error('FRAMEWORKS declaration not found in config.ts');
+    throw new Error("FRAMEWORKS declaration not found in config.ts");
   }
 
   // Skip the `Framework[]` type annotation: the literal starts after the `=`.
-  const open = source.indexOf('[', source.indexOf('=', start));
+  const open = source.indexOf("[", source.indexOf("=", start));
   let depth = 0;
   let quote = null;
 
@@ -57,7 +57,7 @@ function extractFrameworks(source) {
     const char = source[i];
 
     if (quote) {
-      if (char === '\\') {
+      if (char === "\\") {
         i += 1;
       } else if (char === quote) {
         quote = null;
@@ -65,14 +65,14 @@ function extractFrameworks(source) {
       continue;
     }
 
-    if (char === '"' || char === "'" || char === '`') {
+    if (char === '"' || char === "'" || char === "`") {
       quote = char;
       continue;
     }
 
-    if (char === '[') {
+    if (char === "[") {
       depth += 1;
-    } else if (char === ']') {
+    } else if (char === "]") {
       depth -= 1;
 
       if (depth === 0) {
@@ -81,7 +81,7 @@ function extractFrameworks(source) {
     }
   }
 
-  throw new Error('Unbalanced brackets while reading FRAMEWORKS');
+  throw new Error("Unbalanced brackets while reading FRAMEWORKS");
 }
 
 function loadFrameworks(source) {
@@ -96,12 +96,12 @@ function loadFrameworks(source) {
   });
 
   const frameworks = new Function(
-    'TEMPLATE_IGNORE',
+    "TEMPLATE_IGNORE",
     ...COLOR_STUBS,
     `return ${literal};`,
-  )(['node_modules', '.git', '.DS_Store'], ...stubs);
+  )(["node_modules", ".git", ".DS_Store"], ...stubs);
 
-  return { frameworks, colorName: (fn) => stubNames.get(fn) ?? 'default' };
+  return { frameworks, colorName: (fn) => stubNames.get(fn) ?? "default" };
 }
 
 function buildTemplates(frameworks, colorName) {
@@ -136,15 +136,15 @@ function buildTemplates(frameworks, colorName) {
 // Serializes to the exact shape Biome's formatter produces (single quotes,
 // 2-space indent, multiline objects), so the generated file stays lint-clean.
 function serialize(value, depth) {
-  const pad = '  '.repeat(depth);
-  const padInner = '  '.repeat(depth + 1);
+  const pad = "  ".repeat(depth);
+  const padInner = "  ".repeat(depth + 1);
 
   if (Array.isArray(value)) {
     const items = value.map((item) => padInner + serialize(item, depth + 1));
-    return `[\n${items.join(',\n')},\n${pad}]`;
+    return `[\n${items.join(",\n")},\n${pad}]`;
   }
 
-  if (value && typeof value === 'object') {
+  if (value && typeof value === "object") {
     const entries = Object.entries(value).map(([key, item]) => {
       const serialized = serialize(item, depth + 1);
       const line = `${padInner}${key}: ${serialized}`;
@@ -154,41 +154,44 @@ function serialize(value, depth) {
         ? `${padInner}${key}:\n${padInner}  ${serialized}`
         : line;
     });
-    return `{\n${entries.join(',\n')},\n${pad}}`;
+    return `{\n${entries.join(",\n")},\n${pad}}`;
   }
 
-  if (typeof value === 'string') {
-    return `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+  if (typeof value === "string") {
+    return `'${value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
   }
 
   return String(value);
 }
 
 function render(templates) {
-  return [
-    '// Generated by site/scripts/sync-templates.mjs from',
-    '// packages/create-chaos/src/config.ts. Do not edit by hand;',
-    '// run `node site/scripts/sync-templates.mjs` instead.',
-    `window.CHAOS_TEMPLATES = ${serialize(templates, 0)};`,
-    '',
-  ].join('\n');
+  const header = [
+    "// Generated by site/scripts/sync-templates.mjs from",
+    "// packages/create-chaos/src/config.ts. Do not edit by hand;",
+    "// run `node site/scripts/sync-templates.mjs` instead.",
+    "import type { ChaosTemplate } from '@/lib/types';",
+    "",
+    "export const CHAOS_TEMPLATES: ChaosTemplate[] = ",
+  ].join("\n");
+
+  return `${header}${serialize(templates, 0)};\n`;
 }
 
 function main() {
-  const source = fs.readFileSync(configPath, 'utf8');
+  const source = fs.readFileSync(configPath, "utf8");
   const { frameworks, colorName } = loadFrameworks(source);
   const templates = buildTemplates(frameworks, colorName);
   const relative = path.relative(repoRoot, outFile);
 
   if (templates.length === 0) {
-    throw new Error('No templates were generated; config.ts looks empty.');
+    throw new Error("No templates were generated; config.ts looks empty.");
   }
 
   const content = render(templates);
 
-  if (process.argv.includes('--check')) {
+  if (process.argv.includes("--check")) {
     const current = fs.existsSync(outFile)
-      ? fs.readFileSync(outFile, 'utf8')
+      ? fs.readFileSync(outFile, "utf8")
       : null;
 
     if (current !== content) {

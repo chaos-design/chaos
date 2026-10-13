@@ -1,0 +1,5 @@
+# site/ is a standalone app, intentionally NOT part of the root monorepo
+# workspace (packages/*). This file makes `pnpm install` here resolve only
+# site's own dependencies instead of walking up to the repo-root workspace.
+packages:
+  - "."
