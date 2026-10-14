@@ -1,60 +1,29 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Check, Copy } from "lucide-react";
 
 import { CHAOS_TEMPLATES } from "@/data/templates";
-import type { ChaosTemplate } from "@/lib/types";
+import { getTemplateDetail } from "@/data/template-details";
 import { cn } from "@/lib/utils";
+import {
+  buildCommand,
+  choiceMeta,
+  colorClass,
+  matchesFilter,
+  PM_ORDER,
+  type Pm,
+} from "@/lib/template-ui";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { PromptInput } from "@/components/prompt-input";
+import { TemplateInspector } from "@/components/template-inspector";
 
-const PM_ORDER = ["npm", "pnpm", "yarn", "bun"] as const;
-type Pm = (typeof PM_ORDER)[number];
-
-// kolorist name -> static Tailwind text color (kept static so the JIT
-// compiler can see the classes; arbitrary interpolation would be purged).
-const COLOR_CLASS: Record<string, string> = {
-  blue: "text-kolorist-blue",
-  cyan: "text-kolorist-cyan",
-  green: "text-kolorist-green",
-  lightCyan: "text-kolorist-lightCyan",
-  lightGreen: "text-kolorist-lightGreen",
-  lightMagenta: "text-kolorist-lightMagenta",
-  lightRed: "text-kolorist-lightRed",
-  magenta: "text-kolorist-magenta",
-  red: "text-kolorist-red",
-  yellow: "text-kolorist-yellow",
-  default: "text-chaos-term-fg",
-};
-
-const colorClass = (t: ChaosTemplate) =>
-  COLOR_CLASS[t.color] ?? COLOR_CLASS.default;
-
-// Command forms mirror the usage documented in the repository README:
-// npm 7+, yarn and pnpm need `--` before flags passed to the created package;
-// bun passes them directly.
-const buildCommand = (pm: Pm, dir: string, alias: string) => {
-  const name = dir.trim() || "chaos-project";
-  if (pm === "npm") {
-    return `npm create chaos@latest ${name} -- --template ${alias}`;
-  }
-  return `${pm} create chaos ${name} --template ${alias}`;
-};
-
-const choiceMeta = (t: ChaosTemplate) => {
-  const alias = t.alias && t.alias !== t.id ? ` | ${t.alias}` : "";
-  return `${t.categoryLabel} | ${t.id}${alias}`;
-};
-
-const matchesFilter = (t: ChaosTemplate, keyword: string) => {
-  if (!keyword) return true;
-  const haystack = [t.title, t.alias, t.id, t.categoryLabel, t.description]
-    .join(" ")
-    .toLowerCase();
-  return haystack.includes(keyword);
-};
+// Every catalog row is exactly this tall, and the sliding pointer highlight is
+// positioned with `translateY(index * ROW_HEIGHT)`. A fixed row height is what
+// lets the pointer move without any row measuring or reflowing, and it also
+// makes `scrollTop` a multiple of the row height for keyboard scrolling.
+const ROW_HEIGHT = 30;
 
 async function copyText(text: string): Promise<boolean> {
   try {
@@ -93,6 +62,9 @@ export default function Page() {
   const [copied, setCopied] = useState(false);
 
   const commandRef = useRef<HTMLElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const filterRef = useRef<HTMLInputElement>(null);
+  const firstRender = useRef(true);
 
   const visible = useMemo(
     () => templates.filter((t) => matchesFilter(t, filter.trim().toLowerCase())),
@@ -100,11 +72,13 @@ export default function Page() {
   );
 
   const activeIndex = Math.min(cursor, Math.max(0, visible.length - 1));
-  const selectedTemplate =
-    templates.find((t) => t.id === templateId) ?? null;
+  const activeTemplate = visible[activeIndex] ?? null;
+  const activeDetail = activeTemplate ? getTemplateDetail(activeTemplate) : null;
+  const selectedTemplate = templates.find((t) => t.id === templateId) ?? null;
   const command = selectedTemplate
     ? buildCommand(pm, dir, selectedTemplate.alias)
     : "";
+  const filtered = filter.trim().length > 0;
 
   // Keep the pointer on the submitted template when it survives a filter;
   // otherwise clamp it into range.
@@ -126,28 +100,46 @@ export default function Page() {
     el.classList.add("animate-command-flash");
   }, [command]);
 
-  // Arrow keys move the pointer and Enter submits, like the real prompt.
-  // Skipped while typing in an input so text editing keeps its keys.
+  // Keyboard browsing walks the pointer through a list that is now its own
+  // scroll region: move only that region, and only when the row it targets is
+  // actually out of view. The page itself never scrolls.
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement) return;
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        setCursor((c) => Math.min(c + 1, Math.max(0, visible.length - 1)));
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        setCursor((c) => Math.max(c - 1, 0));
-      } else if (e.key === "Enter") {
-        e.preventDefault();
-        const t = visible[activeIndex];
-        if (t) setTemplateId(t.id);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [visible, activeIndex]);
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+    const scroller = listRef.current;
+    if (!scroller) return;
 
-  const handleCopy = async () => {
+    const top = activeIndex * ROW_HEIGHT;
+    const bottom = top + ROW_HEIGHT;
+    const viewTop = scroller.scrollTop;
+    const viewBottom = viewTop + scroller.clientHeight;
+
+    if (top < viewTop) {
+      scroller.scrollTo({ top, behavior: "smooth" });
+    } else if (bottom > viewBottom) {
+      scroller.scrollTo({
+        top: bottom - scroller.clientHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [activeIndex]);
+
+  // Committing a template is announced by the prompt flipping to a green ✔, the
+  // title taking its kolorist colour and the command bar flashing — all of them
+  // colour-only. No outline, no scale: a ring around the prompt read as a border
+  // and the zoom made the row look like it was jittering.
+  const selectTemplate = useCallback((id: string) => {
+    setTemplateId(id);
+  }, []);
+
+  const submitActive = useCallback(() => {
+    const t = visible[activeIndex];
+    if (t) selectTemplate(t.id);
+  }, [visible, activeIndex, selectTemplate]);
+
+  const handleCopy = useCallback(async () => {
     if (!command) return;
     const ok = await copyText(command);
     setCopied(ok);
@@ -162,15 +154,102 @@ export default function Page() {
         sel?.addRange(range);
       }
     }
-  };
+  }, [command]);
 
-  const inputClass =
-    "h-auto w-[26ch] min-w-[8ch] border-0 bg-transparent p-0 font-mono text-chaos-term-fg caret-[#6ccfe0] focus-visible:ring-0";
+  // Keyboard map, modelled on a fzf-style picker: browse, jump, switch the
+  // package manager, commit — all without leaving home row. Keys are ignored
+  // while an input has focus so text editing keeps them.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      if (e.target instanceof HTMLInputElement) {
+        if (e.key === "Escape") {
+          e.target.blur();
+        }
+        return;
+      }
+
+      const move = (delta: number) => {
+        setCursor((c) => {
+          const max = Math.max(0, visible.length - 1);
+          if (max === 0) return 0;
+          const next = c + delta;
+          if (next < 0) return max;
+          if (next > max) return 0;
+          return next;
+        });
+      };
+
+      switch (e.key) {
+        case "ArrowDown":
+        case "j":
+          e.preventDefault();
+          move(1);
+          break;
+        case "ArrowUp":
+        case "k":
+          e.preventDefault();
+          move(-1);
+          break;
+        case "Home":
+          e.preventDefault();
+          setCursor(0);
+          break;
+        case "End":
+          e.preventDefault();
+          setCursor(Math.max(0, visible.length - 1));
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          setPm((p) => PM_ORDER[(PM_ORDER.indexOf(p) + 1) % PM_ORDER.length]);
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          setPm(
+            (p) =>
+              PM_ORDER[
+                (PM_ORDER.indexOf(p) + PM_ORDER.length - 1) % PM_ORDER.length
+              ],
+          );
+          break;
+        case "Enter":
+          e.preventDefault();
+          submitActive();
+          break;
+        case "/":
+          e.preventDefault();
+          filterRef.current?.focus();
+          filterRef.current?.select();
+          break;
+        case "Escape":
+          e.preventDefault();
+          if (filter) setFilter("");
+          break;
+        case "c":
+          e.preventDefault();
+          void handleCopy();
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [visible, submitActive, filter, handleCopy]);
+
+  const countLabel =
+    visible.length === 0
+      ? "--/--"
+      : `${String(activeIndex + 1).padStart(2, "0")}/${String(
+          visible.length,
+        ).padStart(2, "0")}`;
 
   return (
-    <div className="min-h-screen">
-      <header className="sticky top-0 z-20 border-b border-chaos-line bg-[rgba(10,13,19,0.82)] backdrop-blur-md">
-        <div className="mx-auto flex max-w-[1060px] flex-wrap items-baseline gap-4 px-6 py-5">
+    <div className="flex h-dvh flex-col overflow-hidden">
+      <header className="relative z-20 shrink-0 border-b border-chaos-line bg-[rgba(10,13,19,0.82)] backdrop-blur-md">
+        <div className="mx-auto flex max-w-[1180px] flex-wrap items-baseline gap-x-4 gap-y-1 px-4 py-3 sm:px-6 sm:py-3.5">
           <a
             href="./"
             className="font-mono text-lg font-bold text-chaos-term-fg no-underline"
@@ -183,7 +262,7 @@ export default function Page() {
             </span>
             <span className="font-normal text-chaos-term-dim"> / design</span>
           </a>
-          <p className="m-0 flex-1 text-chaos-term-dim">
+          <p className="m-0 hidden flex-1 text-chaos-term-dim sm:block">
             选一个模板，复制命令，直接开跑。
           </p>
           <a
@@ -197,9 +276,9 @@ export default function Page() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1060px] px-6">
-        <Card className="relative mt-10 mb-8 animate-rise overflow-hidden rounded-2xl border-chaos-line bg-chaos-term-bg shadow-terminal">
-          <div className="flex items-center gap-2 border-b border-chaos-line bg-chaos-term-chrome px-4 py-3">
+      <main className="mx-auto flex w-full max-w-[1180px] min-h-0 flex-1 px-4 pt-4 pb-3 sm:px-6 sm:pt-5 sm:pb-4">
+        <Card className="animate-rise flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border-chaos-line bg-chaos-term-bg shadow-terminal">
+          <div className="relative z-10 flex shrink-0 items-center gap-2 border-b border-chaos-line bg-chaos-term-chrome px-4 py-2.5">
             <span
               className="h-2.5 w-2.5 rounded-full"
               style={{
@@ -212,156 +291,276 @@ export default function Page() {
             <span className="ml-2 font-mono text-xs text-chaos-term-dim">
               create-chaos — 模板选择
             </span>
+            <div className="ml-auto flex items-center gap-3 font-mono text-[11px] text-chaos-term-dim">
+              <span className="hidden sm:inline">
+                templates{" "}
+                <b className="inline-block min-w-[2ch] text-right font-normal tabular-nums text-chaos-term-fg">
+                  {visible.length}
+                </b>
+                /{templates.length}
+              </span>
+              <span className="hidden md:inline">
+                pm <b className="font-normal text-chaos-term-cursor">{pm}</b>
+              </span>
+              <span className="tabular-nums">{countLabel}</span>
+            </div>
           </div>
 
-          <div className="overflow-x-auto px-5 py-5 font-mono text-[13.5px] leading-[1.95]">
-            {/* Filter */}
-            <div className="flex flex-wrap items-baseline gap-2">
-              <span className="font-bold text-[#c678dd]">?</span>
-              <label htmlFor="filter-input" className="font-bold text-chaos-term-fg">
-                Filter templates:
-              </label>
-              <span className="text-chaos-term-dim">›</span>
-              <Input
-                id="filter-input"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                placeholder="(all)"
-                spellCheck={false}
-                autoComplete="off"
-                className={inputClass}
-              />
-              <span className="text-chaos-term-dim">- Leave empty to list all.</span>
-            </div>
+          <div className="relative flex min-h-0 flex-1 flex-col">
+            {/* Sci-fi ambience: one sweeping scanline, transform-only, sitting
+                above the backdrop but below the content. */}
+            <span
+              aria-hidden
+              className="animate-scan pointer-events-none absolute inset-x-0 top-0 h-24 bg-[linear-gradient(to_bottom,transparent,rgba(108,207,224,0.05),transparent)]"
+            />
 
-            {/* Project name */}
-            <div className="flex flex-wrap items-baseline gap-2">
-              <span className="font-bold text-[#c678dd]">?</span>
-              <label htmlFor="dir-input" className="font-bold text-chaos-term-fg">
-                Project name:
-              </label>
-              <span className="text-chaos-term-dim">›</span>
-              <Input
-                id="dir-input"
-                value={dir}
-                onChange={(e) => setDir(e.target.value)}
-                spellCheck={false}
-                autoComplete="off"
-                className="h-auto w-[20ch] min-w-[8ch] border-0 bg-transparent p-0 font-mono text-chaos-term-fg caret-[#6ccfe0] focus-visible:ring-0"
-              />
-            </div>
+            <div className="relative z-10 grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_auto] gap-3 px-4 py-3 sm:gap-4 sm:px-5 sm:py-4 lg:grid-cols-[minmax(0,1fr)_21.5rem] lg:grid-rows-[minmax(0,1fr)]">
+              <div className="flex min-h-0 min-w-0 flex-col font-mono text-[13.5px] leading-[1.9]">
+                {/* The prompt block keeps its natural height; the catalog below
+                    takes whatever is left and scrolls on its own. */}
+                <div className="shrink-0">
+                  {/* Filter */}
+                  <div className="group flex flex-wrap items-baseline gap-2">
+                    <span className="font-bold text-[#c678dd]">?</span>
+                    <label
+                      htmlFor="filter-input"
+                      className="font-bold text-chaos-term-fg"
+                    >
+                      Filter templates:
+                    </label>
+                    <span className="text-chaos-term-dim transition-colors group-focus-within:text-chaos-term-cursor">
+                      ›
+                    </span>
+                    <PromptInput
+                      id="filter-input"
+                      ref={filterRef}
+                      value={filter}
+                      onChange={(e) => setFilter(e.target.value)}
+                      placeholder="(all)"
+                      spellCheck={false}
+                      autoComplete="off"
+                      aria-describedby="filter-hint"
+                      minCells={5}
+                      maxCells={28}
+                    />
+                    <span
+                      id="filter-hint"
+                      className="hidden text-[11.5px] text-chaos-term-dim sm:inline"
+                    >
+                      {filtered
+                        ? `${visible.length} match${
+                            visible.length === 1 ? "" : "es"
+                          } · Esc to clear`
+                        : "空白即列出全部"}
+                    </span>
+                  </div>
 
-            {/* Package manager */}
-            <div className="flex flex-wrap items-baseline gap-2">
-              <span className="font-bold text-[#c678dd]">?</span>
-              <span className="font-bold text-chaos-term-fg">Package manager:</span>
-              <span className="text-chaos-term-dim">›</span>
-              <div className="inline-flex gap-4">
-                {PM_ORDER.map((p) => (
-                  <button
-                    key={p}
-                    type="button"
-                    onClick={() => setPm(p)}
-                    aria-pressed={pm === p}
-                    className={cn(
-                      "cursor-pointer border-0 bg-transparent p-0 font-mono text-chaos-term-dim transition-colors hover:text-[#b9c1d0]",
-                      pm === p &&
-                        "text-chaos-term-cursor underline underline-offset-[3px]",
-                    )}
-                    style={
-                      pm === p
-                        ? { textShadow: "0 0 14px rgba(108,207,224,0.35)" }
-                        : undefined
-                    }
-                  >
-                    {p}
-                  </button>
-                ))}
-              </div>
-            </div>
+                  {/* Project name */}
+                  <div className="group flex flex-wrap items-baseline gap-2">
+                    <span className="font-bold text-[#c678dd]">?</span>
+                    <label
+                      htmlFor="dir-input"
+                      className="font-bold text-chaos-term-fg"
+                    >
+                      Project name:
+                    </label>
+                    <span className="text-chaos-term-dim transition-colors group-focus-within:text-chaos-term-cursor">
+                      ›
+                    </span>
+                    <PromptInput
+                      id="dir-input"
+                      value={dir}
+                      onChange={(e) => setDir(e.target.value)}
+                      placeholder="chaos-project"
+                      spellCheck={false}
+                      autoComplete="off"
+                      minCells={6}
+                      maxCells={40}
+                    />
+                    <span className="hidden text-[11.5px] text-chaos-term-dim sm:inline">
+                      留空回退 chaos-project
+                    </span>
+                  </div>
 
-            {/* Selected template head */}
-            <div className="flex flex-wrap items-baseline gap-2">
-              <span
-                className={cn(
-                  "font-bold",
-                  selectedTemplate ? "text-chaos-success" : "text-[#c678dd]",
-                )}
-              >
-                {selectedTemplate ? "✔" : "?"}
-              </span>
-              <span className="font-bold text-chaos-term-fg">Select a template:</span>
-              <span className="text-chaos-term-dim">›</span>
-              {selectedTemplate ? (
-                <span className={cn("font-bold", colorClass(selectedTemplate))}>
-                  {selectedTemplate.title}
-                </span>
-              ) : (
-                <span className="text-chaos-term-dim">
-                  - Pick a template below.
-                </span>
-              )}
-            </div>
+                  {/* Package manager */}
+                  <div className="flex flex-wrap items-baseline gap-2">
+                    <span className="font-bold text-[#c678dd]">?</span>
+                    <span className="font-bold text-chaos-term-fg">
+                      Package manager:
+                    </span>
+                    <span className="text-chaos-term-dim">›</span>
+                    <div className="inline-flex gap-4" role="group">
+                      {PM_ORDER.map((p) => (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => setPm(p)}
+                          aria-pressed={pm === p}
+                          className={cn(
+                            "cursor-pointer border-0 bg-transparent p-0 font-mono text-chaos-term-dim transition-colors hover:text-[#b9c1d0]",
+                            pm === p &&
+                              "text-chaos-term-cursor underline underline-offset-[3px]",
+                          )}
+                          style={
+                            pm === p
+                              ? { textShadow: "0 0 14px rgba(108,207,224,0.35)" }
+                              : undefined
+                          }
+                        >
+                          {p}
+                        </button>
+                      ))}
+                    </div>
+                    <span className="hidden text-[11.5px] text-chaos-term-dim sm:inline">
+                      ←/→
+                    </span>
+                  </div>
 
-            {/* Catalog */}
-            <div className="mt-1 min-w-[560px]">
-              {visible.map((t, i) => {
-                const isCursor = i === activeIndex;
-                return (
-                  <div key={t.id}>
-                    <button
-                      type="button"
-                      data-index={i}
-                      onClick={() => setTemplateId(t.id)}
-                      onMouseEnter={() => setCursor(i)}
-                      aria-pressed={t.id === templateId}
+                  {/* Submitted template */}
+                  <div className="flex flex-wrap items-baseline gap-2">
+                    <span
                       className={cn(
-                        "-mx-2 flex w-[calc(100%+16px)] items-baseline gap-0 rounded-lg border-0 bg-transparent px-2 py-0 text-left font-mono text-[13.5px] leading-[1.95] text-inherit transition-colors",
-                        isCursor && "bg-[rgba(108,207,224,0.07)]",
+                        "font-bold",
+                        selectedTemplate
+                          ? "text-chaos-success"
+                          : "text-[#c678dd]",
                       )}
                     >
-                      <span className="inline-block w-[4ch] whitespace-pre text-chaos-term-cursor">
-                        {isCursor ? "❯" : ""}
-                      </span>
+                      {selectedTemplate ? "✔" : "?"}
+                    </span>
+                    <span className="font-bold text-chaos-term-fg">
+                      Select a template:
+                    </span>
+                    <span className="text-chaos-term-dim">›</span>
+                    {selectedTemplate ? (
+                      // `truncate` keeps the value on the label's line, so the
+                      // prompt block is exactly one line tall for every
+                      // template: committing one can never push the catalog
+                      // down by a wrapped line.
                       <span
                         className={cn(
-                          "font-bold",
-                          colorClass(t),
-                          isCursor && "underline underline-offset-[3px]",
+                          "min-w-0 truncate font-bold",
+                          colorClass(selectedTemplate),
                         )}
                       >
-                        {t.title}
+                        {selectedTemplate.title}
                       </span>
-                    </button>
-                    <div
-                      className={cn(
-                        "mb-0.5 ml-[4ch] max-w-[88ch] animate-fade-in text-chaos-term-dim",
-                        isCursor ? "block" : "hidden",
-                      )}
-                    >
-                      <span className="text-[#96a0b5]">{choiceMeta(t)} · </span>
-                      {t.description}
-                    </div>
+                    ) : (
+                      <span className="min-w-0 truncate text-chaos-term-dim">
+                        - Pick a template below.
+                      </span>
+                    )}
                   </div>
-                );
-              })}
-              {visible.length === 0 && (
-                <p className="mt-1 animate-fade-in text-[#e5c07b]">
-                  - No templates match &quot;{filter.trim()}&quot;.
-                </p>
-              )}
-            </div>
+                </div>
 
-            <p className="mt-1 text-chaos-term-dim">
-              - Hover or use ↑/↓ to browse. Click or press Enter to submit.
-            </p>
+                {/*
+                 * Catalog. Its own scroll region: rows are a fixed height and
+                 * carry no inline description, and the pointer is one
+                 * absolutely positioned bar that slides with a transform, so
+                 * moving it never reflows anything.
+                 */}
+                <div
+                  ref={listRef}
+                  className="chaos-scroll relative mt-1.5 min-h-0 flex-1 overflow-y-auto"
+                >
+                  {visible.length > 0 && (
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute inset-x-0 top-0 rounded-md border-l-2 border-chaos-term-cursor bg-[rgba(108,207,224,0.07)] transition-transform duration-200 ease-out will-change-transform motion-reduce:transition-none"
+                      style={{
+                        height: ROW_HEIGHT,
+                        transform: `translateY(${activeIndex * ROW_HEIGHT}px)`,
+                      }}
+                    />
+                  )}
+
+                  {visible.map((t, i) => {
+                    const isCursor = i === activeIndex;
+                    const isChosen = t.id === templateId;
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        data-index={i}
+                        onClick={() => selectTemplate(t.id)}
+                        onMouseEnter={() => setCursor(i)}
+                        onFocus={() => setCursor(i)}
+                        aria-pressed={isChosen}
+                        title={`${t.title} — ${choiceMeta(t)}`}
+                        className="relative flex w-full items-center gap-2 rounded-md px-2 text-left font-mono text-[13.5px] text-inherit"
+                        style={{ height: ROW_HEIGHT }}
+                      >
+                        <span
+                          className="inline-block w-[2ch] shrink-0 text-chaos-term-cursor transition-[opacity,transform] duration-150 ease-out motion-reduce:transition-none"
+                          style={{
+                            opacity: isCursor ? 1 : 0,
+                            transform: isCursor
+                              ? "translateX(0)"
+                              : "translateX(-4px)",
+                          }}
+                        >
+                          ❯
+                        </span>
+                        <span className="flex min-w-0 items-baseline gap-2">
+                          <span
+                            className={cn(
+                              "truncate font-bold transition-[filter] duration-200",
+                              colorClass(t),
+                              isCursor &&
+                                "underline underline-offset-[3px] [filter:brightness(1.18)_drop-shadow(0_0_10px_rgba(108,207,224,0.25))]",
+                            )}
+                          >
+                            {t.title}
+                          </span>
+                          {t.alias !== t.id ? (
+                            <span className="hidden shrink-0 text-[11.5px] text-chaos-term-dim/80 sm:inline">
+                              {t.alias}
+                            </span>
+                          ) : null}
+                        </span>
+                        <span className="ml-auto hidden w-[5.5rem] shrink-0 truncate text-right text-[11px] text-chaos-term-dim/70 md:inline">
+                          {t.categoryLabel}
+                        </span>
+                        <span
+                          className="w-[1.5ch] shrink-0 text-right text-chaos-success transition-opacity duration-150"
+                          style={{ opacity: isChosen ? 1 : 0 }}
+                        >
+                          ✔
+                        </span>
+                      </button>
+                    );
+                  })}
+
+                  {visible.length === 0 && (
+                    <p className="mt-1 animate-fade-in text-[#e5c07b]">
+                      - No templates match &quot;{filter.trim()}&quot;.
+                    </p>
+                  )}
+                </div>
+
+                <p className="hidden shrink-0 pt-1.5 text-[11.5px] text-chaos-term-dim sm:block">
+                  - ↑/↓ or j/k browse · Enter choose · / filter · c copy · ←/→
+                  package manager.
+                </p>
+              </div>
+
+              <TemplateInspector
+                template={activeTemplate}
+                detail={activeDetail}
+                isSelected={!!activeTemplate && activeTemplate.id === templateId}
+                pm={pm}
+                dir={dir}
+                onSubmit={submitActive}
+                className="h-[9.5rem] lg:h-auto"
+              />
+            </div>
           </div>
         </Card>
       </main>
 
-      <footer className="fixed inset-x-0 bottom-0 z-20 border-t border-chaos-line bg-[rgba(10,13,19,0.88)] backdrop-blur-md">
-        <div className="mx-auto flex max-w-[1060px] items-center gap-4 px-6 py-3.5">
-          <div className="flex min-w-0 flex-1 items-center gap-2.5 overflow-x-auto rounded-xl border border-chaos-line bg-chaos-panel-raised px-4 py-3">
+      <footer className="relative z-20 shrink-0 border-t border-chaos-line bg-[rgba(10,13,19,0.88)] backdrop-blur-md">
+        <div className="mx-auto flex max-w-[1180px] items-center gap-3 px-4 py-2.5 sm:gap-4 sm:px-6 sm:py-3">
+          <div className="flex min-w-0 flex-1 items-center gap-2.5 overflow-x-auto rounded-xl border border-chaos-line bg-chaos-panel-raised px-4 py-2.5">
             <span
               className="select-none font-mono text-chaos-accent"
               style={{ textShadow: "0 0 14px rgba(241,83,53,0.45)" }}
@@ -374,13 +573,17 @@ export default function Page() {
             >
               {command || " "}
             </code>
+            <span
+              aria-hidden
+              className="animate-caret-blink inline-block h-[1.05em] w-[0.55ch] shrink-0 bg-chaos-term-cursor align-middle"
+            />
           </div>
           <Button
             type="button"
             onClick={handleCopy}
             disabled={!command}
             className={cn(
-              "shrink-0 rounded-xl border border-[rgba(241,83,53,0.5)] bg-gradient-to-b from-[#ff6a4a] to-[#e8481f] px-5 py-3 text-sm font-semibold text-white shadow-glow-accent transition-transform hover:-translate-y-px",
+              "shrink-0 rounded-xl border border-[rgba(241,83,53,0.5)] bg-gradient-to-b from-[#ff6a4a] to-[#e8481f] px-5 py-2.5 text-sm font-semibold text-white shadow-glow-accent transition-transform hover:-translate-y-px",
               copied &&
                 "border-[rgba(88,214,141,0.6)] bg-gradient-to-b from-[#47c77a] to-[#2ea25e] shadow-[0_6px_22px_rgba(88,214,141,0.22)]",
             )}

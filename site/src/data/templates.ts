@@ -7,6 +7,7 @@ export const CHAOS_TEMPLATES: ChaosTemplate[] = [
   {
     id: 'react-ts',
     alias: 'react',
+    path: 'react/ts',
     category: 'react',
     categoryLabel: 'React',
     title: 'TypeScript Project',
@@ -16,6 +17,7 @@ export const CHAOS_TEMPLATES: ChaosTemplate[] = [
   {
     id: 'react-component-ts',
     alias: 'reactc',
+    path: 'react/component',
     category: 'react',
     categoryLabel: 'React',
     title: 'Component',
@@ -25,6 +27,7 @@ export const CHAOS_TEMPLATES: ChaosTemplate[] = [
   {
     id: 'react-next-shadcn',
     alias: 'next-shadcn',
+    path: 'next/next-shadcn',
     category: 'next',
     categoryLabel: 'Next.js',
     title: 'Next.js + shadcn/ui',
@@ -34,6 +37,7 @@ export const CHAOS_TEMPLATES: ChaosTemplate[] = [
   {
     id: 'react-next-supabase',
     alias: 'next-supabase',
+    path: 'next/next-supabase',
     category: 'next',
     categoryLabel: 'Next.js',
     title: 'Next.js + Supabase',
@@ -44,6 +48,7 @@ export const CHAOS_TEMPLATES: ChaosTemplate[] = [
   {
     id: 'browser-extension-wxt',
     alias: 'wxt',
+    path: 'browser/extension-wxt',
     category: 'browser',
     categoryLabel: 'Browser',
     title: 'WXT Browser Extension',
@@ -54,6 +59,7 @@ export const CHAOS_TEMPLATES: ChaosTemplate[] = [
   {
     id: 'library-ts',
     alias: 'lib',
+    path: 'library/ts',
     category: 'library',
     categoryLabel: 'Library',
     title: 'TypeScript',
@@ -63,6 +69,7 @@ export const CHAOS_TEMPLATES: ChaosTemplate[] = [
   {
     id: 'library-react-component-ts',
     alias: 'libc',
+    path: 'library/react-component',
     category: 'library',
     categoryLabel: 'Library',
     title: 'React Component',
@@ -72,6 +79,7 @@ export const CHAOS_TEMPLATES: ChaosTemplate[] = [
   {
     id: 'webpack-plugin',
     alias: 'wp',
+    path: 'webpack/plugin',
     category: 'webpack',
     categoryLabel: 'Webpack',
     title: 'Webpack Plugin',
@@ -81,6 +89,7 @@ export const CHAOS_TEMPLATES: ChaosTemplate[] = [
   {
     id: 'vscode-extension',
     alias: 'vse',
+    path: 'vscode/extension',
     category: 'vscode',
     categoryLabel: 'VS Code',
     title: 'VS Code Extension',
@@ -90,6 +99,7 @@ export const CHAOS_TEMPLATES: ChaosTemplate[] = [
   {
     id: 'monorepo',
     alias: 'monorepo',
+    path: 'repo/monorepo',
     category: 'repository',
     categoryLabel: 'Repository',
     title: 'Monorepo',
@@ -99,6 +109,7 @@ export const CHAOS_TEMPLATES: ChaosTemplate[] = [
   {
     id: 'docs',
     alias: 'docs',
+    path: 'docs',
     category: 'docs',
     categoryLabel: 'Docs',
     title: 'Documentation Site',

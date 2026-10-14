@@ -7,6 +7,10 @@
  * evaluated with stubbed color functions, so the generated file can never
  * drift from the templates the CLI actually ships.
  *
+ * It also guards the hand-maintained inspector copy in
+ * src/data/template-details.ts: every template must have an entry there, and no
+ * entry may outlive its template.
+ *
  * Usage:
  *   node site/scripts/sync-templates.mjs           # regenerate the data file
  *   node site/scripts/sync-templates.mjs --check   # fail if it is stale
@@ -25,6 +29,7 @@ const configPath = path.join(
   "config.ts",
 );
 const outFile = path.resolve(here, "..", "src", "data", "templates.ts");
+const detailsFile = path.resolve(here, "..", "src", "data", "template-details.ts");
 
 // Color helpers referenced by the literal are runtime values from kolorist;
 // the site only needs the data around them.
@@ -120,6 +125,9 @@ function buildTemplates(frameworks, colorName) {
           variant.showName && variant.showName !== variant.name
             ? variant.showName
             : variant.name,
+        // Directory inside packages/create-chaos/templates, shown in the
+        // inspector so contributors can jump straight to the source.
+        path: variant.path,
         category: framework.name,
         categoryLabel: framework.display,
         title: variant.display || variant.name,
@@ -131,6 +139,49 @@ function buildTemplates(frameworks, colorName) {
   }
 
   return templates;
+}
+
+// Entries in template-details.ts are written as `  'some-id': {` (or unquoted
+// when the id is a plain identifier), so a shallow scan is enough to read them
+// without pulling in a TypeScript parser.
+function readDetailKeys() {
+  const source = fs.readFileSync(detailsFile, "utf8");
+  return new Set(
+    [...source.matchAll(/^ {2}'?([\w-]+)'?:\s*\{\s*$/gm)].map(
+      (match) => match[1],
+    ),
+  );
+}
+
+/**
+ * The inspector copy is maintained by hand, so it can rot in both directions:
+ * a new template renders an empty panel, and a removed template leaves dead
+ * copy behind. Both fail the build rather than shipping quietly.
+ */
+function assertDetailsCoverage(templates) {
+  const keys = readDetailKeys();
+  const missing = templates.map((t) => t.id).filter((id) => !keys.has(id));
+  const known = new Set(templates.map((t) => t.id));
+  const orphaned = [...keys].filter((id) => !known.has(id));
+
+  if (missing.length === 0 && orphaned.length === 0) {
+    return;
+  }
+
+  const problems = [];
+  if (missing.length > 0) {
+    problems.push(
+      `no entry for ${missing.join(", ")} (the inspector would show only the ` +
+        "one-line description)",
+    );
+  }
+  if (orphaned.length > 0) {
+    problems.push(`stale entries for ${orphaned.join(", ")}`);
+  }
+
+  throw new Error(
+    `src/data/template-details.ts is out of sync: ${problems.join("; ")}.`,
+  );
 }
 
 // Serializes to the exact shape Biome's formatter produces (single quotes,
@@ -186,6 +237,8 @@ function main() {
   if (templates.length === 0) {
     throw new Error("No templates were generated; config.ts looks empty.");
   }
+
+  assertDetailsCoverage(templates);
 
   const content = render(templates);
 
