@@ -103,17 +103,6 @@ const config: Config = {
           "0%": { opacity: "0", transform: "translateY(4px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        // Feedback when a template is committed with Enter or a click.
-        "prompt-pop": {
-          "0%": {
-            transform: "scale(1.015)",
-            boxShadow: "0 0 0 1px rgba(88,214,141,0.5)",
-          },
-          "100%": {
-            transform: "scale(1)",
-            boxShadow: "0 0 0 1px rgba(88,214,141,0)",
-          },
-        },
         // Terminal block caret. Ends visible so reduced-motion users keep a caret.
         "caret-blink": {
           "0%, 45%": { opacity: "1" },
@@ -131,7 +120,6 @@ const config: Config = {
         "fade-in": "fade-in 180ms ease both",
         "command-flash": "command-flash 460ms ease-out",
         "panel-in": "panel-in 200ms ease-out both",
-        "prompt-pop": "prompt-pop 420ms ease-out",
         "caret-blink": "caret-blink 1.1s infinite",
         scan: "scan 7s linear infinite",
       },

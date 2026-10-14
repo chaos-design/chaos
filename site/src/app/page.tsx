@@ -15,8 +15,8 @@ import {
   type Pm,
 } from "@/lib/template-ui";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { PromptInput } from "@/components/prompt-input";
 import { TemplateInspector } from "@/components/template-inspector";
 
 // Every catalog row is exactly this tall, and the sliding pointer highlight is
@@ -24,18 +24,6 @@ import { TemplateInspector } from "@/components/template-inspector";
 // lets the pointer move without any row measuring or reflowing, and it also
 // makes `scrollTop` a multiple of the row height for keyboard scrolling.
 const ROW_HEIGHT = 30;
-
-// A prompt input that reads as part of the terminal rather than as a form
-// field: a filled chip with a hairline border, a cyan caret, and a soft cyan
-// halo once focused. Border widths stay per-side-agnostic on purpose —
-// tailwind-merge will not fold `border` into `border-b`, so mixing them leaks a
-// box onto every side.
-//
-// On narrow screens the width is flexible (`flex-1` + a small `min-w`), which
-// keeps every prompt on a single line instead of wrapping the field onto its
-// own row — wrapping is what used to eat the whole catalog viewport.
-const inputClass =
-  "h-[26px] w-auto min-w-[7ch] flex-1 rounded-[4px] border border-chaos-line bg-[rgba(148,163,196,0.06)] px-1.5 py-0 font-mono text-chaos-term-fg caret-[#6ccfe0] shadow-none outline-none transition-[background-color,border-color,box-shadow] placeholder:text-chaos-term-dim/55 selection:bg-[rgba(108,207,224,0.28)] focus-visible:border-[rgba(108,207,224,0.55)] focus-visible:bg-[rgba(108,207,224,0.09)] focus-visible:shadow-[0_0_0_3px_rgba(108,207,224,0.10)] focus-visible:ring-0 sm:w-[22ch] sm:flex-none";
 
 async function copyText(text: string): Promise<boolean> {
   try {
@@ -74,7 +62,6 @@ export default function Page() {
   const [copied, setCopied] = useState(false);
 
   const commandRef = useRef<HTMLElement>(null);
-  const promptRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const filterRef = useRef<HTMLInputElement>(null);
   const firstRender = useRef(true);
@@ -139,14 +126,12 @@ export default function Page() {
     }
   }, [activeIndex]);
 
+  // Committing a template is announced by the prompt flipping to a green ✔, the
+  // title taking its kolorist colour and the command bar flashing — all of them
+  // colour-only. No outline, no scale: a ring around the prompt read as a border
+  // and the zoom made the row look like it was jittering.
   const selectTemplate = useCallback((id: string) => {
     setTemplateId(id);
-    const el = promptRef.current;
-    if (el) {
-      el.classList.remove("animate-prompt-pop");
-      void el.offsetWidth;
-      el.classList.add("animate-prompt-pop");
-    }
   }, []);
 
   const submitActive = useCallback(() => {
@@ -346,7 +331,7 @@ export default function Page() {
                     <span className="text-chaos-term-dim transition-colors group-focus-within:text-chaos-term-cursor">
                       ›
                     </span>
-                    <Input
+                    <PromptInput
                       id="filter-input"
                       ref={filterRef}
                       value={filter}
@@ -355,7 +340,8 @@ export default function Page() {
                       spellCheck={false}
                       autoComplete="off"
                       aria-describedby="filter-hint"
-                      className={inputClass}
+                      minCells={5}
+                      maxCells={28}
                     />
                     <span
                       id="filter-hint"
@@ -381,17 +367,18 @@ export default function Page() {
                     <span className="text-chaos-term-dim transition-colors group-focus-within:text-chaos-term-cursor">
                       ›
                     </span>
-                    <Input
+                    <PromptInput
                       id="dir-input"
                       value={dir}
                       onChange={(e) => setDir(e.target.value)}
                       placeholder="chaos-project"
                       spellCheck={false}
                       autoComplete="off"
-                      className={inputClass}
+                      minCells={6}
+                      maxCells={40}
                     />
                     <span className="hidden text-[11.5px] text-chaos-term-dim sm:inline">
-                      {dir.trim() ? `→ ${dir.trim()}` : "留空回退 chaos-project"}
+                      留空回退 chaos-project
                     </span>
                   </div>
 
@@ -430,10 +417,7 @@ export default function Page() {
                   </div>
 
                   {/* Submitted template */}
-                  <div
-                    ref={promptRef}
-                    className="flex origin-left flex-wrap items-baseline gap-2 rounded-md"
-                  >
+                  <div className="flex flex-wrap items-baseline gap-2">
                     <span
                       className={cn(
                         "font-bold",
@@ -449,13 +433,20 @@ export default function Page() {
                     </span>
                     <span className="text-chaos-term-dim">›</span>
                     {selectedTemplate ? (
+                      // `truncate` keeps the value on the label's line, so the
+                      // prompt block is exactly one line tall for every
+                      // template: committing one can never push the catalog
+                      // down by a wrapped line.
                       <span
-                        className={cn("font-bold", colorClass(selectedTemplate))}
+                        className={cn(
+                          "min-w-0 truncate font-bold",
+                          colorClass(selectedTemplate),
+                        )}
                       >
                         {selectedTemplate.title}
                       </span>
                     ) : (
-                      <span className="text-chaos-term-dim">
+                      <span className="min-w-0 truncate text-chaos-term-dim">
                         - Pick a template below.
                       </span>
                     )}
