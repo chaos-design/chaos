@@ -29,21 +29,28 @@ determined by the `create-chaos` version they installed.
 
 ## The release flow
 
-`main` is the release branch. On every push to `main`,
-`.github/workflows/npm-publish.yml`:
+Publishing is gated on the `release` branch. The general check pipeline
+(`.github/workflows/ci.yml`) runs lint, typecheck, build and tarball
+verification on every pull request and on pushes to `main`/`master`, but it
+never publishes.
+
+When code lands on the `release` branch,
+`.github/workflows/npm-publish.yml` runs in this order:
 
 1. installs with `--frozen-lockfile`;
-2. runs `lint`, `typecheck`, `build`;
-3. runs `scripts/verify-pack.mjs`;
+2. builds the package;
+3. runs `scripts/verify-pack.mjs` and `scripts/verify-custom.mjs`;
 4. checks whether `create-chaos@<version>` already exists on npm;
 5. publishes only if it does not.
 
-`prepublishOnly` rebuilds `dist`, so a tarball can never contain a stale build
-even if the CI build step were skipped.
+A release is therefore an explicit, opt-in act: you push to `release` when and
+only when you are ready to publish. `prepublishOnly` rebuilds `dist`, so a
+tarball can never contain a stale build even if the build step were skipped.
 
 Tagging `v*` triggers `release.yml`, which creates the GitHub release and
 changelog from commit messages. It deliberately does **not** publish to npm —
-one publisher, no race.
+`npm-publish.yml` is the only publisher, and it is gated on the `release`
+branch, so the two cannot race.
 
 ### Manual publish
 
@@ -75,12 +82,15 @@ pnpm run publish-pkg
    ```
 
 5. Update `CHANGELOG.md` if the release is notable.
-6. Commit and push to `main`; CI publishes.
+6. Merge the release branch: commit and push the bumped version to `release`;
+   `npm-publish.yml` builds, verifies and publishes when code lands there.
 7. Tag and push:
 
    ```bash
    git tag v0.1.2 && git push --tags
    ```
+
+   (The tag drives `release.yml`, which creates the GitHub release + changelog.)
 
 Never publish a version twice — npm rejects it, and CI skips it silently by
 design.

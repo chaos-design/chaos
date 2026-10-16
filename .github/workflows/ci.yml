@@ -1,0 +1,48 @@
+name: CI
+
+# General check pipeline. It runs the "other flows" — lint, typecheck, build
+# and tarball verification — on every pull request and on pushes to the
+# default branches. It deliberately does NOT publish to npm; publishing lives
+# in its own workflow (npm-publish.yml) gated on the `release` branch, so there
+# is a single publisher and the two cannot race.
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  check:
+    name: Lint, Typecheck, Build and Verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      # pnpm must exist before setup-node resolves the pnpm store for `cache`.
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Biome Check
+        run: pnpm run lint
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Verify template output and custom-template handling
+        run: |
+          node scripts/verify-pack.mjs --strict
+          node scripts/verify-custom.mjs

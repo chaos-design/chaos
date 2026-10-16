@@ -187,13 +187,22 @@ Do not reformat templates to match the root style.
 
 ## CI
 
-`.github/workflows/npm-publish.yml` runs on every PR and on pushes to `main`:
+Two workflows split the pipeline so publishing is explicit and opt-in:
 
-`pnpm install --frozen-lockfile` → `lint` → `typecheck` → `build` →
-`verify-pack` → publish.
+- `.github/workflows/ci.yml` — the general check pipeline. It runs on every
+  pull request and on pushes to `main`/`master`:
 
-Publishing is skipped when the version already exists on the registry, and a
-`concurrency` group prevents two releases racing.
+  `pnpm install --frozen-lockfile` → `lint` → `typecheck` → `build` →
+  `verify-pack` → `verify-custom`.
+
+  It does **not** publish to npm.
+
+- `.github/workflows/npm-publish.yml` — the dedicated publisher. It runs only
+  when code is pushed to the `release` branch, so a release is a deliberate
+  act: build the package, verify the tarball, then publish `create-chaos`.
+  Publishing is skipped when the version already exists on the registry, and
+  a `concurrency` group prevents two releases racing.
 
 `.github/workflows/release.yml` only creates the GitHub release and changelog from
-tags, so there is a single publisher.
+tags. Exactly one workflow publishes to npm, so there is no race between two
+publishers.
