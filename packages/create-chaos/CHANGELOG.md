@@ -1,5 +1,16 @@
 # create-chaos
 
+## Unreleased
+
+### CI
+
+- Split the npm publish step out of the general pipeline. `.github/workflows/ci.yml`
+  now holds the "other flows" (lint, typecheck, build, tarball verification) on
+  every pull request and push to `main`/`master`, and never publishes.
+  `.github/workflows/npm-publish.yml` is now the single dedicated publisher and
+  runs only on push to the `release` branch, so publishing is an explicit,
+  opt-in act.
+
 ## 0.1.1
 
 ### Fixes

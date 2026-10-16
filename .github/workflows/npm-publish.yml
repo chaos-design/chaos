@@ -1,15 +1,16 @@
 name: NPM Publish
 
+# Dedicated publisher. The general check pipeline (lint, typecheck, build,
+# tarball verification) lives in ci.yml. This workflow is the single place
+# that publishes `create-chaos` to npm, and it runs only when code is pushed
+# to the `release` branch — so a release is explicit and opt-in.
+#
+# It still builds and verifies the tarball here so the published package is
+# always valid, even though ci.yml already did so on the source branch.
 on:
   push:
     branches:
-      - main
-      - master
       - release
-  release:
-    types: [created]
-  workflow_dispatch:
-  pull_request:
 
 # Only one publish job may run at a time; a queued run re-checks the registry
 # and skips if a newer version already landed.
@@ -19,7 +20,7 @@ concurrency:
 
 jobs:
   publish:
-    name: Build, Test and Publish
+    name: Build, Verify and Publish
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -39,23 +40,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run Biome Check
-        run: pnpm run lint
-
-      - name: Typecheck
-        run: pnpm run typecheck
-
       - name: Build
         run: pnpm run build
 
       - name: Verify template output and custom-template handling
-        if: github.event_name != 'pull_request'
         run: |
           node scripts/verify-pack.mjs --strict
           node scripts/verify-custom.mjs
 
       - name: Publish create-chaos to npm
-        if: github.event_name != 'pull_request'
         working-directory: packages/create-chaos
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
