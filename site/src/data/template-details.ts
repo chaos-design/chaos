@@ -17,11 +17,13 @@ export const TEMPLATE_DETAILS: Record<string, TemplateDetail> = {
       'biome.json / .gitignore / .npmrc',
     ],
     next: 'Add routing (react-router), state (zustand) or Tailwind (shadcn init).',
+    nextZh: '添加路由 (react-router)、状态管理 (zustand) 或 Tailwind (shadcn init)。',
   },
   'react-component-ts': {
     stack: ['React', 'TypeScript', 'Sass'],
     includes: ['index.tsx', 'index.module.scss'],
     next: 'Drop the folder into an existing app and import it.',
+    nextZh: '把组件文件夹放进现有应用并引入即可。',
   },
   'react-next-shadcn': {
     stack: ['Next.js', 'App Router', 'Tailwind CSS', 'shadcn/ui'],
@@ -32,7 +34,9 @@ export const TEMPLATE_DETAILS: Record<string, TemplateDetail> = {
       'vercel.json + GitHub Actions deploy workflow',
     ],
     requires: 'Node.js >= 20.9.0',
+    requiresZh: 'Node.js >= 20.9.0',
     next: 'pnpm dlx shadcn@latest add <component> to pull in more primitives.',
+    nextZh: '运行 pnpm dlx shadcn@latest add <component> 引入更多基础组件。',
   },
   'react-next-supabase': {
     stack: ['Next.js', 'Supabase SSR', 'Tailwind CSS', 'shadcn/ui'],
@@ -44,6 +48,7 @@ export const TEMPLATE_DETAILS: Record<string, TemplateDetail> = {
       'scripts/ to create and configure the Supabase project',
     ],
     next: 'pnpm run create:project, then pnpm run setup:project.',
+    nextZh: '先运行 pnpm run create:project，再运行 pnpm run setup:project。',
   },
   'browser-extension-wxt': {
     stack: ['WXT', 'React', 'TypeScript', 'Tailwind CSS', 'shadcn/ui'],
@@ -53,12 +58,15 @@ export const TEMPLATE_DETAILS: Record<string, TemplateDetail> = {
       'wxt.config.ts / scripts/setup-project.mjs',
     ],
     requires: 'Node.js >= 22.0.0 (WXT requirement; the CLI needs 24+)',
+    requiresZh: 'Node.js >= 22.0.0（WXT 的要求；CLI 需 24+）',
     next: 'pnpm run setup to customise the manifest, name and icons.',
+    nextZh: '运行 pnpm run setup 自定义 manifest、名称与图标。',
   },
   'library-ts': {
     stack: ['TypeScript', 'tsup'],
     includes: ['src/index.ts', 'index.d.ts', 'tsup.config.ts', 'biome.json'],
     next: 'Set name/description/exports in package.json, then pnpm run release.',
+    nextZh: '在 package.json 中设置 name/description/exports，然后运行 pnpm run release。',
   },
   'library-react-component-ts': {
     stack: ['React', 'TypeScript', 'Vite playground'],
@@ -68,6 +76,7 @@ export const TEMPLATE_DETAILS: Record<string, TemplateDetail> = {
       'playground/ — Vite app for visual iteration',
     ],
     next: 'Replace src/counter with your own components.',
+    nextZh: '用你自己的组件替换 src/counter。',
   },
   'webpack-plugin': {
     stack: ['TypeScript', 'Webpack', 'tsup'],
@@ -76,6 +85,7 @@ export const TEMPLATE_DETAILS: Record<string, TemplateDetail> = {
       'demo/ — its own package.json + webpack.config.js',
     ],
     next: 'cd demo && npm install && npm run dev to see it work.',
+    nextZh: '运行 cd demo && npm install && npm run dev 查看效果。',
   },
   'vscode-extension': {
     stack: ['VS Code API', 'React webview', 'Rsbuild', 'pnpm workspace'],
@@ -86,7 +96,9 @@ export const TEMPLATE_DETAILS: Record<string, TemplateDetail> = {
       'static/images/',
     ],
     requires: 'VS Code ^1.85.0',
+    requiresZh: 'VS Code ^1.85.0',
     next: 'pnpm run compile to type-check, then press F5 for the Extension Host.',
+    nextZh: '运行 pnpm run compile 做类型检查，然后按 F5 启动扩展宿主。',
   },
   monorepo: {
     stack: ['pnpm workspaces', 'Biome', 'GitHub Actions'],
@@ -96,6 +108,7 @@ export const TEMPLATE_DETAILS: Record<string, TemplateDetail> = {
       'scripts/ — bump-version, get-package-info, publish-to-npm',
     ],
     next: 'Create packages/<name>/package.json and run pnpm install.',
+    nextZh: '创建 packages/<name>/package.json 并运行 pnpm install。',
   },
   docs: {
     stack: ['Next.js', 'Fumadocs', 'MDX'],
@@ -105,6 +118,7 @@ export const TEMPLATE_DETAILS: Record<string, TemplateDetail> = {
       'content/docs/ + examples/ + source.config.ts',
     ],
     next: 'Add MDX files under content/docs/ and update source.config.ts.',
+    nextZh: '在 content/docs/ 下添加 MDX 文件并更新 source.config.ts。',
   },
 };
 

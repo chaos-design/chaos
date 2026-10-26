@@ -5,6 +5,8 @@ import { Check, Copy } from "lucide-react";
 
 import { CHAOS_TEMPLATES } from "@/data/templates";
 import { getTemplateDetail } from "@/data/template-details";
+import { useLocale } from "@/lib/i18n";
+import { useTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import {
   buildCommand,
@@ -17,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PromptInput } from "@/components/prompt-input";
+import { SettingsToggles } from "@/components/settings-toggles";
 import { TemplateInspector } from "@/components/template-inspector";
 
 // Every catalog row is exactly this tall, and the sliding pointer highlight is
@@ -52,6 +55,7 @@ async function copyText(text: string): Promise<boolean> {
 
 export default function Page() {
   const templates = CHAOS_TEMPLATES;
+  const { t, templateTitle, templateDescription } = useLocale();
   const [pm, setPm] = useState<Pm>("pnpm");
   const [dir, setDir] = useState("my-app");
   const [filter, setFilter] = useState("");
@@ -248,7 +252,7 @@ export default function Page() {
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden">
-      <header className="relative z-20 shrink-0 border-b border-chaos-line bg-[rgba(10,13,19,0.82)] backdrop-blur-md">
+      <header className="relative z-20 shrink-0 border-b border-chaos-line bg-chaos-chrome backdrop-blur-md">
         <div className="mx-auto flex max-w-[1180px] flex-wrap items-baseline gap-x-4 gap-y-1 px-4 py-3 sm:px-6 sm:py-3.5">
           <a
             href="./"
@@ -256,14 +260,14 @@ export default function Page() {
           >
             <span
               className="text-chaos-accent"
-              style={{ textShadow: "0 0 18px rgba(241,83,53,0.45)" }}
+              style={{ textShadow: "0 0 18px var(--chaos-accent-glow)" }}
             >
               chaos
             </span>
             <span className="font-normal text-chaos-term-dim"> / design</span>
           </a>
           <p className="m-0 hidden flex-1 text-chaos-term-dim sm:block">
-            选一个模板，复制命令，直接开跑。
+            {t.tagline}
           </p>
           <a
             href="https://github.com/chaos-design/chaos/blob/main/docs/templates.md"
@@ -271,8 +275,11 @@ export default function Page() {
             rel="noreferrer"
             className="border-b border-chaos-line-strong pb-px text-chaos-term-fg no-underline transition-colors hover:border-chaos-accent hover:text-chaos-accent-dark"
           >
-            模板文档
+            {t.docsLink}
           </a>
+          <div className="ml-auto">
+            <SettingsToggles />
+          </div>
         </div>
       </header>
 
@@ -280,20 +287,17 @@ export default function Page() {
         <Card className="animate-rise flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border-chaos-line bg-chaos-term-bg shadow-terminal">
           <div className="relative z-10 flex shrink-0 items-center gap-2 border-b border-chaos-line bg-chaos-term-chrome px-4 py-2.5">
             <span
-              className="h-2.5 w-2.5 rounded-full"
-              style={{
-                background: "#f15335",
-                boxShadow: "0 0 10px rgba(241,83,53,0.5)",
-              }}
+              className="h-2.5 w-2.5 rounded-full bg-chaos-accent"
+              style={{ boxShadow: "0 0 10px var(--chaos-accent-glow)" }}
             />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#e5c07b]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-chaos-warn" />
             <span className="h-2.5 w-2.5 rounded-full bg-chaos-success" />
             <span className="ml-2 font-mono text-xs text-chaos-term-dim">
-              create-chaos — 模板选择
+              create-chaos — {t.chromeTitle}
             </span>
             <div className="ml-auto flex items-center gap-3 font-mono text-[11px] text-chaos-term-dim">
               <span className="hidden sm:inline">
-                templates{" "}
+                {t.templatesWord}{" "}
                 <b className="inline-block min-w-[2ch] text-right font-normal tabular-nums text-chaos-term-fg">
                   {visible.length}
                 </b>
@@ -311,7 +315,7 @@ export default function Page() {
                 above the backdrop but below the content. */}
             <span
               aria-hidden
-              className="animate-scan pointer-events-none absolute inset-x-0 top-0 h-24 bg-[linear-gradient(to_bottom,transparent,rgba(108,207,224,0.05),transparent)]"
+              className="animate-scan pointer-events-none absolute inset-x-0 top-0 h-24 bg-[linear-gradient(to_bottom,transparent,var(--chaos-scanline),transparent)]"
             />
 
             <div className="relative z-10 grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_auto] gap-3 px-4 py-3 sm:gap-4 sm:px-5 sm:py-4 lg:grid-cols-[minmax(0,1fr)_21.5rem] lg:grid-rows-[minmax(0,1fr)]">
@@ -321,12 +325,12 @@ export default function Page() {
                 <div className="shrink-0">
                   {/* Filter */}
                   <div className="group flex flex-wrap items-baseline gap-2">
-                    <span className="font-bold text-[#c678dd]">?</span>
+                    <span className="font-bold text-kolorist-magenta">?</span>
                     <label
                       htmlFor="filter-input"
                       className="font-bold text-chaos-term-fg"
                     >
-                      Filter templates:
+                      {t.filterLabel}
                     </label>
                     <span className="text-chaos-term-dim transition-colors group-focus-within:text-chaos-term-cursor">
                       ›
@@ -347,22 +351,18 @@ export default function Page() {
                       id="filter-hint"
                       className="hidden text-[11.5px] text-chaos-term-dim sm:inline"
                     >
-                      {filtered
-                        ? `${visible.length} match${
-                            visible.length === 1 ? "" : "es"
-                          } · Esc to clear`
-                        : "空白即列出全部"}
+                      {filtered ? t.filterMatch(visible.length) : t.filterAllHint}
                     </span>
                   </div>
 
                   {/* Project name */}
                   <div className="group flex flex-wrap items-baseline gap-2">
-                    <span className="font-bold text-[#c678dd]">?</span>
+                    <span className="font-bold text-kolorist-magenta">?</span>
                     <label
                       htmlFor="dir-input"
                       className="font-bold text-chaos-term-fg"
                     >
-                      Project name:
+                      {t.dirLabel}
                     </label>
                     <span className="text-chaos-term-dim transition-colors group-focus-within:text-chaos-term-cursor">
                       ›
@@ -378,15 +378,15 @@ export default function Page() {
                       maxCells={40}
                     />
                     <span className="hidden text-[11.5px] text-chaos-term-dim sm:inline">
-                      留空回退 chaos-project
+                      {t.dirHint}
                     </span>
                   </div>
 
                   {/* Package manager */}
                   <div className="flex flex-wrap items-baseline gap-2">
-                    <span className="font-bold text-[#c678dd]">?</span>
+                    <span className="font-bold text-kolorist-magenta">?</span>
                     <span className="font-bold text-chaos-term-fg">
-                      Package manager:
+                      {t.pmLabel}
                     </span>
                     <span className="text-chaos-term-dim">›</span>
                     <div className="inline-flex gap-4" role="group">
@@ -397,13 +397,13 @@ export default function Page() {
                           onClick={() => setPm(p)}
                           aria-pressed={pm === p}
                           className={cn(
-                            "cursor-pointer border-0 bg-transparent p-0 font-mono text-chaos-term-dim transition-colors hover:text-[#b9c1d0]",
+                            "cursor-pointer border-0 bg-transparent p-0 font-mono text-chaos-term-dim transition-colors hover:text-chaos-hover-fg",
                             pm === p &&
                               "text-chaos-term-cursor underline underline-offset-[3px]",
                           )}
                           style={
                             pm === p
-                              ? { textShadow: "0 0 14px rgba(108,207,224,0.35)" }
+                              ? { textShadow: "0 0 14px var(--chaos-cursor-glow)" }
                               : undefined
                           }
                         >
@@ -423,13 +423,13 @@ export default function Page() {
                         "font-bold",
                         selectedTemplate
                           ? "text-chaos-success"
-                          : "text-[#c678dd]",
+                          : "text-kolorist-magenta",
                       )}
                     >
                       {selectedTemplate ? "✔" : "?"}
                     </span>
                     <span className="font-bold text-chaos-term-fg">
-                      Select a template:
+                      {t.selectLabel}
                     </span>
                     <span className="text-chaos-term-dim">›</span>
                     {selectedTemplate ? (
@@ -443,11 +443,11 @@ export default function Page() {
                           colorClass(selectedTemplate),
                         )}
                       >
-                        {selectedTemplate.title}
+                        {templateTitle(selectedTemplate)}
                       </span>
                     ) : (
                       <span className="min-w-0 truncate text-chaos-term-dim">
-                        - Pick a template below.
+                        {t.selectEmpty}
                       </span>
                     )}
                   </div>
@@ -466,7 +466,7 @@ export default function Page() {
                   {visible.length > 0 && (
                     <span
                       aria-hidden
-                      className="pointer-events-none absolute inset-x-0 top-0 rounded-md border-l-2 border-chaos-term-cursor bg-[rgba(108,207,224,0.07)] transition-transform duration-200 ease-out will-change-transform motion-reduce:transition-none"
+                      className="pointer-events-none absolute inset-x-0 top-0 rounded-md border-l-2 border-chaos-term-cursor bg-chaos-cursor-bg transition-transform duration-200 ease-out will-change-transform motion-reduce:transition-none"
                       style={{
                         height: ROW_HEIGHT,
                         transform: `translateY(${activeIndex * ROW_HEIGHT}px)`,
@@ -474,19 +474,19 @@ export default function Page() {
                     />
                   )}
 
-                  {visible.map((t, i) => {
+                  {visible.map((tpl, i) => {
                     const isCursor = i === activeIndex;
-                    const isChosen = t.id === templateId;
+                    const isChosen = tpl.id === templateId;
                     return (
                       <button
-                        key={t.id}
+                        key={tpl.id}
                         type="button"
                         data-index={i}
-                        onClick={() => selectTemplate(t.id)}
+                        onClick={() => selectTemplate(tpl.id)}
                         onMouseEnter={() => setCursor(i)}
                         onFocus={() => setCursor(i)}
                         aria-pressed={isChosen}
-                        title={`${t.title} — ${choiceMeta(t)}`}
+                        title={`${templateTitle(tpl)} — ${choiceMeta(tpl)}`}
                         className="relative flex w-full items-center gap-2 rounded-md px-2 text-left font-mono text-[13.5px] text-inherit"
                         style={{ height: ROW_HEIGHT }}
                       >
@@ -505,21 +505,21 @@ export default function Page() {
                           <span
                             className={cn(
                               "truncate font-bold transition-[filter] duration-200",
-                              colorClass(t),
+                              colorClass(tpl),
                               isCursor &&
                                 "underline underline-offset-[3px] [filter:brightness(1.18)_drop-shadow(0_0_10px_rgba(108,207,224,0.25))]",
                             )}
                           >
-                            {t.title}
+                            {templateTitle(tpl)}
                           </span>
-                          {t.alias !== t.id ? (
-                            <span className="hidden shrink-0 text-[11.5px] text-chaos-term-dim/80 sm:inline">
-                              {t.alias}
+                          {tpl.alias !== tpl.id ? (
+                            <span className="hidden shrink-0 text-[11.5px] text-chaos-term-dim sm:inline">
+                              {tpl.alias}
                             </span>
                           ) : null}
                         </span>
-                        <span className="ml-auto hidden w-[5.5rem] shrink-0 truncate text-right text-[11px] text-chaos-term-dim/70 md:inline">
-                          {t.categoryLabel}
+                        <span className="ml-auto hidden w-[5.5rem] shrink-0 truncate text-right text-[11px] text-chaos-term-dim-70 md:inline">
+                          {tpl.categoryLabel}
                         </span>
                         <span
                           className="w-[1.5ch] shrink-0 text-right text-chaos-success transition-opacity duration-150"
@@ -532,15 +532,14 @@ export default function Page() {
                   })}
 
                   {visible.length === 0 && (
-                    <p className="mt-1 animate-fade-in text-[#e5c07b]">
-                      - No templates match &quot;{filter.trim()}&quot;.
+                    <p className="mt-1 animate-fade-in text-chaos-warn">
+                      {t.noMatch(filter.trim())}
                     </p>
                   )}
                 </div>
 
                 <p className="hidden shrink-0 pt-1.5 text-[11.5px] text-chaos-term-dim sm:block">
-                  - ↑/↓ or j/k browse · Enter choose · / filter · c copy · ←/→
-                  package manager.
+                  {t.keysHint}
                 </p>
               </div>
 
@@ -558,18 +557,18 @@ export default function Page() {
         </Card>
       </main>
 
-      <footer className="relative z-20 shrink-0 border-t border-chaos-line bg-[rgba(10,13,19,0.88)] backdrop-blur-md">
+      <footer className="relative z-20 shrink-0 border-t border-chaos-line bg-chaos-chrome-strong backdrop-blur-md">
         <div className="mx-auto flex max-w-[1180px] items-center gap-3 px-4 py-2.5 sm:gap-4 sm:px-6 sm:py-3">
           <div className="flex min-w-0 flex-1 items-center gap-2.5 overflow-x-auto rounded-xl border border-chaos-line bg-chaos-panel-raised px-4 py-2.5">
             <span
               className="select-none font-mono text-chaos-accent"
-              style={{ textShadow: "0 0 14px rgba(241,83,53,0.45)" }}
+              style={{ textShadow: "0 0 14px var(--chaos-accent-glow)" }}
             >
               $
             </span>
             <code
               ref={commandRef}
-              className="whitespace-nowrap font-mono text-[13.5px] text-[#eef1f6]"
+              className="whitespace-nowrap font-mono text-[13.5px] text-chaos-command-fg"
             >
               {command || " "}
             </code>
@@ -583,18 +582,18 @@ export default function Page() {
             onClick={handleCopy}
             disabled={!command}
             className={cn(
-              "shrink-0 rounded-xl border border-[rgba(241,83,53,0.5)] bg-gradient-to-b from-[#ff6a4a] to-[#e8481f] px-5 py-2.5 text-sm font-semibold text-white shadow-glow-accent transition-transform hover:-translate-y-px",
+              "shrink-0 rounded-xl border border-chaos-copy-border bg-gradient-to-b from-chaos-copy-a to-chaos-copy-b px-5 py-2.5 text-sm font-semibold text-white shadow-glow-accent transition-transform hover:-translate-y-px",
               copied &&
-                "border-[rgba(88,214,141,0.6)] bg-gradient-to-b from-[#47c77a] to-[#2ea25e] shadow-[0_6px_22px_rgba(88,214,141,0.22)]",
+                "border-chaos-copy-ok-border bg-gradient-to-b from-chaos-copy-ok-a to-chaos-copy-ok-b shadow-[0_6px_22px_var(--chaos-success-glow)]",
             )}
           >
             {copied ? (
               <>
-                <Check className="size-4" /> 已复制
+                <Check className="size-4" /> {t.copied}
               </>
             ) : (
               <>
-                <Copy className="size-4" /> 复制命令
+                <Copy className="size-4" /> {t.copyBtn}
               </>
             )}
           </Button>

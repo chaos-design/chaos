@@ -28,4 +28,8 @@ export interface TemplateDetail {
   requires?: string;
   /** The first thing to run once the project exists. */
   next: string;
+  /** Optional Chinese overrides for the inspector panel. */
+  nextZh?: string;
+  requiresZh?: string;
+  stackZh?: string[];
 }
