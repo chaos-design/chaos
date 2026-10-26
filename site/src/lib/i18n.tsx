@@ -47,6 +47,9 @@ export interface UiStrings {
   emptyPanelHint: string;
   pickedNote: string;
   pickBtn: string;
+  langLabel: string;
+  themeToLight: string;
+  themeToDark: string;
 }
 
 const STRINGS: Record<Locale, UiStrings> = {
@@ -81,6 +84,9 @@ const STRINGS: Record<Locale, UiStrings> = {
     emptyPanelHint: "清空筛选以继续浏览。",
     pickedNote: "已选用，底部命令已就绪",
     pickBtn: "选用此模板",
+    langLabel: "语言",
+    themeToLight: "切换到浅色",
+    themeToDark: "切换到深色",
   },
   en: {
     tagline: "Pick a template, copy the command, run it.",
@@ -114,6 +120,9 @@ const STRINGS: Record<Locale, UiStrings> = {
     emptyPanelHint: "Clear the filter to keep browsing.",
     pickedNote: "selected — the command below is ready",
     pickBtn: "Use this template",
+    langLabel: "Language",
+    themeToLight: "Switch to light",
+    themeToDark: "Switch to dark",
   },
 };
 

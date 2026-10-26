@@ -36,6 +36,9 @@
   --chaos-bg: #07090e;
   --chaos-chrome-bg: rgba(10, 13, 19, 0.82);
   --chaos-chrome-bg-strong: rgba(10, 13, 19, 0.88);
+  --chaos-control-bg: rgba(13, 18, 25, 0.7);
+  --chaos-seg-bg: rgba(10, 14, 21, 0.55);
+  --chaos-hover-bg: rgba(120, 130, 154, 0.12);
   --chaos-term-bg: #0a0e15;
   --chaos-term-chrome: #0d1219;
   --chaos-panel: #0d1118;
@@ -133,6 +136,9 @@ html[data-theme="light"] {
   --chaos-bg: #eef1f6;
   --chaos-chrome-bg: rgba(255, 255, 255, 0.85);
   --chaos-chrome-bg-strong: rgba(255, 255, 255, 0.92);
+  --chaos-control-bg: rgba(241, 244, 249, 0.8);
+  --chaos-seg-bg: rgba(255, 255, 255, 0.7);
+  --chaos-hover-bg: rgba(100, 116, 139, 0.12);
   --chaos-term-bg: #ffffff;
   --chaos-term-chrome: #f1f4f9;
   --chaos-panel: #ffffff;

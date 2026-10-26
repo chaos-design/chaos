@@ -277,7 +277,7 @@ export default function Page() {
           >
             {t.docsLink}
           </a>
-          <div className="ml-auto">
+          <div className="ml-auto pl-2 sm:pl-4">
             <SettingsToggles />
           </div>
         </div>
