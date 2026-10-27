@@ -70,6 +70,7 @@ const config: Config = {
           "warn-border": "var(--chaos-warn-border)",
           "inspector-bg": "var(--chaos-inspector-bg)",
           "code-bg": "var(--chaos-code-bg)",
+          "file-bg": "var(--chaos-file-bg)",
           "meta-fg": "var(--chaos-meta-fg)",
           "sub-fg": "var(--chaos-sub-fg)",
           "desc-fg": "var(--chaos-desc-fg)",

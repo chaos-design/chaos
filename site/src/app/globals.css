@@ -45,6 +45,7 @@
   --chaos-panel-raised: #10151e;
   --chaos-inspector-bg: rgba(13, 17, 24, 0.72);
   --chaos-code-bg: rgba(7, 9, 14, 0.7);
+  --chaos-file-bg: rgba(7, 9, 14, 0.45);
   --chaos-line: rgba(148, 163, 196, 0.14);
   --chaos-line-strong: rgba(148, 163, 196, 0.28);
   --chaos-term-fg: #e6e9ef;
@@ -145,6 +146,7 @@ html[data-theme="light"] {
   --chaos-panel-raised: #f6f8fc;
   --chaos-inspector-bg: rgba(255, 255, 255, 0.72);
   --chaos-code-bg: rgba(241, 245, 249, 0.9);
+  --chaos-file-bg: rgba(241, 245, 249, 0.6);
   --chaos-line: rgba(100, 116, 139, 0.18);
   --chaos-line-strong: rgba(100, 116, 139, 0.35);
   --chaos-term-fg: #1e2633;

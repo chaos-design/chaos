@@ -135,17 +135,46 @@ export function TemplateInspector({
 
           {detail?.includes.length ? (
             <div className="border-t border-chaos-line pt-3">
-              <SectionLabel>{t.includesLabel}</SectionLabel>
-              <ul className="space-y-1">
-                {detail.includes.map((entry) => (
-                  <li
-                    key={entry}
-                    className="flex gap-2 font-mono text-[12px] leading-relaxed text-chaos-sub-fg"
-                  >
-                    <span className="text-chaos-term-cursor">▸</span>
-                    <span className="min-w-0 break-words">{entry}</span>
-                  </li>
-                ))}
+              <div className="mb-2 flex items-baseline gap-2">
+                <SectionLabel>{t.includesLabel}</SectionLabel>
+                <span className="ml-auto rounded-md bg-chaos-chip-bg px-1.5 py-0.5 font-mono text-[10.5px] tabular-nums text-chaos-chip-fg">
+                  {detail.includes.length} {t.includesUnit}
+                </span>
+              </div>
+              {/*
+               * The file manifest as a self-contained, scrollable tree: it
+               * grows with its content up to a fixed max height, then scrolls
+               * inside instead of letting the whole panel scroll. Each row is
+               * a path plus an optional dim annotation split on " — ".
+               */}
+              <ul
+                role="list"
+                className="chaos-scroll -mx-1 max-h-48 space-y-0.5 overflow-y-auto rounded-lg border border-chaos-line bg-chaos-file-bg px-1 py-1.5"
+              >
+                {detail.includes.map((entry) => {
+                  // A row is either a bare path, or "path — annotation".
+                  const [path, annotation] = entry.split(" — ", 2);
+                  return (
+                    <li
+                      key={entry}
+                      className="rounded-md px-2 py-1 transition-colors hover:bg-chaos-hover-bg"
+                    >
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="shrink-0 text-chaos-term-cursor">
+                          ▸
+                        </span>
+                        <code className="min-w-0 break-all font-mono text-[12px] leading-relaxed text-chaos-meta-fg">
+                          {path}
+                        </code>
+                      </div>
+                      {annotation ? (
+                        <p className="mt-0.5 pl-4 font-mono text-[10.5px] leading-snug text-chaos-term-dim">
+                          {annotation}
+                        </p>
+                      ) : null}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ) : null}

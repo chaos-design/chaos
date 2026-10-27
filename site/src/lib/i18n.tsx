@@ -37,6 +37,8 @@ export interface UiStrings {
   selectedMark: string;
   browsingMark: string;
   includesLabel: string;
+  /** Singular/unit word shown next to the "包含" count, e.g. "项". */
+  includesUnit: string;
   nextLabel: string;
   commandLabel: string;
   metaTemplate: string;
@@ -74,6 +76,7 @@ const STRINGS: Record<Locale, UiStrings> = {
     selectedMark: "已选用",
     browsingMark: "浏览中",
     includesLabel: "包含",
+    includesUnit: "项",
     nextLabel: "下一步",
     commandLabel: "命令",
     metaTemplate: "模板",
@@ -110,6 +113,7 @@ const STRINGS: Record<Locale, UiStrings> = {
     selectedMark: "selected",
     browsingMark: "browsing",
     includesLabel: "Includes",
+    includesUnit: "items",
     nextLabel: "Next",
     commandLabel: "Command",
     metaTemplate: "template",
