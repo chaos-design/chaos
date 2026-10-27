@@ -179,7 +179,7 @@ export function FileTree({
       aria-label="files"
       className="chaos-scroll font-mono text-[11.5px]"
     >
-      <div className="max-h-60 overflow-y-auto py-1.5 pr-1">
+      <div className="max-h-60 overflow-y-auto py-1.5 pl-2 pr-1">
         <div className="mb-0.5 flex h-[22px] items-center gap-1.5 text-chaos-term-fg">
           <FolderOpen aria-hidden className="size-3.5 text-chaos-term-cursor" />
           {/* Standard `tree` root marker — the view lists what the project ships. */}
