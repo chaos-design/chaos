@@ -12,6 +12,21 @@ export interface ChaosTemplate {
 }
 
 /**
+ * A node in the inspector's file manifest. A folder may list its children
+ * (rendered as an expandable `tree`/VS-Code-style branch) and/or carry a
+ * `count` of children that is shown as a dim badge when it is not expanded.
+ * Names are the post-rename values the generated project actually ships.
+ */
+export interface FileNode {
+  name: string;
+  type: "file" | "folder";
+  /** Number of children (folders + files). Drives the badge on a folder. */
+  count?: number;
+  /** Nested children. When present the folder is expandable in the tree. */
+  children?: FileNode[];
+}
+
+/**
  * Presentation-only metadata for a template: the context the CLI's one-line
  * description has no room for, surfaced in the inspector panel.
  *
@@ -28,4 +43,15 @@ export interface TemplateDetail {
   requires?: string;
   /** The first thing to run once the project exists. */
   next: string;
+  /**
+   * Nestable manifest of the shipped files, rendered as a `tree`/VS-Code-style
+   * collapsible file tree. `includes` stays as the flat, documentation copy;
+   * this is the richer interactive view. Optional — a template without one
+   * falls back to the flat list.
+   */
+  fileTree?: FileNode[];
+  /** Optional Chinese overrides for the inspector panel. */
+  nextZh?: string;
+  requiresZh?: string;
+  stackZh?: string[];
 }

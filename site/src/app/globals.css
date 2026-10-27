@@ -2,9 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Theme tokens.
+ *
+ * The page paints dark by default; the boot script in `layout.tsx` restores a
+ * stored preference onto `<html data-theme>` before first paint, so a
+ * light-mode visitor never sees a dark flash. Every surface the components
+ * touch reads these variables (through the `chaos-*` / `kolorist-*`
+ * Tailwind tokens), which is what makes a theme switch a pure re-skin:
+ * flip the attribute, nothing re-renders.
+ */
 :root {
   color-scheme: dark;
 
+  /* shadcn/ui base tokens (HSL channels, consumed via hsl(var(--token))) */
   --background: 222 47% 5%;
   --foreground: 213 27% 92%;
   --card: 222 30% 8%;
@@ -20,6 +31,185 @@
   --border: 215 19% 24%;
   --input: 215 19% 24%;
   --ring: 187 60% 60%;
+
+  /* App surfaces */
+  --chaos-bg: #07090e;
+  --chaos-chrome-bg: rgba(10, 13, 19, 0.82);
+  --chaos-chrome-bg-strong: rgba(10, 13, 19, 0.88);
+  --chaos-control-bg: rgba(13, 18, 25, 0.7);
+  --chaos-seg-bg: rgba(10, 14, 21, 0.55);
+  --chaos-hover-bg: rgba(120, 130, 154, 0.12);
+  --chaos-term-bg: #0a0e15;
+  --chaos-term-chrome: #0d1219;
+  --chaos-panel: #0d1118;
+  --chaos-panel-raised: #10151e;
+  --chaos-inspector-bg: rgba(13, 17, 24, 0.72);
+  --chaos-code-bg: rgba(7, 9, 14, 0.7);
+  --chaos-file-bg: rgba(7, 9, 14, 0.45);
+  --chaos-line: rgba(148, 163, 196, 0.14);
+  --chaos-line-strong: rgba(148, 163, 196, 0.28);
+  --chaos-term-fg: #e6e9ef;
+  --chaos-term-dim: #78829a;
+  --chaos-term-dim-soft: rgba(120, 130, 154, 0.6);
+  --chaos-term-dim-80: rgba(120, 130, 154, 0.8);
+  --chaos-term-dim-70: rgba(120, 130, 154, 0.7);
+  --chaos-hover-fg: #b9c1d0;
+  --chaos-command-fg: #eef1f6;
+  --chaos-meta-fg: #c8d0de;
+  --chaos-sub-fg: #b5bdcc;
+  --chaos-code-fg: #dfe4ee;
+  --chaos-desc-fg: #a7b0c2;
+
+  /* Brand accents */
+  --chaos-accent: #f15335;
+  --chaos-accent-dark: #ff6a4a;
+  --chaos-accent-glow: rgba(241, 83, 53, 0.45);
+  --chaos-glow-orange: rgba(241, 83, 53, 0.16);
+  --chaos-glow-cyan: rgba(108, 207, 224, 0.12);
+  --chaos-grid: rgba(148, 163, 196, 0.045);
+  --chaos-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  --chaos-glow-accent: 0 6px 22px rgba(241, 83, 53, 0.22);
+
+  /* Cursor / selection family (cyan) */
+  --chaos-term-cursor: #6ccfe0;
+  --chaos-cursor-glow: rgba(108, 207, 224, 0.35);
+  --chaos-cursor-bg: rgba(108, 207, 224, 0.07);
+  --chaos-cursor-hi: rgba(108, 207, 224, 0.28);
+  --chaos-cursor-focus: rgba(108, 207, 224, 0.06);
+  --chaos-scanline: rgba(108, 207, 224, 0.05);
+  --chaos-chip-fg: #9fd8e4;
+  --chaos-chip-bg: rgba(108, 207, 224, 0.06);
+  --chaos-pick-fg: #cdeef5;
+  --chaos-pick-border: rgba(108, 207, 224, 0.35);
+  --chaos-pick-bg: rgba(108, 207, 224, 0.08);
+  --chaos-pick-bg-hover: rgba(108, 207, 224, 0.16);
+
+  /* State colours */
+  --chaos-success: #58d68d;
+  --chaos-success-glow: rgba(88, 214, 141, 0.22);
+  --chaos-copy-a: #ff6a4a;
+  --chaos-copy-b: #e8481f;
+  --chaos-copy-border: rgba(241, 83, 53, 0.5);
+  --chaos-copy-ok-a: #47c77a;
+  --chaos-copy-ok-b: #2ea25e;
+  --chaos-copy-ok-border: rgba(88, 214, 141, 0.6);
+  --chaos-warn: #e5c07b;
+  --chaos-warn-fg: #e3cfa6;
+  --chaos-warn-bg: rgba(229, 192, 123, 0.06);
+  --chaos-warn-border: rgba(229, 192, 123, 0.28);
+
+  /* Scrollbars of the inner scroll regions */
+  --chaos-scrollbar: rgba(148, 163, 196, 0.28);
+  --chaos-scrollbar-hover: rgba(108, 207, 224, 0.42);
+
+  /* kolorist template-title colours (dark theme) */
+  --k-blue: #7aa6da;
+  --k-cyan: #6ccfe0;
+  --k-green: #7ec97e;
+  --k-lightCyan: #a9e6ef;
+  --k-lightGreen: #a9e2a9;
+  --k-lightMagenta: #d3a7e2;
+  --k-lightRed: #ef8fa8;
+  --k-magenta: #c678dd;
+  --k-red: #e06c75;
+  --k-yellow: #e5c07b;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+
+  --background: 210 40% 98%;
+  --foreground: 224 30% 15%;
+  --card: 0 0% 100%;
+  --card-foreground: 224 30% 15%;
+  --primary: 10 85% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 214 32% 91%;
+  --secondary-foreground: 224 25% 20%;
+  --muted: 214 32% 93%;
+  --muted-foreground: 215 16% 40%;
+  --accent: 214 32% 91%;
+  --accent-foreground: 224 25% 20%;
+  --border: 214 20% 82%;
+  --input: 214 20% 78%;
+  --ring: 10 85% 50%;
+
+  --chaos-bg: #eef1f6;
+  --chaos-chrome-bg: rgba(255, 255, 255, 0.85);
+  --chaos-chrome-bg-strong: rgba(255, 255, 255, 0.92);
+  --chaos-control-bg: rgba(241, 244, 249, 0.8);
+  --chaos-seg-bg: rgba(255, 255, 255, 0.7);
+  --chaos-hover-bg: rgba(100, 116, 139, 0.12);
+  --chaos-term-bg: #ffffff;
+  --chaos-term-chrome: #f1f4f9;
+  --chaos-panel: #ffffff;
+  --chaos-panel-raised: #f6f8fc;
+  --chaos-inspector-bg: rgba(255, 255, 255, 0.72);
+  --chaos-code-bg: rgba(241, 245, 249, 0.9);
+  --chaos-file-bg: rgba(241, 245, 249, 0.6);
+  --chaos-line: rgba(100, 116, 139, 0.18);
+  --chaos-line-strong: rgba(100, 116, 139, 0.35);
+  --chaos-term-fg: #1e2633;
+  --chaos-term-dim: #64748b;
+  --chaos-term-dim-soft: rgba(100, 116, 139, 0.6);
+  --chaos-term-dim-80: rgba(100, 116, 139, 0.8);
+  --chaos-term-dim-70: rgba(100, 116, 139, 0.7);
+  --chaos-hover-fg: #334155;
+  --chaos-command-fg: #1f2937;
+  --chaos-meta-fg: #374151;
+  --chaos-sub-fg: #4b5563;
+  --chaos-code-fg: #111827;
+  --chaos-desc-fg: #475569;
+
+  --chaos-accent: #d13c1f;
+  --chaos-accent-dark: #e8481f;
+  --chaos-accent-glow: rgba(224, 74, 43, 0.25);
+  --chaos-glow-orange: rgba(224, 74, 43, 0.1);
+  --chaos-glow-cyan: rgba(8, 145, 178, 0.1);
+  --chaos-grid: rgba(100, 116, 139, 0.07);
+  --chaos-shadow: 0 24px 64px rgba(15, 23, 42, 0.1);
+  --chaos-glow-accent: 0 6px 22px rgba(224, 74, 43, 0.18);
+
+  --chaos-term-cursor: #0891b2;
+  --chaos-cursor-glow: rgba(8, 145, 178, 0.3);
+  --chaos-cursor-bg: rgba(8, 145, 178, 0.1);
+  --chaos-cursor-hi: rgba(8, 145, 178, 0.25);
+  --chaos-cursor-focus: rgba(8, 145, 178, 0.08);
+  --chaos-scanline: rgba(8, 145, 178, 0.09);
+  --chaos-chip-fg: #0e7490;
+  --chaos-chip-bg: rgba(8, 145, 178, 0.08);
+  --chaos-pick-fg: #0e7490;
+  --chaos-pick-border: rgba(8, 145, 178, 0.35);
+  --chaos-pick-bg: rgba(8, 145, 178, 0.08);
+  --chaos-pick-bg-hover: rgba(8, 145, 178, 0.15);
+
+  --chaos-success: #16a34a;
+  --chaos-success-glow: rgba(22, 163, 74, 0.18);
+  --chaos-copy-a: #f4704f;
+  --chaos-copy-b: #d13c1f;
+  --chaos-copy-border: rgba(224, 74, 43, 0.45);
+  --chaos-copy-ok-a: #22c55e;
+  --chaos-copy-ok-b: #15803d;
+  --chaos-copy-ok-border: rgba(22, 163, 74, 0.5);
+  --chaos-warn: #d97706;
+  --chaos-warn-fg: #92400e;
+  --chaos-warn-bg: rgba(217, 119, 6, 0.07);
+  --chaos-warn-border: rgba(217, 119, 6, 0.3);
+
+  --chaos-scrollbar: rgba(100, 116, 139, 0.25);
+  --chaos-scrollbar-hover: rgba(8, 145, 178, 0.45);
+
+  /* Same role, darker hues for contrast on a light surface */
+  --k-blue: #2563eb;
+  --k-cyan: #0891b2;
+  --k-green: #16a34a;
+  --k-lightCyan: #0e7490;
+  --k-lightGreen: #15803d;
+  --k-lightMagenta: #7e22ce;
+  --k-lightRed: #e11d48;
+  --k-magenta: #a21caf;
+  --k-red: #dc2626;
+  --k-yellow: #d97706;
 }
 
 @layer base {
@@ -35,8 +225,8 @@
   /* The app shell (`h-dvh` + flex column) owns every scroll region: the
      catalog scrolls inside the terminal, the page itself never does. */
   body {
-    background-color: #07090e;
-    color: #e6e9ef;
+    background-color: var(--chaos-bg);
+    color: var(--chaos-term-fg);
     font-family: "Avenir Next", Avenir, "Segoe UI", "PingFang SC",
       "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     overflow: hidden;
@@ -51,8 +241,8 @@
     inset: 0;
     z-index: -1;
     background-image:
-      linear-gradient(rgba(148, 163, 196, 0.045) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(148, 163, 196, 0.045) 1px, transparent 1px);
+      linear-gradient(var(--chaos-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--chaos-grid) 1px, transparent 1px);
     background-size: 44px 44px;
     -webkit-mask-image: radial-gradient(
       ellipse 90% 70% at 50% 0%,
@@ -74,12 +264,12 @@
     background:
       radial-gradient(
         ellipse 560px 340px at 12% -4%,
-        rgba(241, 83, 53, 0.16),
+        var(--chaos-glow-orange),
         transparent 70%
       ),
       radial-gradient(
         ellipse 640px 380px at 92% 4%,
-        rgba(108, 207, 224, 0.12),
+        var(--chaos-glow-cyan),
         transparent 70%
       );
   }
@@ -103,7 +293,7 @@
 .chaos-scroll {
   scrollbar-gutter: stable;
   scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 196, 0.28) transparent;
+  scrollbar-color: var(--chaos-scrollbar) transparent;
 }
 
 .chaos-scroll::-webkit-scrollbar {
@@ -116,13 +306,66 @@
 }
 
 .chaos-scroll::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 196, 0.24);
+  background: var(--chaos-scrollbar);
   background-clip: content-box;
   border: 2px solid transparent;
   border-radius: 999px;
 }
 
 .chaos-scroll:hover::-webkit-scrollbar-thumb {
-  background: rgba(108, 207, 224, 0.42);
+  background: var(--chaos-scrollbar-hover);
   background-clip: content-box;
+}
+
+/*
+ * Tree view (`tree`-command look, pixel-aligned).
+ *
+ * Connectors are drawn with hairlines instead of monospace glyphs so the
+ * folder/file icons and the names line up on a shared column: indentation is
+ * a fixed pixel step per level, and every row's tick meets the icon exactly.
+ * Only `li` carries the indent — a nested `ul` has none — so each level's
+ * guide sits exactly under its parent row's content start. `:last-child`
+ * turns the vertical guide into a `└` (stops at the row centre) instead of a
+ * through `├`.
+ *
+ * Row height is fixed at 22px so the ticks (top: 11px) hit the row centre.
+ */
+.chaos-tree,
+.chaos-tree ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.chaos-tree li {
+  position: relative;
+  padding-left: 18px;
+}
+
+/* Vertical guide down the left of a subtree. */
+.chaos-tree li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--chaos-line-strong);
+}
+
+/* Last child: the guide only reaches this row's centre (`└`). */
+.chaos-tree li:last-child::before {
+  bottom: auto;
+  height: 11px;
+}
+
+/* Horizontal tick from the guide to the row. */
+.chaos-tree li::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 15px;
+  height: 1px;
+  background: var(--chaos-line-strong);
 }

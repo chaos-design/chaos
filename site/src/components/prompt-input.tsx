@@ -32,7 +32,7 @@ function monoCells(text: string) {
  * never push the row apart.
  */
 const promptInputClass =
-  "h-[26px] max-w-full shrink-0 rounded-[3px] border-0 bg-transparent p-0 font-mono text-[13.5px] text-chaos-term-fg caret-[#6ccfe0] shadow-none outline-none transition-colors placeholder:text-chaos-term-dim/60 selection:bg-[rgba(108,207,224,0.28)] focus-visible:bg-[rgba(108,207,224,0.06)] focus-visible:ring-0";
+  "h-[26px] max-w-full shrink-0 rounded-[3px] border-0 bg-transparent p-0 font-mono text-[13.5px] text-chaos-term-fg caret-chaos-term-cursor shadow-none outline-none transition-colors placeholder:text-chaos-term-dim-soft selection:bg-chaos-cursor-hi focus-visible:bg-chaos-cursor-focus focus-visible:ring-0";
 
 interface PromptInputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "className"> {
