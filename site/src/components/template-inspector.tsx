@@ -2,9 +2,11 @@
 
 import { CornerDownLeft, TriangleAlert } from "lucide-react";
 
+import { FileTree } from "@/components/file-tree";
 import { Button } from "@/components/ui/button";
+import { TEMPLATE_FILE_TREES } from "@/data/file-trees";
 import { useLocale } from "@/lib/i18n";
-import type { ChaosTemplate, TemplateDetail } from "@/lib/types";
+import type { ChaosTemplate, FileNode, TemplateDetail } from "@/lib/types";
 import { buildCommand, colorClass, type Pm } from "@/lib/template-ui";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +40,12 @@ function MetaRow({ label, value }: { label: string; value: string }) {
   );
 }
 
+/** Total files (leaf + folder entries) reachable under a node, excluding the node itself. */
+function nodeCount(node: FileNode): number {
+  if (node.type === "file" || !node.children?.length) return 0;
+  return node.children.reduce((sum, child) => sum + 1 + nodeCount(child), 0);
+}
+
 /**
  * A fixed-height companion panel for the catalog. It is a sibling of the list,
  * not an inline expansion of it, so browsing templates never reflows the page —
@@ -64,6 +72,11 @@ export function TemplateInspector({
     locale === "zh"
       ? detail?.requiresZh ?? detail?.requires
       : detail?.requires;
+
+  const treeNodes = template ? TEMPLATE_FILE_TREES[template.id] : undefined;
+  const treeCount = treeNodes
+    ? treeNodes.reduce((sum, node) => sum + 1 + nodeCount(node), 0)
+    : 0;
 
   return (
     <aside
@@ -133,7 +146,26 @@ export function TemplateInspector({
             />
           </div>
 
-          {detail?.includes.length ? (
+          {treeNodes?.length ? (
+            <div className="border-t border-chaos-line pt-3">
+              <div className="mb-2 flex items-baseline gap-2">
+                <SectionLabel>{t.includesLabel}</SectionLabel>
+                <span className="ml-auto rounded-md bg-chaos-chip-bg px-1.5 py-0.5 font-mono text-[10.5px] tabular-nums text-chaos-chip-fg">
+                  {treeCount} {t.includesUnit}
+                </span>
+              </div>
+              {/*
+               * The file manifest as a collapsible `tree` / VS-Code-style
+               * explorer: folders open/collapse, branch connectors and a
+               * count badge make the structure legible at a glance. It grows
+               * with its content up to a max height, then scrolls inside so a
+               * big manifest never pushes the whole panel.
+               */}
+              <div className="overflow-hidden rounded-lg border border-chaos-line bg-chaos-file-bg">
+                <FileTree nodes={treeNodes} root={template.id} />
+              </div>
+            </div>
+          ) : detail?.includes.length ? (
             <div className="border-t border-chaos-line pt-3">
               <div className="mb-2 flex items-baseline gap-2">
                 <SectionLabel>{t.includesLabel}</SectionLabel>
@@ -141,12 +173,6 @@ export function TemplateInspector({
                   {detail.includes.length} {t.includesUnit}
                 </span>
               </div>
-              {/*
-               * The file manifest as a self-contained, scrollable tree: it
-               * grows with its content up to a fixed max height, then scrolls
-               * inside instead of letting the whole panel scroll. Each row is
-               * a path plus an optional dim annotation split on " — ".
-               */}
               <ul
                 role="list"
                 className="chaos-scroll -mx-1 max-h-48 space-y-0.5 overflow-y-auto rounded-lg border border-chaos-line bg-chaos-file-bg px-1 py-1.5"

@@ -39,6 +39,9 @@ export interface UiStrings {
   includesLabel: string;
   /** Singular/unit word shown next to the "包含" count, e.g. "项". */
   includesUnit: string;
+  /** `tree`-style stat line: "N 个目录，M 个文件" / "N directories, M files". */
+  treeDirs: string;
+  treeFiles: string;
   nextLabel: string;
   commandLabel: string;
   metaTemplate: string;
@@ -77,6 +80,8 @@ const STRINGS: Record<Locale, UiStrings> = {
     browsingMark: "浏览中",
     includesLabel: "包含",
     includesUnit: "项",
+    treeDirs: "个目录",
+    treeFiles: "个文件",
     nextLabel: "下一步",
     commandLabel: "命令",
     metaTemplate: "模板",
@@ -114,6 +119,8 @@ const STRINGS: Record<Locale, UiStrings> = {
     browsingMark: "browsing",
     includesLabel: "Includes",
     includesUnit: "items",
+    treeDirs: "directories",
+    treeFiles: "files",
     nextLabel: "Next",
     commandLabel: "Command",
     metaTemplate: "template",
