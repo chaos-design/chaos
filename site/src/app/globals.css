@@ -316,3 +316,56 @@ html[data-theme="light"] {
   background: var(--chaos-scrollbar-hover);
   background-clip: content-box;
 }
+
+/*
+ * Tree view (`tree`-command look, pixel-aligned).
+ *
+ * Connectors are drawn with hairlines instead of monospace glyphs so the
+ * folder/file icons and the names line up on a shared column: indentation is
+ * a fixed pixel step per level, and every row's tick meets the icon exactly.
+ * Only `li` carries the indent — a nested `ul` has none — so each level's
+ * guide sits exactly under its parent row's content start. `:last-child`
+ * turns the vertical guide into a `└` (stops at the row centre) instead of a
+ * through `├`.
+ *
+ * Row height is fixed at 22px so the ticks (top: 11px) hit the row centre.
+ */
+.chaos-tree,
+.chaos-tree ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.chaos-tree li {
+  position: relative;
+  padding-left: 18px;
+}
+
+/* Vertical guide down the left of a subtree. */
+.chaos-tree li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--chaos-line-strong);
+}
+
+/* Last child: the guide only reaches this row's centre (`└`). */
+.chaos-tree li:last-child::before {
+  bottom: auto;
+  height: 11px;
+}
+
+/* Horizontal tick from the guide to the row. */
+.chaos-tree li::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 15px;
+  height: 1px;
+  background: var(--chaos-line-strong);
+}
